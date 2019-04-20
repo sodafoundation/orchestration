@@ -1,0 +1,37 @@
+version: "2.0"
+name: "opensds.provision-volume"
+
+workflows:
+
+    main:
+        type: direct
+        input:
+            - ip
+            - port
+            - pid
+            - name
+            - size
+            - timeout
+        output:
+            tagline: "<% $.print_status %>"
+        task-defaults:
+          on-error:
+            - fail
+        tasks:
+            create_volume:
+                action: opensds.create-volume
+                input:
+                    url: "http://<% $.ip %>:<% $.port %>/v1beta/<% $.pid %>/block/volumes"
+                    name: "<% $.name %>"
+                    size: '<% $.size %>'
+                publish:
+                   volid: <% task(create_volume).result.result %>
+                on-success:
+                    - attach_volume
+            attach_volume:
+                action: opensds.attach-volume
+                input:
+                    url: "http://<% $.ip %>:<% $.port %>/v1beta/<% $.pid %>/block/attachments"
+                    vol: <% $.volid %>
+                publish:
+                    print_status : <% task(attach_volume).result.stdout %>
