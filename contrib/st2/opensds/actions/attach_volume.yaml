@@ -1,0 +1,13 @@
+---
+description: Attach Volume
+enabled: true
+entry_point: attach_volume.py
+name: attach-volume
+parameters:
+  url:
+    type: string
+    required: true
+  vol:
+    type: string
+    required: true
+runner_type: "python-script"

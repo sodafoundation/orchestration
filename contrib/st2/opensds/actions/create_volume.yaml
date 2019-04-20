@@ -1,0 +1,16 @@
+---
+description: Create Volume
+enabled: true
+entry_point: create_volume.py
+name: create-volume
+parameters:
+  url:
+    type: string
+    required: true
+  name:
+    type: string
+    required: true
+  size:
+    type: integer
+    required: true
+runner_type: "python-script"
