@@ -1,0 +1,19 @@
+---
+description: Delete Volume
+enabled: true
+entry_point: delete_volume.py
+name: delete-volume
+parameters:
+  ip:
+    required: true
+    type: string
+  port:
+    required: true
+    type: string
+  projectid:
+    type: string
+    required: true
+  volumeid:
+    type: string
+    required: true
+runner_type: "python-script"

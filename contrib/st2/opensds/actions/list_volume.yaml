@@ -1,0 +1,16 @@
+---
+description: List Volume
+enabled: true
+entry_point: list_volume.py
+name: list-volume
+parameters:
+  ip:
+    required: true
+    type: string
+  port:
+    required: true
+    type: string
+  projectid:
+    type: string
+    required: true
+runner_type: "python-script"
