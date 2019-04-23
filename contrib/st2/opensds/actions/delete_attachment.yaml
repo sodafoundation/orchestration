@@ -4,7 +4,7 @@ enabled: true
 entry_point: delete_attachment.py
 name: delete-attachment
 parameters:
-  ip:
+  ipaddr:
     required: true
     type: string
   port:

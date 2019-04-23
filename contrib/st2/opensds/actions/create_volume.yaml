@@ -4,13 +4,34 @@ enabled: true
 entry_point: create_volume.py
 name: create-volume
 parameters:
-  url:
+  ipaddr:
+    type: string
+    required: true
+  port:
+    type: string
+    required: true
+  projectid:
     type: string
     required: true
   name:
     type: string
     required: true
+  description:
+    type: string
+    required: false
+  availabilityzone:
+    type: string
+    required: false
   size:
     type: integer
     required: true
+  profileid:
+    type: string
+    required: false
+  snapshotid:
+    type: string
+    required: false
+  snapshotfromcloud:
+    type: string
+    required: false
 runner_type: "python-script"

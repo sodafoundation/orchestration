@@ -4,7 +4,7 @@ enabled: true
 entry_point: list_volume.py
 name: list-volume
 parameters:
-  ip:
+  ipaddr:
     required: true
     type: string
   port:
