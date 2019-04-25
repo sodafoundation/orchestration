@@ -12,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import jsonify
-from flask import Blueprint
-from orchestration.connectionmanager.Connector import Connector
-from orchestration.connectionmanager.St2 import St2
-# from flask import request
 
-service = Blueprint("service", __name__)
+def test_post_instance(client):
+    response = client.post('/v1/orchestration/instances')
+    assert response.status_code == 200
 
-
-# This API will provide the details of the action 'id' provided
-@service.route("/v1/orchestration/services/<string:id>", methods=['GET'])
-def get_service(id = ''):
-    c = Connector().morph()
-    ret = c.listActions(id)
-    return jsonify(id=id, response=ret), 200

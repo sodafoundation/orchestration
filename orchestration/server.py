@@ -14,6 +14,7 @@
 
 from flask import Flask
 from orchestration.api.services import service
+from orchestration.api.instances import instance
 
 
 class ServerManager:
@@ -32,9 +33,10 @@ class ServerManager:
         # register router
         # self.app.register_blueprint(class_name)
         self.app.register_blueprint(service)
+        self.app.register_blueprint(instance)
 
     def start(self):
-        self.app.run("127.0.0.1", "8080")
+        self.app.run("127.0.0.1", "8081")
 
 
 server_manager = ServerManager()
