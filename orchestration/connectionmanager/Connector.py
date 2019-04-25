@@ -32,4 +32,4 @@ class Connector(object):
 
         tech = 'St2' # TODO: Read this tech from DB
         if tech == 'St2':
-            return St2('100.64.40.190', 'st2admin', 'Ch@ngeMe')
+            return St2(server, user, pass)
