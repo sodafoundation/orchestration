@@ -1,0 +1,43 @@
+---
+description: Create Bucket Migration Dataflow Plan for s3 interface of multi-cloud
+enabled: true
+entry_point: create_bucket_migration.py
+name: create-bucket-migration
+parameters:
+  url:
+    type: string
+    description: "URL for the Bucket Migration Dataflow Plan Creation for multi-cloud S3 Interface."
+    required: true
+  tenant_id:
+    type: string
+    description: "Tenant ID."
+    required: true
+  user_id:
+    type: string
+    description: "User ID."
+    required: true
+  name:
+    type: string
+    description: "Name for the Bucket Migration Dataflow."
+    required: true
+  description:
+    type: string
+    description: "Description about the Bucket Migration Dataflow."
+    required: true
+  src_bucket_name:
+    type: string
+    description: "Source Bucket Name."
+    required: true
+  dest_bucket_name:
+    type: string
+    description: "Destination Bucket Name."
+    required: true
+  remain_source:
+    type: boolean
+    description: "Value for keeping the source objects."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: true
+runner_type: "python-script"
