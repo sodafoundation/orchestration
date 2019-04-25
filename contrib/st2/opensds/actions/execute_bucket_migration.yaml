@@ -1,0 +1,15 @@
+---
+description: Run Bucket Migration Dataflow Plan
+enabled: true
+entry_point: execute_bucket_migration.py
+name: execute-bucket-migration
+parameters:
+  url:
+    type: string
+    description: "URL for the executing Bucket Migration for multi-cloud S3 Interface."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: true
+runner_type: "python-script"
