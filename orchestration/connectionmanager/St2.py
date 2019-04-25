@@ -65,7 +65,7 @@ class St2():
 		
     def getExecutionStats(self, execId):
         authToken = self.authenticate()
-        hdr = {'X-Auth-Token':authToken, 'Content-Type':'application/json'}
-        url = OrchConstants().get_st2_executions_get_url(self.server) + '/' + execId
+        hdr = {'X-Auth-Token':authToken}
+        url = OrchConstants().get_st2_executions_get_url(self.server) + '/' + execId + '/output'
         resp = requests.get(url, headers=hdr, verify=False)
         return(resp.text)

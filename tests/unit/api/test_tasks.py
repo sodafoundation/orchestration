@@ -12,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import jsonify
-from flask import Blueprint
-from orchestration.connectionmanager.Connector import Connector
-from orchestration.connectionmanager.St2 import St2
-from flask import request
-import json
 
-task = Blueprint("task", __name__)
-@task.route("/v1/orchestration/tasks/<string:execId>", methods=['GET'])
+def test_instance_output(client):
+    response = client.get('/v1/orchestration/tasks/xyz')
+    assert response.status_code == 200
 
-def get_task_output(execId = ''):
-    c = Connector().morph()
-    ret = c.getExecutionStats(execId)
-    return jsonify(response=json.dumps(ret)), 200
-    

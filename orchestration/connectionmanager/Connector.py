@@ -29,7 +29,9 @@ class Connector(object):
         # server = getServerName() #TODO
         # user = getUserName() # TODO
         # pass = getPass() # TODO
-
+        server=''
+        user=''
+        passwd=''
         tech = 'St2' # TODO: Read this tech from DB
         if tech == 'St2':
-            return St2(server, user, pass)
+            return St2(server, user, passwd)
