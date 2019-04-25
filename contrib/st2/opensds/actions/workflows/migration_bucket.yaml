@@ -1,0 +1,80 @@
+---
+version: "2.0"
+name: "opensds.migration-bucket"
+
+workflows:
+
+    main:
+        type: direct
+        input:
+            - hostIP
+            - port
+            - tenantId
+            - userId
+            - name
+            - description
+            - destBackend
+            - srcBucketName
+            - destBucketName
+            - remainSource
+            - auth
+        output:
+            tagline: "<% $.print_status %>"
+        task-defaults:
+          on-error:
+            - fail
+        tasks:
+            get_bucket:
+                action: opensds.get-bucket
+                input:
+                    url: "http://<% $.hostIP %>:<% $.port %>/v1/s3/"
+                    bucket_name: "<% $.destBucketName %>"
+                    auth_token: '<% $.auth %>'
+                publish:
+                    print_status: <% task(get_bucket).result.stdout %>
+                on-success:
+                    - create_bucket_migration
+                on-error:
+                    - create_bucket
+            create_bucket:
+                action: opensds.create-bucket
+                input:
+                    url: "http://<% $.hostIP %>:<% $.port %>/v1/s3/<% $.destBucketName %>"
+                    backend_name: "<% $.destBackend %>"
+                    auth_token: '<% $.auth %>'
+                publish:
+                    print_status: <% task(create_bucket).result.stdout %>
+                on-success:
+                    - create_bucket_migration
+            create_bucket_migration:
+                action: opensds.create-bucket-migration
+                input:
+                    url: "http://<% $.hostIP %>:<% $.port %>/v1/<% $.tenantId %>/plans"
+                    tenant_id: "<% $.tenantId %>"
+                    user_id: "<% $.userId %>"
+                    name: "<% $.name%>"
+                    description: "<% $.description %>"
+                    src_bucket_name: "<% $.srcBucketName %>"
+                    dest_bucket_name: "<% $.destBucketName %>"
+                    remain_source: "<% $.remainSource %>"
+                    auth_token: '<% $.auth %>'
+                publish:
+                    migrationId: <% task(create_bucket_migration).result.result %>
+                on-success:
+                    - execute_bucket_migration
+            execute_bucket_migration:
+                action: opensds.execute-bucket-migration
+                input:
+                    url: "http://<% $.hostIP %>:<% $.port %>/v1/<% $.tenantId %>/plans/<% $.migrationId %>/run"
+                    auth_token: '<% $.auth %>'
+                publish:
+                    jobId : <% task(execute_bucket_migration).result.result %>
+                on-success:
+                    - get_bucket_migration
+            get_bucket_migration:
+                action: opensds.get-bucket-migration
+                input:
+                    url: "http://<% $.hostIP %>:<% $.port %>/v1/<% $.tenantId %>/jobs/<% $.jobId %>"
+                    auth_token: '<% $.auth %>'
+                publish:
+                    print_status : <% task(get_bucket_migration).result.stdout %>
