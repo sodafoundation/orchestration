@@ -32,6 +32,7 @@ def init_session():
     global __engine__, Session
     if not Session:
         __engine__ = engine_from_config(DATABASE)
+        # autocommit is False by default in sessionmaker.
         Session = sessionmaker(bind=__engine__)
 
 
