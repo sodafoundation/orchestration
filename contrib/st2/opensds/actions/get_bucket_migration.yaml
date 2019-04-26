@@ -1,0 +1,15 @@
+---
+description: Get Information about Bucket Migration Job
+enabled: true
+entry_point: get_bucket_migration.py
+name: get-bucket-migration
+parameters:
+  url:
+    type: string
+    description: "URL for getting the Bucket Migration Information for multi-cloud S3 Interface."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: true
+runner_type: "python-script"
