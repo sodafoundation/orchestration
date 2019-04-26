@@ -1,0 +1,19 @@
+---
+description: Create Bucket for s3 interface of multi-cloud
+enabled: true
+entry_point: create_bucket.py
+name: create-bucket
+parameters:
+  url:
+    type: string
+    description: "URL for the Bucket Creation for multi-cloud S3 Interface."
+    required: true
+  backend_name:
+    type: string
+    description: "Name of the backend storage."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: true
+runner_type: "python-script"

@@ -12,33 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask
-from orchestration.api.services import service
-from orchestration.utils import config
+import requests
+import time
+
+from st2common.runners.base_action import Action
 
 
-class ServerManager:
-    app = Flask(__name__)
+class GetMigrationAction(Action):
+    def run(self, url, auth_token):
+        headers = {
+            'x-auth-token': auth_token
+        }
+        while True:
+            r = requests.get(url=url, headers=headers)
+            r.raise_for_status()
+            resp = r.json()
+            status = resp["job"]["status"]
+            msg = 'Status of Bucket Migration is ' + status
+            print(msg)
+            if status == 'succeed':
+                break
+            time.sleep(2)
 
-    def __init__(self):
-        self._init_logging()
-        self._init_server()
-
-    def _init_logging(self):
-        pass
-
-    def _init_server(self):
-        self.app.url_map.strict_slashes = False
-
-        # register router
-        # self.app.register_blueprint(class_name)
-        self.app.register_blueprint(service)
-
-    def start(self):
-        self.app.run(config.HOST, config.PORT)
-
-
-server_manager = ServerManager()
 
 if __name__ == '__main__':
-    server_manager.start()
+    GetMigrationAction()
