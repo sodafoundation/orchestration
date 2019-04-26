@@ -15,7 +15,6 @@
 from flask import jsonify
 from flask import Blueprint
 from orchestration.connectionmanager.Connector import Connector
-from orchestration.connectionmanager.St2 import St2
 # from flask import request
 
 service = Blueprint("service", __name__)
@@ -23,7 +22,7 @@ service = Blueprint("service", __name__)
 
 # This API will provide the details of the action 'id' provided
 @service.route("/v1/orchestration/services/<string:id>", methods=['GET'])
-def get_service(id = ''):
+def get_service(id=''):
     c = Connector().morph()
     ret = c.listActions(id)
     return jsonify(id=id, response=ret), 200

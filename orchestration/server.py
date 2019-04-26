@@ -38,7 +38,7 @@ class ServerManager:
         self.app.register_blueprint(task)
 
     def start(self):
-        self.app.run("127.0.0.1", "8080")
+        self.app.run("127.0.0.1", "8081")
 
 
 server_manager = ServerManager()

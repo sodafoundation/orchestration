@@ -1,3 +1,6 @@
 flask
 six>=1.5.2
 sqlalchemy
+cryptography
+requests
+ConfigParser

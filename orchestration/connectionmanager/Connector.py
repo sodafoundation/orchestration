@@ -12,26 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests
-from requests.auth import HTTPBasicAuth
-import sys
-from St2 import St2
-import json
+from orchestration.connectionmanager.St2 import St2
+from orchestration.connectionmanager.CredCreator import CredCreator
 
-# This class is the interface for all the different form of 
+# This class is the interface for all the different form of
 # Workflow Manager
+
+
 class Connector(object):
 
     # This function should read the Workflow Manager technology
-    # from Database and based upon the technology, should 
+    # from Database and based upon the technology, should
     # return the instance of that technology
     def morph(self):
-        # server = getServerName() #TODO
-        # user = getUserName() # TODO
-        # pass = getPass() # TODO
-        server=''
-        user=''
-        passwd=''
-        tech = 'St2' # TODO: Read this tech from DB
-        if tech == 'St2':
-            return St2(server, user, passwd)
+        try:
+            (tech, server, user, passwd) = CredCreator().getCreds()
+            if tech == 'St2':
+                return St2(server, user, passwd)
+        except Exception as ex:
+            raise ex

@@ -14,25 +14,27 @@
 
 # Stackstorm Workflow manager specific implementation
 
+from orchestration.connectionmanager.OrchestrationConstants \
+    import OrchConstants
 import requests
-import ast
 import json
 from requests.auth import HTTPBasicAuth
-requests.packages.urllib3.disable_warnings() 
-from OrchestrationConstants import OrchConstants
+requests.packages.urllib3.disable_warnings()
+
 
 class St2():
     def __init__(self, server, user, passwd):
         self.server = server
         self.username = user
         self.passwd = passwd
-        #super(St2, self).__init__(server, user, passwd)
 
     # Function to authenticate with Stackstorm. It will return X-Auth_token
     def authenticate(self):
         server = self.server
         url = OrchConstants().get_st2_token_url(server)
-        req = requests.post(url, auth=HTTPBasicAuth(self.username, self.passwd),verify=False)
+        req = requests.post(url,
+                            auth=HTTPBasicAuth(self.username, self.passwd),
+                            verify=False)
         response = req.json()
         return response['token']
 
@@ -40,9 +42,9 @@ class St2():
     # Caller can store the result in DB
     # @Input: ActionName
     # @output: the ActionDetails
-    def listActions(self, packName = ''):
+    def listActions(self, packName=''):
         authToken = self.authenticate()
-        headers = {'X-Auth-Token':authToken}
+        headers = {'X-Auth-Token': authToken}
         url = OrchConstants().get_st2_action_list_url(self.server)
         req = requests.get(url, headers=headers, verify=False)
         response = req.json()
@@ -50,22 +52,24 @@ class St2():
             if(elem['name'] != packName):
                 continue
             else:
-                return(elem) 
+                return(elem)
 
     # Function to execute the Action
     # @Input: The post request should have the data as the 'action'
-    # And any parameter that is required by the actions 
+    # And any parameter that is required by the actions
     # @output: Result returned by the Stackstorm
     def executeAction(self, reqData):
         authToken = self.authenticate()
         url = OrchConstants().get_st2_executions_post_url(self.server)
-        hdr = {'X-Auth-Token':authToken, 'Content-Type':'application/json'}
-        resp = requests.post(url=url, data=json.dumps(reqData), headers=hdr, verify=False)
+        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        resp = requests.post(
+                url, data=json.dumps(reqData), headers=hdr, verify=False)
         return(resp.text)
-		
+
     def getExecutionStats(self, execId):
         authToken = self.authenticate()
-        hdr = {'X-Auth-Token':authToken}
-        url = OrchConstants().get_st2_executions_get_url(self.server) + '/' + execId + '/output'
+        hdr = {'X-Auth-Token': authToken}
+        url = OrchConstants().get_st2_executions_get_url(self.server) \
+            + '/' + execId + '/output'
         resp = requests.get(url, headers=hdr, verify=False)
         return(resp.text)

@@ -14,6 +14,7 @@
 
 # This class contains the constants required by different modules
 
+
 class OrchConstants:
     HTTPS_URL = 'https://'
     ST2_TOKEN_URL = '/auth/v1/tokens'
@@ -21,14 +22,13 @@ class OrchConstants:
     ST2_EXECUTIONS_URL = '/api/v1/executions'
 
     def get_st2_token_url(self, server):
-        return(self.HTTPS_URL +  server + self.ST2_TOKEN_URL)
+        return(self.HTTPS_URL + server + self.ST2_TOKEN_URL)
 
     def get_st2_action_list_url(self, server):
         return(self.HTTPS_URL + server + self.ST2_ACTION_LIST_URL)
-    
+
     def get_st2_executions_post_url(self, server):
         return(self.HTTPS_URL + server + self.ST2_EXECUTIONS_URL)
 
     def get_st2_executions_get_url(self, server):
         return(self.HTTPS_URL + server + self.ST2_EXECUTIONS_URL)
- 
