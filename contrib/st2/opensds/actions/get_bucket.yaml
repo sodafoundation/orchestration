@@ -1,0 +1,19 @@
+---
+description: Get Bucket information
+enabled: true
+entry_point: get_bucket.py
+name: get-bucket
+parameters:
+  url:
+    type: string
+    description: "URL for the Getting Bucket Information for multi-cloud S3 Interface."
+    required: true
+  bucket_name:
+    type: string
+    description: "Name of the bucket."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: true
+runner_type: "python-script"

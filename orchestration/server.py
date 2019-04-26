@@ -14,6 +14,7 @@
 
 from flask import Flask
 from orchestration.api.services import service
+from orchestration.utils import config
 from orchestration.api.instances import instance
 from orchestration.api.tasks import task
 
@@ -38,7 +39,7 @@ class ServerManager:
         self.app.register_blueprint(task)
 
     def start(self):
-        self.app.run("127.0.0.1", "8081")
+        self.app.run(config.HOST, config.PORT)
 
 
 server_manager = ServerManager()
