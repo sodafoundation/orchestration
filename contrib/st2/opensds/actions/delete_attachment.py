@@ -25,7 +25,6 @@ class DeleteAttachmentAction(Action):
             projectid + "/block/attachments/" + \
             attachmentid
         r = requests.delete(url=url)
-        print(r.status_code)
         r.raise_for_status()
 
 

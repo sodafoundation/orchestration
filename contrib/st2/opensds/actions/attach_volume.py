@@ -43,9 +43,7 @@ class AttachVolumeAction(Action):
             projectid + "/block/attachments"
 
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
-        print(r.status_code)
         r.raise_for_status()
-        print(r.text)
 
 
 if __name__ == '__main__':

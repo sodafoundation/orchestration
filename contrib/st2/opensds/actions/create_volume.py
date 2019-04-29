@@ -46,9 +46,7 @@ class CreateVolumeAction(Action):
 
         headers = {'content-type': 'application/json'}
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
-        print(r.status_code)
         r.raise_for_status()
-        print(r.text)
         resp = r.json()
         return resp["id"]
 
