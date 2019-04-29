@@ -48,5 +48,5 @@ parameters:
     type: boolean
   auth:
     required: true
-    escription: "Authentication Token."
+    description: "Authentication Token."
     type: string

@@ -46,7 +46,3 @@ class GetBucketAction(Action):
 
         if not exists:
             raise Exception('{} Not Found'.format(bucket_name))
-
-
-if __name__ == '__main__':
-    GetBucketAction()

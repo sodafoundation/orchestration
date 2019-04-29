@@ -30,8 +30,3 @@ class RunMigrationAction(Action):
         r.raise_for_status()
         resp = r.json()
         return resp["jobId"]
-
-
-if __name__ == '__main__':
-    jobId = RunMigrationAction()
-    print('%s : %s' % 'Migration Job created with JobId', jobId)
