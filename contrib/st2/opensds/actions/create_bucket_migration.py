@@ -53,8 +53,3 @@ class CreateMigrationPlanAction(Action):
         r.raise_for_status()
         resp = r.json()
         return resp["plan"]["id"]
-
-
-if __name__ == '__main__':
-    migrationId = CreateMigrationPlanAction()
-    print('%s : %s' % 'Migration Plan created with Id', migrationId)

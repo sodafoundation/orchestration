@@ -33,7 +33,3 @@ class GetMigrationAction(Action):
             if status == 'succeed':
                 break
             time.sleep(2)
-
-
-if __name__ == '__main__':
-    GetMigrationAction()
