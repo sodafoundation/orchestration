@@ -49,9 +49,3 @@ class CreateVolumeAction(Action):
         r.raise_for_status()
         resp = r.json()
         return resp["id"]
-
-
-if __name__ == '__main__':
-
-    volumeId = CreateVolumeAction()
-    print('%s : %s' % ('Volume created with Id', volumeId))

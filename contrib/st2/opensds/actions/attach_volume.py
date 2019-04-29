@@ -44,8 +44,3 @@ class AttachVolumeAction(Action):
 
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()
-
-
-if __name__ == '__main__':
-
-    AttachVolumeAction()

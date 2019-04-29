@@ -22,7 +22,3 @@ class ListVolumeAction(Action):
         url = "http://"+ipaddr+":"+port+"/v1beta/"+projectid+"/block/volumes"
         r = requests.get(url=url)
         r.raise_for_status()
-
-
-if __name__ == '__main__':
-    ListVolumeAction()
