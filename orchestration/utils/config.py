@@ -19,7 +19,7 @@ PORT = "5000"
 
 # logging configuration
 LOGGING_FILE = "/var/log/opensds/orchestration.log"
-LOGGIGN_FORMAT = "format = [%(asctime)s] [%(levelname)s] [%(name)s] " \
+LOGGIGN_FORMAT = "[%(asctime)s] [%(levelname)s] [%(name)s] " \
     "[%(funcName)s():%(lineno)s] [PID:%(process)d TID:%(thread)d] %(message)s"
 LOGGING_LEVEL = "INFO"
 
