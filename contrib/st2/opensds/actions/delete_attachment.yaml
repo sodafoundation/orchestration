@@ -1,0 +1,19 @@
+---
+description: Delete Attachment
+enabled: true
+entry_point: delete_attachment.py
+name: delete-attachment
+parameters:
+  ipaddr:
+    required: true
+    type: string
+  port:
+    required: true
+    type: string
+  projectid:
+    type: string
+    required: true
+  attachmentid:
+    type: string
+    required: true
+runner_type: "python-script"

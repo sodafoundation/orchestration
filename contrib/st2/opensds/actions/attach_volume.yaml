@@ -1,0 +1,34 @@
+---
+description: Attach Volume
+enabled: true
+entry_point: attach_volume.py
+name: attach-volume
+parameters:
+  ipaddr:
+    type: string
+    required: true
+  port:
+    type: string
+    required: true
+  projectid:
+    type: string
+    required: true
+  volumeid:
+    type: string
+    required: true
+  mountpoint:
+    type: string
+    required: false
+  hostinfo:
+    type: object
+    required: false
+  connectioninfo:
+    type: object
+    required: false
+  tenantid:
+    type: string
+    required: false
+  accessprotocol:
+    type: string
+    required: false
+runner_type: "python-script"

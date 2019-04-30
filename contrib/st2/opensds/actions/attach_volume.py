@@ -18,15 +18,29 @@ import json
 from st2common.runners.base_action import Action
 
 
-class RunMigrationAction(Action):
-    def run(self, url, auth_token):
-        data = {}
-        headers = {
-            'accept': 'application/json',
-            'content-type': 'application/json',
-            'x-auth-token': auth_token
-        }
+class AttachVolumeAction(Action):
+    def run(self,
+            ipaddr="",
+            port="",
+            projectid="",
+            mountpoint="",
+            hostinfo="",
+            connectioninfo="",
+            tenantid="",
+            accessprotocol="",
+            volumeid=""):
+        data = {
+            "Mountpoint": mountpoint,
+            "HostInfo": hostinfo,
+            "ConnectionInfo": connectioninfo,
+            "TenantId": tenantid,
+            "AccessProtocol": accessprotocol,
+            "VolumeId": volumeid}
+        headers = {'content-type': 'application/json'}
+        url = "http://" + \
+            ipaddr + ":" + \
+            port + "/v1beta/" + \
+            projectid + "/block/attachments"
+
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()
-        resp = r.json()
-        return resp["jobId"]
