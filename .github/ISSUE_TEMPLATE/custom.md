@@ -1,6 +1,6 @@
 ---
-name: Custom issue template
-about: Describe this issue template's purpose here.
+name: OpenSDS issue template
+about: Describe this issue purpose here.
 title: ''
 labels: ''
 assignees: ''
