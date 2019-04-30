@@ -1,0 +1,56 @@
+---
+description: Provision an OpenSDS Volume
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/provision_volume.yaml
+name: provision-volume
+pack: opensds
+parameters:
+  ipaddr:
+    required: true
+    type: string
+  port:
+    required: true
+    type: string
+  projectid:
+    required: true
+    type: string
+  name:
+    required: true
+    type: string
+  description:
+    type: string
+    required: false
+  availabilityzone:
+    type: string
+    required: false
+  size:
+    type: integer
+    required: true
+  profileid:
+    type: string
+    required: false
+  snapshotid:
+    type: string
+    required: false
+  snapshotfromcloud:
+    type: string
+    required: false
+  mountpoint:
+    type: string
+    required: false
+  hostinfo:
+    type: object
+    required: false
+  connectioninfo:
+    type: object
+    required: false
+  tenantid:
+    type: string
+    required: false
+  accessprotocol:
+    type: string
+    required: false
+  timeout:
+    type: integer
+    default: 60

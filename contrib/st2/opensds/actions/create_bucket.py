@@ -34,7 +34,3 @@ class CreateBucketAction(Action):
             response = ET.fromstring(r.text)
             msg = response.find("Msg")
             print(msg)
-
-
-if __name__ == '__main__':
-    CreateBucketAction()

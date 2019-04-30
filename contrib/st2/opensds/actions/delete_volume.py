@@ -12,19 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import requests
 
-# flask server configuration
-HOST = "127.0.0.1"
-PORT = "5000"
-
-# logging configuration
-LOGGING_FILE = "/var/log/opensds/orchestration.log"
-LOGGIGN_FORMAT = "[%(asctime)s] [%(levelname)s] [%(name)s] " \
-    "[%(funcName)s():%(lineno)s] [PID:%(process)d TID:%(thread)d] %(message)s"
-LOGGING_LEVEL = "INFO"
+from st2common.runners.base_action import Action
 
 
-# database configuration
-DATABASE = {
-    'sqlalchemy.url': 'sqlite://'
-}
+class DeleteVolumeAction(Action):
+    def run(self, ipaddr="", port="", projectid="", volumeid=""):
+        url = "http://" + \
+            ipaddr + ":" + \
+            port + "/v1beta/" + \
+            projectid + "/block/volumes/" + \
+            volumeid
+        r = requests.delete(url=url)
+        r.raise_for_status()

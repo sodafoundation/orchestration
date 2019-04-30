@@ -1,0 +1,61 @@
+version: "2.0"
+name: "opensds.provision-volume"
+
+workflows:
+
+    main:
+        type: direct
+        input:
+            - ipaddr
+            - port
+            - projectid
+            - name
+            - description
+            - availabilityzone
+            - size
+            - profileid
+            - snapshotid
+            - snapshotfromcloud
+            - mountpoint
+            - hostinfo
+            - connectioninfo
+            - tenantid
+            - accessprotocol
+            - timeout
+        output:
+            tagline: "<% $.print_status %>"
+        task-defaults:
+          on-error:
+            - fail
+        tasks:
+            create_volume:
+                action: opensds.create-volume
+                input:
+                    ipaddr: "<% $.ipaddr %>"
+                    port: "<% $.port %>"
+                    projectid: "<% $.projectid %>"
+                    name: "<% $.name %>"
+                    description: "<% $.description %>"
+                    availabilityzone: "<% $.availabilityzone %>"
+                    size: '<% $.size %>'
+                    profileid: "<% $.profileid %>"
+                    snapshotid: "<% $.snapshotid %>"
+                    snapshotfromcloud: '<% $.snapshotfromcloud %>'
+                publish:
+                   volumeid: <% task(create_volume).result.result %>
+                on-success:
+                    - attach_volume
+            attach_volume:
+                action: opensds.attach-volume
+                input:
+                    ipaddr: "<% $.ipaddr %>"
+                    port: "<% $.port %>"
+                    projectid: "<% $.projectid %>"
+                    volumeid: <% $.volumeid %>
+                    mountpoint: <% $.mountpoint %>
+                    hostinfo: <% $.hostinfo %>
+                    connectioninfo: <% $.connectioninfo %>
+                    tenantid: <% $.tenantid %>
+                    accessprotocol: <% $.accessprotocol %>
+                publish:
+                    print_status : <% task(attach_volume).result.stdout %>
