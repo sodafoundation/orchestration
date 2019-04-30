@@ -19,26 +19,32 @@ Initialization of sqlalchemy ORM.
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
 from orchestration.utils.config import DATABASE
-from orchestration.db.models import Base
+from orchestration.db.models import Base, ServiceDefinition
 
 
 # Declares global engine in here
 __engine__ = None
 # Declares global session in here
 Session = None
-
-
-def init_session():
-    global __engine__, Session
-    if not Session:
-        __engine__ = engine_from_config(DATABASE)
-        # autocommit is False by default in sessionmaker.
-        Session = sessionmaker(bind=__engine__)
-
-
-def init_db():
-    Base.metadata.create_all(bind=__engine__)
+__engine__ = engine_from_config(DATABASE)
+# autocommit is False by default in sessionmaker.
+Session = sessionmaker(bind=__engine__)
+Base.metadata.create_all(bind=__engine__)
+session = Session()
+service_def = ServiceDefinition(
+    name='migration_St2',
+    description='Container for migration services'
+    )
+session.add(service_def)
 
 
 def drop_db():
     Base.metadata.drop_all(bind=__engine__)
+
+
+def create_defs():
+    pass
+#    service_def = {}
+#    service_def['name'] = 'migration_st2'
+#    service_def['description'] = 'Container for migration services'
+#    create_service_definition(None, service_def)

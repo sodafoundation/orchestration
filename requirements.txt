@@ -6,3 +6,4 @@ uuid
 cryptography
 requests
 ConfigParser
+mock

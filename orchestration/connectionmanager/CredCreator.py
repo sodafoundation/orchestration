@@ -6,7 +6,7 @@ import sys
 
 
 class CredCreator():
-    def createCredIni(self, tech, server, user, passwd):
+    def create_cred_ini(self, tech, server, user, passwd):
         Config = configparser.ConfigParser()
         with open("/var/.osdscreds.ini", 'w') as credFile:
             Config.add_section('CREDS')
@@ -22,7 +22,7 @@ class CredCreator():
             Config.write(credFile)
             credFile.close()
 
-    def getCreds(self):
+    def get_creds(self):
         tech = ''
         server = ''
         user = ''
@@ -73,6 +73,6 @@ if __name__ == '__main__':
             server = sys.argv[3]
             user = sys.argv[4]
             passwd = sys.argv[5]
-            CredCreator().createCredIni(tech, server, user, passwd)
+            CredCreator().create_cred_ini(tech, server, user, passwd)
     elif sys.argv[1] == 'get':
-        print(CredCreator().getCreds())
+        print(CredCreator().get_creds())

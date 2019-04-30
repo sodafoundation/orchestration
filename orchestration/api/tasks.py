@@ -21,5 +21,5 @@ task = Blueprint("task", __name__)
 @task.route("/v1/orchestration/tasks/<string:execId>", methods=['GET'])
 def get_task_output(execId=''):
     c = Connector().morph()
-    ret = c.getExecutionStats(execId)
+    ret = c.get_execution_stats(execId)
     return jsonify(response=json.dumps(ret)), 200

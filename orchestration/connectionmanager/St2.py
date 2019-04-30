@@ -42,31 +42,58 @@ class St2():
     # Caller can store the result in DB
     # @Input: ActionName
     # @output: the ActionDetails
-    def listActions(self, packName=''):
+    def list_actions(self, packName=''):
         authToken = self.authenticate()
         headers = {'X-Auth-Token': authToken}
         url = OrchConstants().get_st2_action_list_url(self.server)
         req = requests.get(url, headers=headers, verify=False)
         response = req.json()
-        for elem in response:
-            if(elem['name'] != packName):
-                continue
-            else:
-                return(elem)
+        if packName == '':
+            return response
+        else:
+            for elem in response:
+                if(elem['name'] != packName):
+                    continue
+                else:
+                    return(elem)
+
+    def create_action(self, req_data):
+        authToken = self.authenticate()
+        url = OrchConstants().get_st2_actions_post_url(self.server)
+        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        resp = requests.post(
+                url, data=json.dumps(req_data), headers=hdr, verify=False)
+        return(resp.text)
+
+    def update_action(self, id, req_data):
+        authToken = self.authenticate()
+        url = OrchConstants().get_st2_actions_list_url(self.server) + '/' + id
+        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        resp = requests.put(
+                url, data=json.dumps(req_data), headers=hdr, verify=False)
+        return(resp.text)
+
+    def delete_action(self, id, req_data):
+        authToken = self.authenticate()
+        url = OrchConstants().get_st2_actions_list_url(self.server) + '/' + id
+        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        resp = requests.delete(
+                url, data=json.dumps(req_data), headers=hdr, verify=False)
+        return(resp.text)
 
     # Function to execute the Action
     # @Input: The post request should have the data as the 'action'
     # And any parameter that is required by the actions
     # @output: Result returned by the Stackstorm
-    def executeAction(self, reqData):
+    def execute_action(self, req_data):
         authToken = self.authenticate()
         url = OrchConstants().get_st2_executions_post_url(self.server)
         hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
         resp = requests.post(
-                url, data=json.dumps(reqData), headers=hdr, verify=False)
+                url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.text)
 
-    def getExecutionStats(self, execId):
+    def get_execution_stats(self, execId):
         authToken = self.authenticate()
         hdr = {'X-Auth-Token': authToken}
         url = OrchConstants().get_st2_executions_get_url(self.server) \

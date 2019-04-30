@@ -41,7 +41,7 @@ definition_association = Table('service_workflow_definition_associations',
 
 class ServiceDefinition(ModelBase):
     """Declares service template model"""
-    __tablename__ = "service_definitions"
+    __tablename__ = 'service_definitions'
     tenant_id = Column(String(255))
     user_id = Column(String(255))
     name = Column(String(255))

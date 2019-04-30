@@ -44,17 +44,20 @@ def create_service_definition(context, values):
             setattr(service_definition, key, value)
 
     if not service_definition.id:
-        service_definition.id = uuid.uuid4()
+        service_definition.id = str(uuid.uuid4())
 
     with session_scope() as session:
         session.add(service_definition)
     return service_definition
 
 
-def get_service_definition(context, id):
+def get_service_definition(id='', context=None):
     with session_scope() as session:
-        query = session.query(models.ServiceDefinition).filter(
-            models.ServiceDefinition.id == id)
+        if id == '':
+            query = session.query(models.ServiceDefinition)
+        else:
+            query = session.query(models.ServiceDefinition).filter(
+                models.ServiceDefinition.id == id)
     return None if not query else query.first()
 
 
@@ -120,16 +123,19 @@ def create_workflow_definition(context, values):
             setattr(workflow_definition, key, value)
 
     if not workflow_definition.id:
-        workflow_definition.id = uuid.uuid4()
+        workflow_definition.id = str(uuid.uuid4())
     with session_scope() as session:
         session.add(workflow_definition)
     return workflow_definition
 
 
-def get_workflow_definition(context, id):
+def get_workflow_definition(context, id=''):
     with session_scope() as session:
-        query = session.query(models.WorkflowDefinition).filter(
-            models.WorkflowDefinition.id == id)
+        if id == '':
+            query = session.query(models.WorkflowDefinition)
+        else:
+            query = session.query(models.WorkflowDefinition).filter(
+                models.WorkflowDefinition.id == id)
     return None if not query else query.first()
 
 

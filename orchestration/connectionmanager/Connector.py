@@ -26,7 +26,7 @@ class Connector(object):
     # return the instance of that technology
     def morph(self):
         try:
-            (tech, server, user, passwd) = CredCreator().getCreds()
+            (tech, server, user, passwd) = CredCreator().get_creds()
             if tech == 'St2':
                 return St2(server, user, passwd)
         except Exception as ex:

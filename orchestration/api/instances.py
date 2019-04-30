@@ -17,6 +17,7 @@ from flask import Blueprint
 from orchestration.connectionmanager.Connector import Connector
 from flask import request
 import json
+from orchestration.db.api import create_workflow, create_workflow_definition
 
 instance = Blueprint("instance", __name__)
 
@@ -27,8 +28,48 @@ instance = Blueprint("instance", __name__)
 # "Content-Type:application/json" -d
 # '{"action":"aks.ak_echo_py", "parameters":{"message":"Hello World"}}'
 @instance.route("/v1/orchestration/instances", methods=['POST'])
-def execute_service():
+def instance_ops():
     c = Connector().morph()
     content = request.get_json()
-    ret = c.executeAction(content)
+    ret = c.execute_action(content)
+    ret_json = json.loads(ret)
+    wf_inst = {}
+    wf_inst['workflow_definition_id'] = ret_json['action']['id']
+    wf_inst['id'] = ret_json['id']
+    wf_inst['name'] = ret_json['action']['name']
+    wf_inst['description'] = ret_json['action']['description']
+    create_workflow(None, wf_inst)
+    return jsonify(response=json.dumps(ret_json)), 200
+
+
+@instance.route("/v1/orchestration/workflow", methods=['POST'])
+def create_action():
+    c = Connector().morph()
+    content = request.get_json()
+    ret = c.create_action(content)
     return jsonify(response=json.dumps(ret)), 200
+
+
+@instance.route(
+    "/v1/orchestration/workflow/<string:id>",
+    methods=['GET', 'PUT', 'DELETE'])
+def wf_ops(id=''):
+    c = Connector().morph()
+    method = request.method
+    if method == 'GET':
+        ret = c.list_actions(id)
+        wfd_hash = {}
+        wfd_hash['id'] = str(ret['id'])
+        wfd_hash['name'] = ret['name']
+        wfd_hash['description'] = ret['description']
+        wfd_hash['definition'] = json.dumps(ret)
+        create_workflow_definition(None, wfd_hash)
+        return jsonify(id=id, response=ret), 200
+    elif method == 'PUT':
+        content = request.get_json()
+        ret = c.update_action(id, content)
+        return jsonify(response=json.dumps(ret)), 200
+    elif method == 'DELETE':
+        content = request.get_json()
+        ret = c.delete_action(id, content)
+        return jsonify(response=json.dumps(ret)), 200

@@ -14,15 +14,15 @@
 
 from flask import jsonify
 from flask import Blueprint
-from orchestration.connectionmanager.Connector import Connector
-# from flask import request
+from orchestration.db.api import get_service_definition
 
 service = Blueprint("service", __name__)
 
 
 # This API will provide the details of the action 'id' provided
-@service.route("/v1/orchestration/services/<string:id>", methods=['GET'])
-def get_service(id=''):
-    c = Connector().morph()
-    ret = c.listActions(id)
-    return jsonify(id=id, response=ret), 200
+@service.route(
+    "/v1/orchestration/services",
+    methods=['GET'])
+def get_services():
+    q_ret = get_service_definition()
+    return jsonify(response=str((q_ret).__dict__)), 200

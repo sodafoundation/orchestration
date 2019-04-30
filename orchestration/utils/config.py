@@ -26,5 +26,5 @@ LOGGING_LEVEL = "INFO"
 
 # database configuration
 DATABASE = {
-    'sqlalchemy.url': 'sqlite://'
+    'sqlalchemy.url': 'sqlite:///osdsorch.sqlite'
 }
