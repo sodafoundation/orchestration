@@ -22,7 +22,7 @@ from requests.auth import HTTPBasicAuth
 requests.packages.urllib3.disable_warnings()
 
 
-class St2():
+class st2():
     def __init__(self, server, user, passwd):
         self.server = server
         self.username = user
@@ -43,40 +43,42 @@ class St2():
     # @Input: ActionName
     # @output: the ActionDetails
     def list_actions(self, packName=''):
-        authToken = self.authenticate()
-        headers = {'X-Auth-Token': authToken}
+        auth_token = self.authenticate()
+        headers = {'X-Auth-Token': auth_token}
         url = OrchConstants().get_st2_action_list_url(self.server)
         req = requests.get(url, headers=headers, verify=False)
-        response = req.json()
+        req = req.json()
+        action_dict = {}
         if packName == '':
-            return response
+            return req
         else:
-            for elem in response:
-                if(elem['name'] != packName):
+            for elem in req:
+                if(elem['pack'] != packName):
                     continue
                 else:
-                    return(elem)
+                    action_dict[elem['id']] = elem
+        return action_dict
 
     def create_action(self, req_data):
-        authToken = self.authenticate()
-        url = OrchConstants().get_st2_actions_post_url(self.server)
-        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        auth_token = self.authenticate()
+        url = OrchConstants().get_st2_action_list_url(self.server)
+        hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.post(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.text)
 
     def update_action(self, id, req_data):
-        authToken = self.authenticate()
-        url = OrchConstants().get_st2_actions_list_url(self.server) + '/' + id
-        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        auth_token = self.authenticate()
+        url = OrchConstants().get_st2_action_list_url(self.server) + '/' + id
+        hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.put(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.text)
 
     def delete_action(self, id, req_data):
-        authToken = self.authenticate()
-        url = OrchConstants().get_st2_actions_list_url(self.server) + '/' + id
-        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        auth_token = self.authenticate()
+        url = OrchConstants().get_st2_action_list_url(self.server) + '/' + id
+        hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.delete(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.text)
@@ -86,17 +88,18 @@ class St2():
     # And any parameter that is required by the actions
     # @output: Result returned by the Stackstorm
     def execute_action(self, req_data):
-        authToken = self.authenticate()
+        auth_token = self.authenticate()
         url = OrchConstants().get_st2_executions_post_url(self.server)
-        hdr = {'X-Auth-Token': authToken, 'Content-Type': 'application/json'}
+        hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
+        print(url)
         resp = requests.post(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.text)
 
-    def get_execution_stats(self, execId):
-        authToken = self.authenticate()
-        hdr = {'X-Auth-Token': authToken}
+    def get_execution_stats(self, exec_id):
+        auth_token = self.authenticate()
+        hdr = {'X-Auth-Token': auth_token}
         url = OrchConstants().get_st2_executions_get_url(self.server) \
-            + '/' + execId + '/output'
+            + '/' + exec_id + '/output'
         resp = requests.get(url, headers=hdr, verify=False)
         return(resp.text)

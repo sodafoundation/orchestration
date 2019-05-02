@@ -14,6 +14,4 @@
 
 
 def test_instance_output(client):
-    # response = client.get('/v1/orchestration/tasks/xyz')
-    # assert response.status_code == 200
     pass

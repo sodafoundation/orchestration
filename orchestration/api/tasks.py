@@ -14,12 +14,12 @@
 
 from flask import jsonify
 from flask import Blueprint
-from orchestration.connectionmanager.Connector import Connector
+from orchestration.connectionmanager.Connector import connector
 import json
 
 task = Blueprint("task", __name__)
 @task.route("/v1/orchestration/tasks/<string:execId>", methods=['GET'])
 def get_task_output(execId=''):
-    c = Connector().morph()
+    c = connector().morph()
     ret = c.get_execution_stats(execId)
     return jsonify(response=json.dumps(ret)), 200

@@ -19,7 +19,7 @@ Initialization of sqlalchemy ORM.
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
 from orchestration.utils.config import DATABASE
-from orchestration.db.models import Base, ServiceDefinition
+from orchestration.db.models import Base
 
 
 # Declares global engine in here
@@ -31,11 +31,6 @@ __engine__ = engine_from_config(DATABASE)
 Session = sessionmaker(bind=__engine__)
 Base.metadata.create_all(bind=__engine__)
 session = Session()
-service_def = ServiceDefinition(
-    name='migration_St2',
-    description='Container for migration services'
-    )
-session.add(service_def)
 
 
 def drop_db():

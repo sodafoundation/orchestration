@@ -14,15 +14,15 @@
 
 from flask import jsonify
 from flask import Blueprint
-from orchestration.db.api import get_service_definition
+from orchestration.db.api import list_service_definitions
 
 service = Blueprint("service", __name__)
 
 
 # This API will provide the details of the action 'id' provided
 @service.route(
-    "/v1/orchestration/services",
+    "/v1beta/orchestration/services",
     methods=['GET'])
 def get_services():
-    q_ret = get_service_definition()
-    return jsonify(response=str((q_ret).__dict__)), 200
+    q_ret = list_service_definitions(None)
+    return jsonify(q_ret), 200

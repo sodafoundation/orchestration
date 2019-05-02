@@ -64,7 +64,7 @@ def get_service_definition(id='', context=None):
 def list_service_definitions(context, **filters):
     with session_scope() as session:
         query = session.query(models.ServiceDefinition)
-    return [] if not query else query.all()
+    return {} if not query else query.all()
 
 
 def update_service_definition(context, values):
