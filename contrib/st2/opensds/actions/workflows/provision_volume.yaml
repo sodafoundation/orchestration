@@ -19,8 +19,8 @@ workflows:
             - mountpoint
             - hostinfo
             - connectioninfo
-            - tenantid
             - accessprotocol
+            - token
             - timeout
         output:
             tagline: "<% $.print_status %>"
@@ -41,6 +41,7 @@ workflows:
                     profileid: "<% $.profileid %>"
                     snapshotid: "<% $.snapshotid %>"
                     snapshotfromcloud: '<% $.snapshotfromcloud %>'
+                    token: "<% $.token %>"
                 publish:
                    volumeid: <% task(create_volume).result.result %>
                 on-success:
@@ -55,7 +56,7 @@ workflows:
                     mountpoint: <% $.mountpoint %>
                     hostinfo: <% $.hostinfo %>
                     connectioninfo: <% $.connectioninfo %>
-                    tenantid: <% $.tenantid %>
                     accessprotocol: <% $.accessprotocol %>
+                    token: "<% $.token %>"
                 publish:
                     print_status : <% task(attach_volume).result.stdout %>

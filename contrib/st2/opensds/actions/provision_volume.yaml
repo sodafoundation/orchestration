@@ -45,10 +45,10 @@ parameters:
   connectioninfo:
     type: object
     required: false
-  tenantid:
+  accessprotocol:
     type: string
     required: false
-  accessprotocol:
+  token:
     type: string
     required: false
   timeout:

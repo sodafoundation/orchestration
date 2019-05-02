@@ -26,17 +26,20 @@ class AttachVolumeAction(Action):
             mountpoint="",
             hostinfo="",
             connectioninfo="",
-            tenantid="",
             accessprotocol="",
+            token="",
             volumeid=""):
         data = {
             "Mountpoint": mountpoint,
             "HostInfo": hostinfo,
             "ConnectionInfo": connectioninfo,
-            "TenantId": tenantid,
+            "TenantId": projectid,
             "AccessProtocol": accessprotocol,
             "VolumeId": volumeid}
-        headers = {'content-type': 'application/json'}
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': token
+        }
         url = "http://" + \
             ipaddr + ":" + \
             port + "/v1beta/" + \

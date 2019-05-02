@@ -34,4 +34,7 @@ parameters:
   snapshotfromcloud:
     type: string
     required: false
+  token:
+    type: string
+    required: false
 runner_type: "python-script"

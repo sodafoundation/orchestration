@@ -13,4 +13,7 @@ parameters:
   projectid:
     type: string
     required: true
+  token:
+    type: string
+    required: false
 runner_type: "python-script"

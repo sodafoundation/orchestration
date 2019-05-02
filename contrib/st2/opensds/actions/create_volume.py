@@ -29,6 +29,7 @@ class CreateVolumeAction(Action):
             profileid="",
             snapshotid="",
             snapshotfromcloud="",
+            token="",
             size=1):
         data = {
             "Name": name,
@@ -44,7 +45,10 @@ class CreateVolumeAction(Action):
             port + "/v1beta/" + \
             projectid + "/block/volumes"
 
-        headers = {'content-type': 'application/json'}
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': token
+        }
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()
         resp = r.json()
