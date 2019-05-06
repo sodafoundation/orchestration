@@ -14,15 +14,15 @@
 
 # Stackstorm Workflow manager specific implementation
 
-from orchestration.connectionmanager.OrchestrationConstants \
-    import OrchConstants
+from orchestration.connectionmanager.orchestrationconstants \
+    import Orchconstants
 import requests
 import json
 from requests.auth import HTTPBasicAuth
 requests.packages.urllib3.disable_warnings()
 
 
-class st2():
+class St2():
     def __init__(self, server, user, passwd):
         self.server = server
         self.username = user
@@ -31,7 +31,7 @@ class st2():
     # Function to authenticate with Stackstorm. It will return X-Auth_token
     def authenticate(self):
         server = self.server
-        url = OrchConstants().get_st2_token_url(server)
+        url = Orchconstants().get_st2_token_url(server)
         req = requests.post(url,
                             auth=HTTPBasicAuth(self.username, self.passwd),
                             verify=False)
@@ -45,7 +45,7 @@ class st2():
     def list_actions(self, pack_name=''):
         auth_token = self.authenticate()
         headers = {'X-Auth-Token': auth_token}
-        url = OrchConstants().get_st2_action_list_url(self.server)
+        url = Orchconstants().get_st2_action_list_url(self.server)
         req = requests.get(url, headers=headers, verify=False)
         req = req.json()
         action_dict = {}
@@ -63,27 +63,27 @@ class st2():
 
     def create_action(self, req_data):
         auth_token = self.authenticate()
-        url = OrchConstants().get_st2_action_list_url(self.server)
+        url = Orchconstants().get_st2_action_list_url(self.server)
         hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.post(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
-        return(resp.text)
+        return(resp.status_code, resp.text)
 
     def update_action(self, id, req_data):
         auth_token = self.authenticate()
-        url = OrchConstants().get_st2_action_list_url(self.server) + '/' + id
+        url = Orchconstants().get_st2_action_list_url(self.server) + '/' + id
         hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.put(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
-        return(resp.text)
+        return(resp.status_code, resp.text)
 
     def delete_action(self, id, req_data):
         auth_token = self.authenticate()
-        url = OrchConstants().get_st2_action_list_url(self.server) + '/' + id
+        url = Orchconstants().get_st2_action_list_url(self.server) + '/' + id
         hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.delete(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
-        return(resp.text)
+        return(resp.status_code, resp.text)
 
     # Function to execute the Action
     # @Input: The post request should have the data as the 'action'
@@ -91,16 +91,16 @@ class st2():
     # @output: Result returned by the Stackstorm
     def execute_action(self, req_data):
         auth_token = self.authenticate()
-        url = OrchConstants().get_st2_executions_post_url(self.server)
+        url = Orchconstants().get_st2_executions_post_url(self.server)
         hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
         resp = requests.post(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
-        return(resp.text)
+        return(resp.status_code, resp.text)
 
     def get_execution_stats(self, exec_id):
         auth_token = self.authenticate()
         hdr = {'X-Auth-Token': auth_token}
-        url = OrchConstants().get_st2_executions_get_url(self.server) \
+        url = Orchconstants().get_st2_executions_get_url(self.server) \
             + '/' + exec_id
         resp = requests.get(url, headers=hdr, verify=False)
-        return(resp.text)
+        return(resp.status_code, resp.text)

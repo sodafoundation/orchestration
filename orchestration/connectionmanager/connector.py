@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from orchestration.connectionmanager.St2 import st2
+from orchestration.connectionmanager.st2 import St2
 from orchestration.connectionmanager.CredCreator import CredCreator
 
 # This class is the interface for all the different form of
 # Workflow Manager
 
 
-class connector(object):
+class Connector(object):
 
     # This function should read the Workflow Manager technology
     # from Database and based upon the technology, should
@@ -28,6 +28,6 @@ class connector(object):
         try:
             (tech, server, user, passwd) = CredCreator().get_creds()
             if tech == 'St2':
-                return st2(server, user, passwd)
+                return St2(server, user, passwd)
         except Exception as ex:
             raise ex

@@ -14,14 +14,18 @@
 
 from flask import jsonify
 from flask import Blueprint
-from orchestration.connectionmanager.Connector import connector
+from orchestration.connectionmanager.connector import Connector
 import json
+from orchestration.api.apiconstants import Apiconstants
 
 task = Blueprint("task", __name__)
 @task.route("/v1/orchestration/tasks/<string:execId>", methods=['GET'])
 def get_task_output(execId=''):
-    c = connector().morph()
-    ret = c.get_execution_stats(execId)
+    c = Connector().morph()
+    rc, ret = c.get_execution_stats(execId)
+    if(rc != Apiconstants.HTTP_OK):
+        return jsonify(response=json.loads(ret)), rc
+
     ret_json = json.loads(ret)
     task_hash = {}
     task_hash['id'] = ret_json['id']

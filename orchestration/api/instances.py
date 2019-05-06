@@ -14,11 +14,12 @@
 
 from flask import jsonify
 from flask import Blueprint
-from orchestration.connectionmanager.Connector import connector
+from orchestration.connectionmanager.connector import Connector
 from flask import request
 import json
 from orchestration.db.api \
     import create_workflow, list_workflows
+from orchestration.api.apiconstants import Apiconstants
 
 instance = Blueprint("instance", __name__)
 
@@ -30,9 +31,12 @@ instance = Blueprint("instance", __name__)
 # '{"action":"aks.ak_echo_py", "parameters":{"message":"Hello World"}}'
 @instance.route("/v1beta/orchestration/instances", methods=['POST'])
 def instance_ops():
-    c = connector().morph()
+    c = Connector().morph()
     content = request.get_json()
-    ret = c.execute_action(content)
+    rc, ret = c.execute_action(content)
+    if(rc != Apiconstants.HTTP_OK):
+        return jsonify(response=json.loads(ret)), rc
+
     ret_json = json.loads(ret)
     wf_hash = {}
     wf_hash['id'] = ret_json['id']
@@ -47,9 +51,12 @@ def instance_ops():
 
 @instance.route("/v1beta/orchestration/instances/create", methods=['POST'])
 def create_action():
-    c = connector().morph()
+    c = Connector().morph()
     content = request.get_json()
-    ret = c.create_action(content)
+    rc, ret = c.create_action(content)
+    if(rc != Apiconstants.HTTP_OK):
+        return jsonify(response=json.loads(ret)), rc
+
     return jsonify(response=json.dumps(ret)), 200
 
 
@@ -57,7 +64,7 @@ def create_action():
 # This can be imported and called directly from
 # outside
 def get_wfds():
-    c = connector().morph()
+    c = Connector().morph()
     ret = c.list_actions('opensds')
     return ret
 
@@ -66,23 +73,30 @@ def get_wfds():
     "/v1beta/orchestration/workflows",
     methods=['GET'])
 def wfds_ops():
-    return jsonify(response=get_wfds()), 200
+    ret = get_wfds()
+    return jsonify(response=ret), 200
 
 
 @instance.route(
     "/v1beta/orchestration/instances",
     methods=['GET', 'PUT', 'DELETE'])
 def wf_ops():
-    c = connector().morph()
+    c = Connector().morph()
     method = request.method
     if method == 'GET':
         ret = list_workflows(None)
         return jsonify(response=ret), 200
     elif method == 'PUT':
         content = request.get_json()
-        ret = c.update_action(id, content)
+        rc, ret = c.update_action(id, content)
+        if(rc != Apiconstants.HTTP_OK):
+            return jsonify(response=json.loads(ret)), rc
+
         return jsonify(response=json.dumps(ret)), 200
     elif method == 'DELETE':
         content = request.get_json()
-        ret = c.delete_action(id, content)
+        rc, ret = c.delete_action(id, content)
+        if(rc != Apiconstants.HTTP_OK):
+            return jsonify(response=json.loads(ret)), rc
+
         return jsonify(response=json.dumps(ret)), 200

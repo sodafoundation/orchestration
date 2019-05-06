@@ -15,7 +15,7 @@
 # This class contains the constants required by different modules
 
 
-class OrchConstants:
+class Orchconstants:
     HTTPS_URL = 'https://'
     ST2_TOKEN_URL = '/auth/v1/tokens'
     ST2_ACTION_LIST_URL = '/api/v1/actions'
