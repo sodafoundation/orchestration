@@ -25,4 +25,4 @@ service = Blueprint("service", __name__)
     methods=['GET'])
 def get_services():
     q_ret = list_service_definitions(None)
-    return jsonify(q_ret), 200
+    return jsonify(response=q_ret), 200

@@ -18,7 +18,7 @@ from orchestration.connectionmanager.Connector import connector
 from flask import request
 import json
 from orchestration.db.api \
-    import create_workflow
+    import create_workflow, list_workflows
 
 instance = Blueprint("instance", __name__)
 
@@ -63,13 +63,20 @@ def get_wfds():
 
 
 @instance.route(
-    "/v1beta/orchestration/instances/",
+    "/v1beta/orchestration/workflows",
+    methods=['GET'])
+def wfds_ops():
+    return jsonify(response=get_wfds()), 200
+
+
+@instance.route(
+    "/v1beta/orchestration/instances",
     methods=['GET', 'PUT', 'DELETE'])
 def wf_ops():
     c = connector().morph()
     method = request.method
     if method == 'GET':
-        ret = get_wfds()
+        ret = list_workflows(None)
         return jsonify(response=ret), 200
     elif method == 'PUT':
         content = request.get_json()

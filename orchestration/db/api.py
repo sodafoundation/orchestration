@@ -64,7 +64,10 @@ def get_service_definition(id='', context=None):
 def list_service_definitions(context, **filters):
     with session_scope() as session:
         query = session.query(models.ServiceDefinition)
-    return {} if not query else query.all()
+    if not query:
+        return []
+    else:
+        return get_query_res(query.all(), models.ServiceDefinition)
 
 
 def update_service_definition(context, values):
@@ -142,7 +145,10 @@ def get_workflow_definition(context, id=''):
 def list_workflow_definitions(context, **filters):
     with session_scope() as session:
         query = session.query(models.WorkflowDefinition)
-    return [] if not query else query.all()
+    if not query:
+        return []
+    else:
+        return get_query_res(query.all(), models.WorkflowDefinition)
 
 
 def update_workflow_definition():
@@ -177,7 +183,7 @@ def get_workflow(context, id):
 def list_workflows(context, **filters):
     with session_scope() as session:
         query = session.query(models.Workflow)
-    return [] if not query else query.all()
+    return [] if not query else get_query_res(query.all(), models.Workflow)
 
 
 def update_workflow():
@@ -221,3 +227,16 @@ def update_task():
 
 def delete_task():
     pass
+
+
+# This fucntion takes the query result as obj
+# and the tablename of the object.
+# Returns the list of all the objects converted to dict
+def get_query_res(obj, tablename):
+    res_list = []
+    for obj_elem in obj:
+        row_hash = {}
+        for c in tablename.__table__.columns.keys():
+            row_hash[str(c)] = getattr(obj_elem, c)
+        res_list.append(row_hash)
+    return res_list
