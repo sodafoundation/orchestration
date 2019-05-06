@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from orchestration.connectionmanager.st2 import St2
-from orchestration.connectionmanager.CredCreator import CredCreator
+from orchestration.connectionmanager.credcreator import CredCreator
 
 # This class is the interface for all the different form of
 # Workflow Manager
