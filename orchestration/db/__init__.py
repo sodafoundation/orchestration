@@ -39,7 +39,3 @@ def drop_db():
 
 def create_defs():
     pass
-#    service_def = {}
-#    service_def['name'] = 'migration_st2'
-#    service_def['description'] = 'Container for migration services'
-#    create_service_definition(None, service_def)

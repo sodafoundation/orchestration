@@ -42,21 +42,23 @@ class st2():
     # Caller can store the result in DB
     # @Input: ActionName
     # @output: the ActionDetails
-    def list_actions(self, packName=''):
+    def list_actions(self, pack_name=''):
         auth_token = self.authenticate()
         headers = {'X-Auth-Token': auth_token}
         url = OrchConstants().get_st2_action_list_url(self.server)
         req = requests.get(url, headers=headers, verify=False)
         req = req.json()
         action_dict = {}
-        if packName == '':
+        if pack_name == '':
             return req
         else:
             for elem in req:
-                if(elem['pack'] != packName):
+                if elem['runner_type'] != 'mistral-v2':
+                    continue
+                if(elem['pack'] != pack_name):
                     continue
                 else:
-                    action_dict[elem['id']] = elem
+                    action_dict[elem['ref']] = elem
         return action_dict
 
     def create_action(self, req_data):
@@ -91,7 +93,6 @@ class st2():
         auth_token = self.authenticate()
         url = OrchConstants().get_st2_executions_post_url(self.server)
         hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
-        print(url)
         resp = requests.post(
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.text)
@@ -100,6 +101,6 @@ class st2():
         auth_token = self.authenticate()
         hdr = {'X-Auth-Token': auth_token}
         url = OrchConstants().get_st2_executions_get_url(self.server) \
-            + '/' + exec_id + '/output'
+            + '/' + exec_id
         resp = requests.get(url, headers=hdr, verify=False)
         return(resp.text)

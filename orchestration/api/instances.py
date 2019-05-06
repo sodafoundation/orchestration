@@ -18,7 +18,7 @@ from orchestration.connectionmanager.Connector import connector
 from flask import request
 import json
 from orchestration.db.api \
-    import create_workflow_definition, get_workflow_definition
+    import create_workflow
 
 instance = Blueprint("instance", __name__)
 
@@ -34,10 +34,18 @@ def instance_ops():
     content = request.get_json()
     ret = c.execute_action(content)
     ret_json = json.loads(ret)
-    return jsonify(response=json.dumps(ret_json)), 200
+    wf_hash = {}
+    wf_hash['id'] = ret_json['id']
+    wf_hash['name'] = ret_json['action']['name']
+    wf_hash['input'] = json.dumps(ret_json['parameters'])
+    wf_hash['workflow_definition_id'] = ret_json['action']['ref']
+
+    # Create the record of this instance in DB
+    create_workflow(None, wf_hash)
+    return jsonify(response=ret_json), 200
 
 
-@instance.route("/v1beta/orchestration/workflow", methods=['POST'])
+@instance.route("/v1beta/orchestration/instances/create", methods=['POST'])
 def create_action():
     c = connector().morph()
     content = request.get_json()
@@ -45,30 +53,24 @@ def create_action():
     return jsonify(response=json.dumps(ret)), 200
 
 
+# Internal API to get the Workflow definitions
+# This can be imported and called directly from
+# outside
+def get_wfds():
+    c = connector().morph()
+    ret = c.list_actions('opensds')
+    return ret
+
+
 @instance.route(
-    "/v1beta/orchestration/workflow/<string:id>",
+    "/v1beta/orchestration/instances/",
     methods=['GET', 'PUT', 'DELETE'])
-def wf_ops(id=''):
+def wf_ops():
     c = connector().morph()
     method = request.method
     if method == 'GET':
-        ret = c.list_actions(id)
-        wf_hash = {}
-        wfs = []
-        for elem in ret.values():
-            if elem['runner_type'] == 'mistral-v2':
-                wfd_hash = {}
-                wfd_hash['id'] = elem['ref']
-                wfd_hash['name'] = elem['name']
-                wfd_hash['description'] = elem['description']
-                wfd_hash['definition'] = json.dumps(elem['parameters'])
-                # check if the entries are not present in DB then only
-                # enter in DB
-                wfs.append(wfd_hash)
-                if get_workflow_definition(None, elem['ref']) is None:
-                    create_workflow_definition(None, wfd_hash)
-        wf_hash['workflows'] = wfs
-        return jsonify(id=id, response=wfs), 200
+        ret = get_wfds()
+        return jsonify(response=ret), 200
     elif method == 'PUT':
         content = request.get_json()
         ret = c.update_action(id, content)

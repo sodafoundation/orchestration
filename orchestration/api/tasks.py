@@ -22,4 +22,13 @@ task = Blueprint("task", __name__)
 def get_task_output(execId=''):
     c = connector().morph()
     ret = c.get_execution_stats(execId)
-    return jsonify(response=json.dumps(ret)), 200
+    ret_json = json.loads(ret)
+    task_hash = {}
+    task_hash['id'] = ret_json['id']
+    task_hash['start'] = ret_json['start_timestamp']
+    task_hash['end'] = ret_json['end_timestamp']
+    task_hash['status'] = ret_json['status']
+    task_hash['message'] = 'Failed'
+    if ret_json['status'] == 'succeeded':
+        task_hash['message'] = ret_json['result']['tagline']
+    return jsonify(response=task_hash), 200
