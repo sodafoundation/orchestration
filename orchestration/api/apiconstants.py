@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This class contains the constants required by different modules
 
-def test_get_service(client):
-    # response = client.get('/v1/orchestration/services/testing')
-    # assert response.status_code == 200
-    # assert "Hello World!" == response.data['name']
-    pass
+
+class Apiconstants:
+    HTTP_OK = 200
