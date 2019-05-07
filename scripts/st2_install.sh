@@ -1,13 +1,9 @@
 #!/bin/bash -e
 
 # Input variables
-export ST2_DOCKER_SRC_PATH="/opt/opensds/orchestration"
-export ST2_WORKFLOW_SRC_PATH="/opt/opensds/orchestration/contrib/st2/opensds"
-export HOST_USER=demo_user
-export HOST_PASSWORD=demo_password
-export PACKS_PATH=/opt/stackstorm/packs/
-export HOST_IP=100.64.40.36
-
+export ST2_DOCKER_PATH=${ST2_DOCKER_PATH:-"/opt/opensds/orchestration"}
+export ST2_WORKFLOW_PATH=${ST2_WORKFLOW_PATH:-"/opt/opensds/orchestration"}
+export PACKS_PATH=${PACKS_PATH:-/opt/stackstorm/packs}
 
 osds::st2::show_help() {
     cat  << ST2_INSTALL_SCRIPT_HELP
@@ -24,53 +20,49 @@ ST2_INSTALL_SCRIPT_HELP
 }
 
 osds::st2::stop() {
-    cd $ST2_DOCKER_SRC_PATH/st2-docker
+    cd $ST2_DOCKER_PATH/st2-docker
     docker-compose down
 }
 
 osds::st2::start() {
-    cd $ST2_DOCKER_SRC_PATH/st2-docker
-    docker-compose down
+    cd $ST2_DOCKER_PATH/st2-docker
     docker-compose up -d
 }
 
 osds::st2::download() {
   (
-    cd $ST2_DOCKER_SRC_PATH
+    cd $ST2_DOCKER_PATH
     git clone https://github.com/stackstorm/st2-docker
     cd st2-docker
     make env
+    # Patch docker-compose file for attaching opensds pack volume
+    OPENSDS_WF="\ \ \ \ \ \ - $ST2_WORKFLOW_PATH/opensds:$PACKS_PATH/opensds"
+    sed -i "/stackstorm-packs-volume:\/opt/a $OPENSDS_WF" $ST2_DOCKER_PATH/st2-docker/docker-compose.yml
   )
 }
 
 osds::st2::install() {
-    set -x xtrace
-
     # validate before running
-    if [ ! -d "$ST2_DOCKER_SRC_PATH/st2-docker" ]; then
+    if [ ! -d "$ST2_DOCKER_PATH/st2-docker" ]; then
         osds::st2::download
     fi
 
     # start st2 docker container
+    cd $ST2_DOCKER_PATH/st2-docker
+    docker-compose down
     osds::st2::start
 
     # install opensds workflows
-    cd $ST2_DOCKER_SRC_PATH/st2-docker
-
-    docker-compose exec stackstorm sshpass -p $HOST_PASSWORD \
-        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r \
-        $HOST_USER@$HOST_IP:$ST2_WORKFLOW_SRC_PATH $PACKS_PATH
     docker-compose exec stackstorm st2ctl reload --register-all
     docker-compose exec stackstorm st2 action list -p opensds
     docker-compose exec stackstorm st2 run packs.setup_virtualenv packs=opensds
-    docker-compose exec stackstorm st2ctl status
 }
 
 osds::st2::cleanup() {
-    cd $ST2_DOCKER_SRC_PATH/st2-docker
-    osds::st2::start
+    cd $ST2_DOCKER_PATH/st2-docker
     docker-compose exec stackstorm st2 pack remove opensds
     docker-compose exec stackstorm rm -rf $PACKS_PATH/opensds
+    docker-compose down
 }
 
 osds::st2::uninstall(){

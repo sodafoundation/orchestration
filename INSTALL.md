@@ -4,7 +4,8 @@ This document describe how to set up Orchestration/Workflow Manager for OpenSDS 
 
 * In this document Workflow Manager used is [StackStorm](https://stackstorm.com/).
 * A Docker instance of StackStorm will be created from the StackStorms [repository](https://github.com/StackStorm/st2-docker)
-* A StackStorm Pack with OpenSDS specific workflows and actions will be loaded into it.
+* A StackStorm Pack with OpenSDS specific workflows and actions will be mounted into it.
+* A Docker instance of Orchestration Manager will be started.
 * A limited set of Workflows/Actions are available in [Orchestration](https://github.com/opensds/orchestration/tree/master/contrib/st2/opensds) reposity for OpenSDS.
 * An example usage of these Workflows is listed below.
 
@@ -22,17 +23,19 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
     $ cd st2-docker
     $ make env
     ```
-* Start docker container using docker-compose
+* Add following line to docker-compose.yml file for mounting [opensds pack](https://github.com/opensds/orchestration/tree/master/contrib/st2/opensds) as volume
     ```sh
-    $ docker-compose up -d  # For starting container
-    $ docker-compose down   # For stopping container
+    volumes:
+    ...
+          - /opt/opensds/orchestration/opensds:/opt/stackstorm/packs/opensds
+    ...
     ```
-* Copy [opensds folder](https://github.com/opensds/orchestration/tree/master/contrib/st2/opensds) to packs folder of stackstorm docker instance.
-	```sh
+* Start docker container using docker-compose and register opensds pack
+    ```sh
+    $ docker-compose up -d
 	$ docker-compose exec stackstorm /bin/bash
-	# scp -r <host opensds path> /opt/stackstorm/packs/
 	# st2ctl reload --register-all
-	```
+    ```
 * Register virtual environment while installing opensds first time.
 	```sh
 	# st2 run packs.setup_virtualenv packs=opensds
@@ -63,47 +66,53 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
     mistral-server PID: 340
     mistral.api PID: 335
 	```
+* Start Orchestration manager as docker instance.
+	```sh
+	$ docker-compose up -d
+	```
 
 #### Installer script
-The file script/st2_installer.sh may be used for automated installation of StackStorm and Workflows.
-This script needs to be updated with input variables of,
-* Source paths of StackStorm Installer and Workflow
-* Host IP and user credentials
+The file [install.sh](https://github.com/opensds/orchestration/install.sh) may be used for automated installation of StackStorm and Workflows.
 
-Example input variables:
 ```sh
-# Input variables
-export ST2_DOCKER_SRC_PATH="/opt/opensds/orchestration"
-export ST2_WORKFLOW_SRC_PATH="/opt/opensds/orchestration/contrib/st2/opensds"
-export HOST_USER=demo_user
-export HOST_PASSWORD=demo_password
-export PACKS_PATH=/opt/stackstorm/packs/
-export HOST_IP=100.64.0.1
+$  ./install.sh
+```
+And, default paths for st2-docker or opensds pack may be modified as below, if needed.
+
+```sh
+$ ST2_DOCKER_PATH="/opt/opensds/orchestration" ST2_WORKFLOW_PATH="/opt/opensds/orchestration/contrib/st2" ./scripts/install.sh
 ```
 
 * Known issue
   * Creation of virtual environment for opensds (command: st2 run packs.setup_virtualenv packs=opensds) fails with [Exception: Failed to install requirement "six>=1.9.0,<2.0": Collecting six<2.0,>=1.9.0]. This can be ignored for now.
-  * After cleanup, mistral services may not be running. Restart postgres, and bring up stackstorm containers [```docker-compose down && docker-compose up -d postgres && docker-compose up -d```]
+  * After cleanup, mistral services may not be running. Restart postgres, and bring up stackstorm containers
+    ```sh
+    $docker-compose down && docker-compose up -d postgres && docker-compose up -d
+    ```
 
-#### Example usage	
+#### Example usage
 OpenSDS Orchestration Dashboard OR CURL may be used for testing
 
-For the examples below OpenSDS is installed on VM with IP: 100.64.41.214 and StackStorm docker image is running on Host IP: 100.64.40.36
+For the examples below OpenSDS is installed on VM and both StackStorm and Orchestration manager are running on Host. Please replace '<>' with respective values.
 
-* Provision Volume Workflow with input arguments
- ```sh
+* Get token from StackStorm with username st2admin, and password as input arguments
+    ```sh
+    $ curl -X POST -k -u st2admin:'<password>' https://localhost/auth/v1/tokens
+    ```
+* Provision Volume Workflow using StackStorm with input arguments
+    ```sh
     $ curl -k -X POST \
-        https://100.64.40.36/api/v1/executions \
+        https://localhost/api/v1/executions \
         -H  'content-type: application/json' \
-        -H  'X-Auth-Token: c2f427ce9b3d43889ec61eb623160c5d' \
-        -d '{"action": "opensds.provision-volume", "user": null, "parameters": {"ipaddr": "100.64.41.214", "port": "50040", "size": 1, "projectid": "7e515a1edee94f9688efda14b6fb677e", "name": "test200", "token": "gAAAAABcy_WakGraN1iQy8R87ueVwdNYDJP2n9a2J_o7bnptqwFjJLxKMzvJoPVt4ofi74V7kLBCMJzZQ41kcwhWQEOv3v8ne9Z2FrhOOiYPY358Y1-F3gdRTY8oOKlyiqgcAJ9wT5sF5RzqAKwAyinRd3KEkGjsFsjxfFkJSlpRFdJmW_XQ8hwjch539Nwo3RgLaCXX1W0z", "hostinfo": {"host":"ubuntu","initiator":"iqn.1993-08.org.debian:01:437bac3717c8","ip":"100.64.40.36"}}}'  
- ```
+        -H  'X-Auth-Token: <stackstorm token>' \
+        -d '{"action": "opensds.provision-volume", "user": null, "parameters": {"ipaddr": "<ip>", "port": "50040", "size": 1, "tenantid": "<id>", "name": "test000", "token": "<opensds token>", "hostinfo": {"host":"ubuntu","initiator":"iqn.1993-08.org.debian:01:437bac3717c8","ip":"<host ip>"}}}'
+    ```
 
-* Create Volume Action with input arguments
-```sh
+* Create Volume using StackStorm Action with input arguments
+    ```sh
     $ curl -k -X POST   \
-    https://100.64.40.36/api/v1/executions   \
+    https://localhost/api/v1/executions   \
     -H  'content-type: application/json'   \
-    -H  'X-Auth-Token: c2f427ce9b3d43889ec61eb623160c5d'   \
-    -d '{"action": "opensds.create-volume", "user": nul, "parameters": {"ipaddr": "100.64.41.214", "port": "50040", "size": 1, "projectid": "7e515a1edee94f9688efda14b6fb677e", "name": "test101", "token": "gAAAAABcy_WakGraN1iQy8R87ueVwdNYDJP2n9a2J_o7bnptqwFjJLxKMzvJoPVt4ofi74V7kLBCMJzZQ41kcwhWQEOv3v8ne9Z2FrhOOiYPY358Y1-F3gdRTY8oOKlyiqgcAJ9wT5sF5RzqAKwAyinRd3KEkGjsFsjxfFkJSlpRFdJmW_XQ8hwjch539Nwo3RgLaCXX1W0z"}}'
-```
+    -H  'X-Auth-Token: <stackstorm token>'   \
+    -d '{"action": "opensds.create-volume", "user": nul, "parameters": {"ipaddr": "<ip>", "port": "50040", "size": 1, "tenantid": "<id>", "name": "test001", "token": "<opensds token>"}}'
+    ```
