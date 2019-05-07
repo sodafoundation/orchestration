@@ -21,6 +21,7 @@ from contextlib import contextmanager
 from orchestration.db import Session
 from orchestration.db import models
 
+
 # session_scope can be used cleanly in transaction,
 # references the officel document of sqlalchemy.
 @contextmanager
@@ -36,29 +37,70 @@ def session_scope():
         session.close()
 
 
-# -------------------------data access for service definition------------------
-def create_service_definition(context, values):
-    service_definition = models.ServiceDefinition()
-    for key, value in values.items():
-        if hasattr(service_definition, key):
-            setattr(service_definition, key, value)
-
-    if not service_definition.id:
-        service_definition.id = str(uuid.uuid4())
-
+def list_sd_wfd_associations(context, **filters):
     with session_scope() as session:
-        session.add(service_definition)
-    return service_definition
+        query = session.query(models.ServiceDefinition,
+                              models.WorkflowDefinition) \
+            .filter(models.DefinitionAssociation.service_definition_id
+                    == models.ServiceDefinition.id,
+                    models.DefinitionAssociation.workflow_definition_id
+                    == models.WorkflowDefinition.id) \
+            .order_by(models.DefinitionAssociation.workflow_definition_id)
+    if not query:
+        return []
+    else:
+        return query.all()
 
 
-def get_service_definition(id='', context=None):
+def get_sd_wfd_association(context=None, id=''):
+    with session_scope() as session:
+        if id == '':
+            return list_sd_wfd_associations(None)
+        else:
+            query = session.query(models.ServiceDefinition,
+                                  models.WorkflowDefinition) \
+                .filter(models.DefinitionAssociation.service_definition_id
+                        == models.ServiceDefinition.id,
+                        models.DefinitionAssociation.workflow_definition_id
+                        == models.WorkflowDefinition.id) \
+                .filter(models.ServiceDefinition.id == id) \
+                .order_by(models.DefinitionAssociation.workflow_definition_id)
+    if not query:
+        return None
+    else:
+        return query.all()
+
+
+# -------------------------data access for service definition------------------
+def create_service_definition(context, values, workflow_definitions):
+    try:
+        if not values.get('id'):
+            values['id'] = str(uuid.uuid4())
+
+        service_definition = models.ServiceDefinition()
+        service_definition.update(values)
+        for workflow_definition in workflow_definitions:
+            service_definition.workflow_definitions.append(workflow_definition)
+
+        with session_scope() as session:
+            session.add(service_definition)
+    except RuntimeError:
+        return None
+
+    return get_service_definition(context, id=values['id'])
+
+
+def get_service_definition(context=None, id=''):
     with session_scope() as session:
         if id == '':
             query = session.query(models.ServiceDefinition)
         else:
             query = session.query(models.ServiceDefinition).filter(
                 models.ServiceDefinition.id == id)
-    return None if not query else query.first()
+    if not query or query.first() is None:
+        return None
+    else:
+        return query.first().to_dict()
 
 
 def list_service_definitions(context, **filters):
@@ -120,25 +162,29 @@ def delete_service_definition(context, id):
 
 # ------------------------data access for workflow definition-----------------
 def create_workflow_definition(context, values):
-    workflow_definition = models.WorkflowDefinition()
-    for key, value in values.items():
-        if hasattr(workflow_definition, key):
-            setattr(workflow_definition, key, value)
+    try:
+        workflow_definition = models.WorkflowDefinition()
+        for key, value in values.items():
+            if hasattr(workflow_definition, key):
+                setattr(workflow_definition, key, value)
 
-    if not workflow_definition.id:
-        workflow_definition.id = str(uuid.uuid4())
-    with session_scope() as session:
-        session.add(workflow_definition)
+        if not workflow_definition.id:
+            workflow_definition.id = str(uuid.uuid4())
+        with session_scope() as session:
+            session.add(workflow_definition)
+    except RuntimeError:
+        return None
     return workflow_definition
 
 
-def get_workflow_definition(context, id=''):
+def get_workflow_definition(context, id, wfe_type):
     with session_scope() as session:
         if id == '':
             query = session.query(models.WorkflowDefinition)
         else:
-            query = session.query(models.WorkflowDefinition).filter(
-                models.WorkflowDefinition.id == id)
+            query = session.query(models.WorkflowDefinition)\
+                .filter(models.WorkflowDefinition.definition_source == id)\
+                .filter(models.WorkflowDefinition.wfe_type == wfe_type)
     return None if not query else query.first()
 
 

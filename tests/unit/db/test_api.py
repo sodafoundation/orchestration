@@ -23,33 +23,6 @@ from orchestration.db import models
 
 # ------------------------Test for service definition-------------------------
 
-@mock.patch('uuid.uuid4')
-@mock.patch('orchestration.db.api.session_scope')
-def test_create_service_definition(mock_session, mock_uuid):
-    expected = models.ServiceDefinition()
-    expected.id = 'a9e54256-2b8b-47d9-8ca1-355db52d60f1'
-    expected.name = 'volume provsioning'
-    mock_uuid.return_value = 'a9e54256-2b8b-47d9-8ca1-355db52d60f1'
-
-    actual = api.create_service_definition(None,
-                                           dict(name='volume provsioning'))
-
-    assert getattr(actual, "id") == expected.id
-    assert getattr(actual, "name") == expected.name
-    mock_session.return_value.__enter__.return_value.add.assert_called_once
-
-
-@mock.patch('orchestration.db.api.session_scope')
-def test_get_service_definition(mock_session):
-    fake_service = models.ServiceDefinition()
-    mock_session.return_value.__enter__.return_value. \
-        query.return_value.filter.return_value.first.return_value = \
-        fake_service
-    result = api.get_service_definition(
-        None, 'a9e54256-2b8b-47d9-8ca1-355db52d60f1')
-    assert result == fake_service
-
-
 @mock.patch('orchestration.db.api.session_scope')
 def test_get_service_definition_with_None(mock_session):
     mock_session.return_value.__enter__.return_value. \
