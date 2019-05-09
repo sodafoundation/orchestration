@@ -14,29 +14,51 @@
 """
 SQLAlchemy models for orchestration.
 """
+import datetime
 import uuid
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, ForeignKey
+
+from sqlalchemy import ForeignKey
 from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.inspection import inspect
+from sqlalchemy.ext.declarative import as_declarative
 
-Base = declarative_base()
+
+@as_declarative()
+class Base(object):
+    """
+    Class Base as a super class of models will provides some common functions
+    for models.
+    """
+
+    def to_dict(self):
+        return {c.key: getattr(self, c.key)
+                for c in inspect(self).mapper.column_attrs}
+
+    def update(self, values):
+        for key, value in values.items():
+            setattr(self, key, value)
 
 
 class ModelBase(Base):
     __abstract__ = True
     id = Column(String(36),  default=lambda: str(
         uuid.uuid4()), primary_key=True)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow())
 
 
-definition_association = Table('service_workflow_definition_associations',
-                               Base.metadata,
-                               Column('service_definition_id', String,
-                                      ForeignKey('service_definitions.id')),
-                               Column('workflow_definition_id', String,
-                                      ForeignKey('workflow_definitions.id')))
+class DefinitionAssociation(Base):
+    __tablename__ = 'service_workflow_definition_associations'
+    service_definition_id = Column(
+        String,
+        ForeignKey('service_definitions.id'),
+        primary_key=True)
+
+    workflow_definition_id = Column(
+        String,
+        ForeignKey('workflow_definitions.id'),
+        primary_key=True)
 
 
 class ServiceDefinition(ModelBase):
@@ -48,9 +70,10 @@ class ServiceDefinition(ModelBase):
     description = Column(String)
     input = Column(Text)
     constraint = Column(Text)
+    group = Column(String(255))
     workflow_definitions = relationship(
         "WorkflowDefinition",
-        secondary=definition_association)
+        secondary='service_workflow_definition_associations')
 
 
 class WorkflowDefinition(ModelBase):
@@ -59,6 +82,7 @@ class WorkflowDefinition(ModelBase):
     name = Column(String(255))
     description = Column(String)
     definition = Column(Text)
+    wfe_type = Column(String(255))
     definition_source = Column(String(255))
 
 
