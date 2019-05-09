@@ -3,3 +3,7 @@ six>=1.11.0
 sqlalchemy
 st2client
 uuid
+cryptography
+requests
+ConfigParser
+mock

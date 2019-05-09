@@ -26,19 +26,16 @@ from orchestration.db.models import Base
 __engine__ = None
 # Declares global session in here
 Session = None
-
-
-def init_session():
-    global __engine__, Session
-    if not Session:
-        __engine__ = engine_from_config(DATABASE)
-        # autocommit is False by default in sessionmaker.
-        Session = sessionmaker(bind=__engine__)
-
-
-def init_db():
-    Base.metadata.create_all(bind=__engine__)
+__engine__ = engine_from_config(DATABASE)
+# autocommit is False by default in sessionmaker.
+Session = sessionmaker(bind=__engine__)
+Base.metadata.create_all(bind=__engine__)
+session = Session()
 
 
 def drop_db():
     Base.metadata.drop_all(bind=__engine__)
+
+
+def create_defs():
+    pass
