@@ -19,12 +19,13 @@ PORT = "5000"
 
 # logging configuration
 LOGGING_FILE = "/var/log/opensds/orchestration.log"
-LOGGIGN_FORMAT = "[%(asctime)s] [%(levelname)s] [%(name)s] " \
+LOGGING_FORMAT = "[%(asctime)s] [%(levelname)s] [%(name)s] " \
     "[%(funcName)s():%(lineno)s] [PID:%(process)d TID:%(thread)d] %(message)s"
 LOGGING_LEVEL = "INFO"
 
 
 # database configuration
+DB_LOGGING_FILE = '/var/log/opensds/orchestration_db.log'
 DATABASE = {
     'sqlalchemy.url': 'sqlite:///osdsorch.sqlite'
 }

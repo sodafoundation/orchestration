@@ -16,9 +16,11 @@
 Initialization of sqlalchemy ORM.
 """
 
+#import logging
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
 from orchestration.utils.config import DATABASE
+from orchestration.utils import config
 from orchestration.db.models import Base
 
 
@@ -32,7 +34,15 @@ Session = sessionmaker(bind=__engine__)
 Base.metadata.create_all(bind=__engine__)
 session = Session()
 
-
+# Logging initialized
+#db_log_file = logging.FileHandler(config.DB_LOGGING_FILE, 'a')
+#formatter = logging.Formatter(config.LOGGING_FORMAT)
+#db_log_file.setFormatter(formatter)
+#
+#logger = logging.getLogger('db_logger')
+#logger.setLevel(20)
+#logger.addHandler(db_log_file)
+#
 def drop_db():
     Base.metadata.drop_all(bind=__engine__)
 

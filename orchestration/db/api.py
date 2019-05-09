@@ -17,10 +17,12 @@ Data access module.
 """
 
 import uuid
+import inspect
 from contextlib import contextmanager
 from orchestration.db import Session
 from orchestration.db import models
-
+from sqlalchemy.exc import SQLAlchemyError, NoSuchTableError
+from orchestration.server import logger
 # session_scope can be used cleanly in transaction,
 # references the officel document of sqlalchemy.
 @contextmanager
@@ -46,28 +48,46 @@ def create_service_definition(context, values):
     if not service_definition.id:
         service_definition.id = str(uuid.uuid4())
 
-    with session_scope() as session:
-        session.add(service_definition)
+    try:
+        with session_scope() as session:
+            session.add(service_definition)
+    except SQLAlchemyError as sqe:
+        logger.error("Received exception while creating service definition" \
+                        "[%s]", str(sqe))
+ 
     return service_definition
 
 
 def get_service_definition(id='', context=None):
-    with session_scope() as session:
-        if id == '':
-            query = session.query(models.ServiceDefinition)
-        else:
-            query = session.query(models.ServiceDefinition).filter(
-                models.ServiceDefinition.id == id)
-    return None if not query else query.first()
-
+    func_name = 'list_service_definitions'
+    logger.info("%s: Getting service definition for %s" %(fun_name, id))
+    try:
+        with session_scope() as session:
+            if id == '':
+                query = session.query(models.ServiceDefinition)
+            else:
+                query = session.query(models.ServiceDefinition).filter(
+                    models.ServiceDefinition.id == id)
+            return None if not query else query.first()
+    except SQLAlchemyError as sqe:
+        logger.error("Received exception while getting service definition" \
+                        "[%s]", str(sqe))
+    return None
 
 def list_service_definitions(context, **filters):
-    with session_scope() as session:
-        query = session.query(models.ServiceDefinition)
-    if not query:
+    func_name = 'list_service_definitions'
+    logger.info("%s: Getting service definition for %s" %(func_name, id))
+    try:
+        with session_scope() as session:
+            query = session.query(models.ServiceDefinition)
+        if not query:
+            return []
+        else:
+            return get_query_res(query.all(), models.ServiceDefinition)
+    except SQLAlchemyError as sqe:
+        logger.error("Received exception while listing service definition" \
+                        "[%s]", str(sqe))
         return []
-    else:
-        return get_query_res(query.all(), models.ServiceDefinition)
 
 
 def update_service_definition(context, values):

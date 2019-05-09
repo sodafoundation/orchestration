@@ -20,6 +20,7 @@ import json
 from orchestration.db.api \
     import create_workflow, list_workflows
 from orchestration.api.apiconstants import Apiconstants
+from orchestration.api import logger
 
 instance = Blueprint("instance", __name__)
 
@@ -84,6 +85,7 @@ def wf_ops():
     c = Connector().morph()
     method = request.method
     if method == 'GET':
+        logger.info("ASHIT: Inside getting actions")
         ret = list_workflows(None)
         return jsonify(response=ret), 200
     elif method == 'PUT':
