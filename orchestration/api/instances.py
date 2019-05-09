@@ -69,6 +69,15 @@ def get_wfds():
     return ret
 
 
+# This to get the Workflow definition from st2
+def get_wfd(id):
+    c = Connector().morph()
+    rc, ret = c.get_action(id, 'opensds')
+    if rc != Apiconstants.HTTP_OK:
+        return None
+    return ret
+
+
 @instance.route(
     "/v1beta/orchestration/workflows",
     methods=['GET'])
