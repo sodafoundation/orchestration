@@ -16,12 +16,28 @@ SQLAlchemy models for orchestration.
 """
 import datetime
 import uuid
-from sqlalchemy.ext.declarative import declarative_base
+
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.inspection import inspect
+from sqlalchemy.ext.declarative import as_declarative
 
-Base = declarative_base()
+
+@as_declarative()
+class Base(object):
+    """
+    Class Base as a super class of models will provides some common functions
+    for models.
+    """
+
+    def to_dict(self):
+        return {c.key: getattr(self, c.key)
+                for c in inspect(self).mapper.column_attrs}
+
+    def update(self, values):
+        for key, value in values.items():
+            setattr(self, key, value)
 
 
 class ModelBase(Base):
