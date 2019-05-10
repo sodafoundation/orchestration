@@ -12,7 +12,7 @@ parameters:
   port:
     required: true
     type: string
-  projectid:
+  tenantid:
     required: true
     type: string
   name:

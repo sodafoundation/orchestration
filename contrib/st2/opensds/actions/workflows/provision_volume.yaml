@@ -8,7 +8,7 @@ workflows:
         input:
             - ipaddr
             - port
-            - projectid
+            - tenantid
             - name
             - description
             - availabilityzone
@@ -33,7 +33,7 @@ workflows:
                 input:
                     ipaddr: "<% $.ipaddr %>"
                     port: "<% $.port %>"
-                    projectid: "<% $.projectid %>"
+                    tenantid: "<% $.tenantid %>"
                     name: "<% $.name %>"
                     description: "<% $.description %>"
                     availabilityzone: "<% $.availabilityzone %>"
@@ -51,7 +51,7 @@ workflows:
                 input:
                     ipaddr: "<% $.ipaddr %>"
                     port: "<% $.port %>"
-                    projectid: "<% $.projectid %>"
+                    tenantid: "<% $.tenantid %>"
                     volumeid: <% $.volumeid %>
                     mountpoint: <% $.mountpoint %>
                     hostinfo: <% $.hostinfo %>

@@ -22,7 +22,7 @@ class AttachVolumeAction(Action):
     def run(self,
             ipaddr="",
             port="",
-            projectid="",
+            tenantid="",
             mountpoint="",
             hostinfo="",
             connectioninfo="",
@@ -33,7 +33,7 @@ class AttachVolumeAction(Action):
             "Mountpoint": mountpoint,
             "HostInfo": hostinfo,
             "ConnectionInfo": connectioninfo,
-            "TenantId": projectid,
+            "TenantId": tenantid,
             "AccessProtocol": accessprotocol,
             "VolumeId": volumeid}
         headers = {
@@ -43,7 +43,7 @@ class AttachVolumeAction(Action):
         url = "http://" + \
             ipaddr + ":" + \
             port + "/v1beta/" + \
-            projectid + "/block/attachments"
+            tenantid + "/block/attachments"
 
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()

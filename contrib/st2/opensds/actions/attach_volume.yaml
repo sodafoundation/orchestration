@@ -10,7 +10,7 @@ parameters:
   port:
     type: string
     required: true
-  projectid:
+  tenantid:
     type: string
     required: true
   volumeid:

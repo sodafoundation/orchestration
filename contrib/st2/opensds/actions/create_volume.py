@@ -22,7 +22,7 @@ class CreateVolumeAction(Action):
     def run(self,
             ipaddr="",
             port="",
-            projectid="",
+            tenantid="",
             name="",
             description="Volume",
             availabilityzone="default",
@@ -43,7 +43,7 @@ class CreateVolumeAction(Action):
         url = "http://" + \
             ipaddr + ":" + \
             port + "/v1beta/" + \
-            projectid + "/block/volumes"
+            tenantid + "/block/volumes"
 
         headers = {
             'content-type': 'application/json',
