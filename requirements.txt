@@ -4,6 +4,5 @@ sqlalchemy
 st2client
 uuid
 cryptography
-requests
+requests<=2.15
 ConfigParser
-mock

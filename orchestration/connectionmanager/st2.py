@@ -61,6 +61,17 @@ class St2():
                     action_dict[elem['ref']] = elem
         return action_dict
 
+    # Function to get the action
+    # Caller can store the result in DB
+    # @Input: PackName, ActionId
+    # @output: the ActionDetails
+    def get_action(self, id, pack_name=''):
+        auth_token = self.authenticate()
+        headers = {'X-Auth-Token': auth_token}
+        url = Orchconstants().get_st2_action_list_url(self.server) + '/' + id
+        response = requests.get(url, headers=headers, verify=False)
+        return response.status_code, response.json()
+
     def create_action(self, req_data):
         auth_token = self.authenticate()
         url = Orchconstants().get_st2_action_list_url(self.server)

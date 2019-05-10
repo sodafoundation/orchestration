@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+
+  orchestration:
+    image: opensdsio/orchestration
+    container_name: orchestration
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=sqlite:///osdsorch.sqlite
+    volumes:
+      - /var/log/opensds:/var/log/opensds

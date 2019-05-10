@@ -1,0 +1,39 @@
+---
+description: Create Volume Snapshot
+enabled: true
+entry_point: create_volume_snapshot.py
+name: create-volume-snapshot
+parameters:
+  host_ip:
+    type: string
+    description: "IP of the OpenSDS host."
+    required: true
+  port:
+    type: string
+    description: "Port for the service."
+    required: true
+  tenant_id:
+    type: string
+    description: "Tenant ID."
+    required: true
+  volume_id:
+    type: string
+    description: "Volume ID."
+    required: true
+  name:
+    type: string
+    description: "Name of the snapshot."
+    required: true
+  description:
+    type: string
+    description: "Description about the Snapshot."
+    required: true
+  profile_id:
+    type: string
+    description: "Snapshot Profile ID."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: true
+runner_type: "python-script"
