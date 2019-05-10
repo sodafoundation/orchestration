@@ -4,16 +4,16 @@ enabled: true
 entry_point: delete_volume.py
 name: delete-volume
 parameters:
-  ipaddr:
+  ip_addr:
     required: true
     type: string
   port:
     required: true
     type: string
-  tenantid:
+  tenant_id:
     type: string
     required: true
-  volumeid:
+  volume_id:
     type: string
     required: true
   token:

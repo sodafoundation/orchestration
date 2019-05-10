@@ -6,13 +6,13 @@ entry_point: workflows/provision_volume.yaml
 name: provision-volume
 pack: opensds
 parameters:
-  ipaddr:
+  ip_addr:
     required: true
     type: string
   port:
     required: true
     type: string
-  tenantid:
+  tenant_id:
     required: true
     type: string
   name:
@@ -21,31 +21,31 @@ parameters:
   description:
     type: string
     required: false
-  availabilityzone:
+  availability_zone:
     type: string
     required: false
   size:
     type: integer
     required: true
-  profileid:
+  profile_id:
     type: string
     required: false
-  snapshotid:
+  snapshot_id:
     type: string
     required: false
-  snapshotfromcloud:
+  snapshot_from_cloud:
     type: string
     required: false
-  mountpoint:
+  mount_point:
     type: string
     required: false
-  hostinfo:
+  host_info:
     type: object
     required: false
-  connectioninfo:
+  connection_info:
     type: object
     required: false
-  accessprotocol:
+  access_protocol:
     type: string
     required: false
   token:

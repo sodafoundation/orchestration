@@ -20,30 +20,30 @@ from st2common.runners.base_action import Action
 
 class CreateVolumeAction(Action):
     def run(self,
-            ipaddr="",
+            ip_addr="",
             port="",
-            tenantid="",
+            tenant_id="",
             name="",
             description="Volume",
-            availabilityzone="default",
-            profileid="",
-            snapshotid="",
-            snapshotfromcloud="",
+            availability_zone="default",
+            profile_id="",
+            snapshot_id="",
+            snapshot_from_cloud="",
             token="",
             size=1):
         data = {
             "Name": name,
             "Description": description,
-            "AvailabilityZone": availabilityzone,
-            "ProfileId": profileid,
-            "SnapshotId": snapshotid,
-            "SnapshotFromCloud": snapshotfromcloud,
+            "AvailabilityZone": availability_zone,
+            "profile_id": profile_id,
+            "SnapshotId": snapshot_id,
+            "SnapshotFromCloud": snapshot_from_cloud,
             "Size": size
             }
         url = "http://" + \
-            ipaddr + ":" + \
+            ip_addr + ":" + \
             port + "/v1beta/" + \
-            tenantid + "/block/volumes"
+            tenant_id + "/block/volumes"
 
         headers = {
             'content-type': 'application/json',

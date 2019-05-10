@@ -4,28 +4,28 @@ enabled: true
 entry_point: attach_volume.py
 name: attach-volume
 parameters:
-  ipaddr:
+  ip_addr:
     type: string
     required: true
   port:
     type: string
     required: true
-  tenantid:
+  tenant_id:
     type: string
     required: true
-  volumeid:
+  volume_id:
     type: string
     required: true
-  mountpoint:
+  mount_point:
     type: string
     required: false
-  hostinfo:
+  host_info:
     type: object
     required: false
-  connectioninfo:
+  connection_info:
     type: object
     required: false
-  accessprotocol:
+  access_protocol:
     type: string
     required: false
   token:
