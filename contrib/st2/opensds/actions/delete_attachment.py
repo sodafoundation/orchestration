@@ -18,11 +18,13 @@ from st2common.runners.base_action import Action
 
 
 class DeleteAttachmentAction(Action):
-    def run(self, ipaddr="", port="", projectid="", attachmentid=""):
+    def run(self, ip_addr="", port="",
+            tenant_id="", token="", attachment_id=""):
         url = "http://" + \
-            ipaddr + ":" + \
+            ip_addr + ":" + \
             port + "/v1beta/" + \
-            projectid + "/block/attachments/" + \
-            attachmentid
-        r = requests.delete(url=url)
+            tenant_id + "/block/attachments/" + \
+            attachment_id
+        headers = {'x-auth-token': token}
+        r = requests.delete(url=url, headers=headers)
         r.raise_for_status()
