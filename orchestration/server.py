@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import logging
+
 from flask import Flask
 from orchestration.api.services import service
 from orchestration.utils import config
@@ -23,13 +23,7 @@ class ServerManager:
     app = Flask(__name__)
 
     def __init__(self):
-        self._init_logging()
         self._init_server()
-
-    def _init_logging(self):
-        logging.basicConfig(level=config.LOGGING_LEVEL,
-                            format=config.LOGGIGN_FORMAT,
-                            filename=config.LOGGING_FILE)
 
     def _init_server(self):
         self.app.url_map.strict_slashes = False

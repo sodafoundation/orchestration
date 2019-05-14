@@ -115,3 +115,11 @@ class St2():
             + '/' + exec_id
         resp = requests.get(url, headers=hdr, verify=False)
         return(resp.status_code, resp.text)
+
+    def get_execution_output(self, exec_id):
+        auth_token = self.authenticate()
+        hdr = {'X-Auth-Token': auth_token}
+        url = Orchconstants().get_st2_executions_get_url(self.server) \
+            + '/' + exec_id + '/output'
+        resp = requests.get(url, headers=hdr, verify=False)
+        return(resp.status_code, resp.text)
