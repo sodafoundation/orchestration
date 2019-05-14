@@ -123,7 +123,8 @@ def get_service_def(service_id):
         wfd_hash = {'id': wd.id,
                     'name': wd.name,
                     'description': wd.description,
-                    'definition': json.loads(wd.definition)
+                    'definition': json.loads(wd.definition),
+                    'action': wd.definition_source
                     }
         wfs.append(wfd_hash)
 

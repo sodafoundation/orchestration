@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import logging
-from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 from orchestration.api.services import service
 from orchestration.utils import config
@@ -22,23 +21,9 @@ from orchestration.api.tasks import task
 
 class ServerManager:
     app = Flask(__name__)
+
     def __init__(self):
-        self._init_logging()
         self._init_server()
-
-    def _init_logging(self):
-        #logging.basicConfig(level=config.LOGGING_LEVEL,
-        #                    format=config.LOGGING_FORMAT,
-        #                    filename=config.LOGGING_FILE)
-        # Logging initialized\
-        global logger
-        server_log_file = RotatingFileHandler(config.LOGGING_FILE, maxBytes=10000, backupCount=1)
-        logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
-        formatter = logging.Formatter(config.LOGGING_FORMAT)
-        server_log_file.setFormatter(formatter)
-
-        logger.addHandler(server_log_file)
 
     def _init_server(self):
         self.app.url_map.strict_slashes = False

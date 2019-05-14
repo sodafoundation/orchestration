@@ -20,8 +20,6 @@ logger = None
 api_log_file = logging.FileHandler('/var/log/opensds/orch_api.log', 'a')
 formatter = logging.Formatter(config.LOGGING_FORMAT)
 api_log_file.setFormatter(formatter)
-#logging.basicConfig(filename='/var/log/opensds/orch_api.log', filemode='a',
-#                                    format=config.LOGGING_FORMAT)
 
 logger = logging.getLogger('api_logger')
 logger.setLevel(20)

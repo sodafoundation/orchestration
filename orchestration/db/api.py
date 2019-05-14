@@ -17,12 +17,11 @@ Data access module.
 """
 
 import uuid
-import inspect
 from contextlib import contextmanager
 from orchestration.db import Session
 from orchestration.db import models
-from sqlalchemy.exc import SQLAlchemyError, NoSuchTableError
-from orchestration.server import logger
+from sqlalchemy.exc import SQLAlchemyError
+from orchestration.utils.config import logger
 
 
 # session_scope can be used cleanly in transaction,
@@ -108,7 +107,7 @@ def get_service_definition(context=None, id=''):
 
 def list_service_definitions(context, **filters):
     func_name = 'list_service_definitions'
-    logger.info("%s: Getting service definition for %s" %(func_name, id))
+    logger.info("%s: Getting service definition for %s" % (func_name, id))
     try:
         with session_scope() as session:
             query = session.query(models.ServiceDefinition)
@@ -117,8 +116,8 @@ def list_service_definitions(context, **filters):
         else:
             return get_query_res(query.all(), models.ServiceDefinition)
     except SQLAlchemyError as sqe:
-        logger.error("Received exception while listing service definition" \
-                        "[%s]", str(sqe))
+        logger.error("Received exception while listing service definition"
+                     "[%s]", str(sqe))
         return []
 
 

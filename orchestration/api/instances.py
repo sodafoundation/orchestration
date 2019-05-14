@@ -20,7 +20,7 @@ import json
 from orchestration.db.api \
     import create_workflow, list_workflows
 from orchestration.api.apiconstants import Apiconstants
-from orchestration.api import logger
+from orchestration.utils.config import logger
 
 instance = Blueprint("instance", __name__)
 
@@ -35,38 +35,33 @@ def instance_ops():
     c = Connector().morph()
     content = request.get_json()
     rc, ret = c.execute_action(content)
-    if(rc != Apiconstants.HTTP_OK):
-        return jsonify(response=json.loads(ret)), rc
+    if(rc != Apiconstants.HTTP_CREATED):
+        logger.error("api response received return code[%d]", rc)
+        return jsonify(json.loads(ret)), rc
 
     ret_json = json.loads(ret)
     wf_hash = {}
     wf_hash['id'] = ret_json['id']
     wf_hash['name'] = ret_json['action']['name']
     wf_hash['input'] = json.dumps(ret_json['parameters'])
-    wf_hash['workflow_definition_id'] = ret_json['action']['ref']
-
+    wf_hash['workflow_source'] = ret_json['action']['ref']
     # Create the record of this instance in DB
+    logger.info("creating workflow table with record [%s]", str(wf_hash))
     create_workflow(None, wf_hash)
-    return jsonify(response=ret_json), 200
+    return jsonify(ret_json), 200
 
 
-@instance.route("/v1beta/orchestration/instances/create", methods=['POST'])
-def create_action():
-    c = Connector().morph()
-    content = request.get_json()
-    rc, ret = c.create_action(content)
-    if(rc != Apiconstants.HTTP_OK):
-        return jsonify(response=json.loads(ret)), rc
-
-    return jsonify(response=json.dumps(ret)), 200
+'''
+Internal API to get the Workflow definitions
+This can be imported and called directly from
+outside
+'''
 
 
-# Internal API to get the Workflow definitions
-# This can be imported and called directly from
-# outside
 def get_wfds():
     c = Connector().morph()
     ret = c.list_actions('opensds')
+    logger.debug("returning list of actions: %s" % (ret))
     return ret
 
 
@@ -75,6 +70,7 @@ def get_wfd(id):
     c = Connector().morph()
     rc, ret = c.get_action(id, 'opensds')
     if rc != Apiconstants.HTTP_OK:
+        logger.error("api response return error code [%d]", rc)
         return None
     return ret
 
@@ -84,7 +80,7 @@ def get_wfd(id):
     methods=['GET'])
 def wfds_ops():
     ret = get_wfds()
-    return jsonify(response=ret), 200
+    return jsonify(ret), 200
 
 
 @instance.route(
@@ -94,20 +90,21 @@ def wf_ops():
     c = Connector().morph()
     method = request.method
     if method == 'GET':
-        logger.info("ASHIT: Inside getting actions")
+        logger.info("inside getting actions")
         ret = list_workflows(None)
-        return jsonify(response=ret), 200
+        logger.debug("returning list of workflows: %s" % (ret))
+        return jsonify(ret), 200
     elif method == 'PUT':
         content = request.get_json()
         rc, ret = c.update_action(id, content)
         if(rc != Apiconstants.HTTP_OK):
-            return jsonify(response=json.loads(ret)), rc
+            return jsonify(json.loads(ret)), rc
 
-        return jsonify(response=json.dumps(ret)), 200
+        return jsonify(json.dumps(ret)), 200
     elif method == 'DELETE':
         content = request.get_json()
         rc, ret = c.delete_action(id, content)
         if(rc != Apiconstants.HTTP_OK):
-            return jsonify(response=json.loads(ret)), rc
+            return jsonify(json.loads(ret)), rc
 
-        return jsonify(response=json.dumps(ret)), 200
+        return jsonify(json.dumps(ret)), 200
