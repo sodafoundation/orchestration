@@ -20,16 +20,16 @@ from st2common.runners.base_action import Action
 
 class CreateMigrationPlanAction(Action):
     def run(self, url,
-            tenant_id,
+            osds_tenant_id,
             user_id,
             name,
             description,
             src_bucket_name,
             dest_bucket_name,
             remain_source,
-            auth_token):
+            osds_token):
         data = {
-            "tenantId": tenant_id,
+            "tenantId": osds_tenant_id,
             "userId": user_id,
             "Description": description,
             "Name": name,
@@ -47,7 +47,7 @@ class CreateMigrationPlanAction(Action):
         headers = {
                    'accept': 'application/json',
                    'content-type': 'application/json',
-                   'x-auth-token': auth_token
+                   'x-auth-token': osds_token
                    }
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()

@@ -12,7 +12,7 @@ parameters:
     type: string
     description: "Name of the bucket."
     required: true
-  auth_token:
+  osds_token:
     type: string
     description: "Authentication Token."
     required: true

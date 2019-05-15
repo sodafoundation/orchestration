@@ -19,13 +19,13 @@ from st2common.runners.base_action import Action
 
 
 class CreateBucketAction(Action):
-    def run(self, url, backend_name, auth_token):
+    def run(self, url, backend_name, osds_token):
         xml = """<?xml version='1.0' encoding='utf-8'?>
                  <CreateBucketConfiguration>
                     <LocationConstraint>{}</LocationConstraint>
                  </CreateBucketConfiguration>""".format(backend_name)
         headers = {'content-type': 'application/xml',
-                   'x-auth-token': auth_token,
+                   'x-auth-token': osds_token,
                    'accept': 'application/xml'
                    }
         r = requests.put(url=url, data=xml, headers=headers)

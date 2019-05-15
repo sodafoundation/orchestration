@@ -7,9 +7,9 @@ workflows:
     main:
         type: direct
         input:
-            - hostIP
-            - port
-            - tenantId
+            - osds_ip
+            - osds_port
+            - osds_tenant_id
             - userId
             - name
             - description
@@ -17,7 +17,7 @@ workflows:
             - srcBucketName
             - destBucketName
             - remainSource
-            - auth
+            - osds_token
         output:
             tagline: "<% $.print_status %>"
         task-defaults:
@@ -27,9 +27,9 @@ workflows:
             get_bucket:
                 action: opensds.get-bucket
                 input:
-                    url: "http://<% $.hostIP %>:<% $.port %>/v1/s3/"
+                    url: "http://<% $.osds_ip %>:<% $.osds_port %>/v1/s3/"
                     bucket_name: "<% $.destBucketName %>"
-                    auth_token: '<% $.auth %>'
+                    osds_token: '<% $.osds_token %>'
                 publish:
                     print_status: <% task(get_bucket).result.stdout %>
                 on-success:
@@ -39,9 +39,9 @@ workflows:
             create_bucket:
                 action: opensds.create-bucket
                 input:
-                    url: "http://<% $.hostIP %>:<% $.port %>/v1/s3/<% $.destBucketName %>"
+                    url: "http://<% $.osds_ip %>:<% $.osds_port %>/v1/s3/<% $.destBucketName %>"
                     backend_name: "<% $.destBackend %>"
-                    auth_token: '<% $.auth %>'
+                    osds_token: '<% $.osds_token %>'
                 publish:
                     print_status: <% task(create_bucket).result.stdout %>
                 on-success:
@@ -49,15 +49,15 @@ workflows:
             create_bucket_migration:
                 action: opensds.create-bucket-migration
                 input:
-                    url: "http://<% $.hostIP %>:<% $.port %>/v1/<% $.tenantId %>/plans"
-                    tenant_id: "<% $.tenantId %>"
+                    url: "http://<% $.osds_ip %>:<% $.osds_port %>/v1/<% $.osds_tenant_id %>/plans"
+                    osds_tenant_id: "<% $.osds_tenant_id %>"
                     user_id: "<% $.userId %>"
                     name: "<% $.name%>"
                     description: "<% $.description %>"
                     src_bucket_name: "<% $.srcBucketName %>"
                     dest_bucket_name: "<% $.destBucketName %>"
                     remain_source: "<% $.remainSource %>"
-                    auth_token: '<% $.auth %>'
+                    osds_token: '<% $.osds_token %>'
                 publish:
                     migrationId: <% task(create_bucket_migration).result.result %>
                 on-success:
@@ -65,8 +65,8 @@ workflows:
             execute_bucket_migration:
                 action: opensds.execute-bucket-migration
                 input:
-                    url: "http://<% $.hostIP %>:<% $.port %>/v1/<% $.tenantId %>/plans/<% $.migrationId %>/run"
-                    auth_token: '<% $.auth %>'
+                    url: "http://<% $.osds_ip %>:<% $.osds_port %>/v1/<% $.osds_tenant_id %>/plans/<% $.migrationId %>/run"
+                    osds_token: '<% $.osds_token %>'
                 publish:
                     jobId : <% task(execute_bucket_migration).result.result %>
                 on-success:
@@ -74,7 +74,7 @@ workflows:
             get_bucket_migration:
                 action: opensds.get-bucket-migration
                 input:
-                    url: "http://<% $.hostIP %>:<% $.port %>/v1/<% $.tenantId %>/jobs/<% $.jobId %>"
-                    auth_token: '<% $.auth %>'
+                    url: "http://<% $.osds_ip %>:<% $.osds_port %>/v1/<% $.osds_tenant_id %>/jobs/<% $.jobId %>"
+                    osds_token: '<% $.osds_token %>'
                 publish:
                     print_status : <% task(get_bucket_migration).result.stdout %>

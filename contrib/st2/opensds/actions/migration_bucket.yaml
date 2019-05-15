@@ -6,15 +6,15 @@ entry_point: workflows/migration_bucket.yaml
 name: migration-bucket
 pack: opensds
 parameters:
-  hostIP:
+  osds_ip:
     required: true
     description: "Host IP for the OpenSDS."
     type: string
-  port:
+  osds_port:
     required: true
     description: "Port for the service."
     type: string
-  tenantId:
+  osds_tenant_id:
     required: true
     description: "Tenant ID."
     type: string
@@ -46,7 +46,7 @@ parameters:
     required: true
     description: "Value for keeping the source objects."
     type: boolean
-  auth:
+  osds_token:
     required: true
     description: "Authentication Token."
     type: string

@@ -20,30 +20,30 @@ from st2common.runners.base_action import Action
 
 class AttachVolumeAction(Action):
     def run(self,
-            ip_addr="",
-            port="",
-            tenant_id="",
+            osds_ip="",
+            osds_port="",
+            osds_tenant_id="",
             mount_point="",
             host_info="",
             connection_info="",
             access_protocol="",
-            token="",
+            osds_token="",
             volume_id=""):
         data = {
             "Mountpoint": mount_point,
             "HostInfo": host_info,
             "ConnectionInfo": connection_info,
-            "TenantId": tenant_id,
+            "TenantId": osds_tenant_id,
             "AccessProtocol": access_protocol,
             "VolumeId": volume_id}
         headers = {
             'content-type': 'application/json',
-            'x-auth-token': token
+            'x-auth-token': osds_token
         }
         url = "http://" + \
-            ip_addr + ":" + \
-            port + "/v1beta/" + \
-            tenant_id + "/block/attachments"
+            osds_ip + ":" + \
+            osds_port + "/v1beta/" + \
+            osds_tenant_id + "/block/attachments"
 
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()

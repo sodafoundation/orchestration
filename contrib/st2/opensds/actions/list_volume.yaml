@@ -4,16 +4,16 @@ enabled: true
 entry_point: list_volume.py
 name: list-volume
 parameters:
-  ip_addr:
+  osds_ip:
     required: true
     type: string
-  port:
+  osds_port:
     required: true
     type: string
-  tenant_id:
+  osds_tenant_id:
     type: string
     required: true
-  token:
+  osds_token:
     type: string
     required: false
 runner_type: "python-script"

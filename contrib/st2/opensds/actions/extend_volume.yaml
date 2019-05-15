@@ -4,15 +4,15 @@ enabled: true
 entry_point: extend_volume.py
 name: extend-volume
 parameters:
-  host_ip:
+  osds_ip:
     type: string
     description: "IP of the OpenSDS host."
     required: true
-  port:
+  osds_port:
     type: string
     description: "Port for the service."
     required: true
-  tenant_id:
+  osds_tenant_id:
     type: string
     description: "Tenant ID."
     required: true
@@ -24,7 +24,7 @@ parameters:
     type: integer
     description: "Size of the Volume to be extended."
     required: true
-  auth_token:
+  osds_token:
     type: string
     description: "Authentication Token."
     required: true
