@@ -19,17 +19,18 @@ from st2common.runners.base_action import Action
 
 
 class ExtendVolumeAction(Action):
-    def run(self, osds_ip, osds_port, osds_tenant_id, volume_id, size, osds_token):
+    def run(self, ip_addr, port, tenant_id,
+            volume_id, size, auth_token):
         data = {
             "newSize": size
         }
         url = "http://" + \
-              osds_ip + ":" + \
-              osds_port + "/v1beta/" + \
-              osds_tenant_id + "/block/volumes/" + \
+              ip_addr + ":" + \
+              port + "/v1beta/" + \
+              tenant_id + "/block/volumes/" + \
               volume_id + "/resize"
         headers = {'content-type': 'application/json',
-                   'x-auth-token': osds_token}
+                   'x-auth-token': auth_token}
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()
         resp = r.json()
@@ -37,11 +38,11 @@ class ExtendVolumeAction(Action):
         status = resp["status"]
         while status != 'available':
             url = "http://" + \
-                  osds_ip + ":" + \
-                  osds_port + "/v1beta/" + \
-                  osds_tenant_id + "/block/volumes/" + \
+                  ip_addr + ":" + \
+                  port + "/v1beta/" + \
+                  tenant_id + "/block/volumes/" + \
                   volume_id
-            headers = {'x-auth-token': osds_token}
+            headers = {'x-auth-token': auth_token}
             r = requests.get(url=url, headers=headers)
             r.raise_for_status()
             resp = r.json()

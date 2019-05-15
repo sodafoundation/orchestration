@@ -19,12 +19,12 @@ from st2common.runners.base_action import Action
 
 
 class RunMigrationAction(Action):
-    def run(self, url, osds_token):
+    def run(self, url, auth_token):
         data = {}
         headers = {
             'accept': 'application/json',
             'content-type': 'application/json',
-            'x-auth-token': osds_token
+            'x-auth-token': auth_token
         }
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()

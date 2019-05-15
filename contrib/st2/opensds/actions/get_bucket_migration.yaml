@@ -8,8 +8,8 @@ parameters:
     type: string
     description: "URL for getting the Bucket Migration Information for multi-cloud S3 Interface."
     required: true
-  osds_token:
+  auth_token:
     type: string
     description: "Authentication Token."
-    required: true
+    required: false
 runner_type: "python-script"

@@ -4,13 +4,13 @@ enabled: true
 entry_point: create_volume.py
 name: create-volume
 parameters:
-  osds_ip:
+  ip_addr:
     type: string
     required: true
-  osds_port:
+  port:
     type: string
     required: true
-  osds_tenant_id:
+  tenant_id:
     type: string
     required: true
   name:
@@ -25,7 +25,7 @@ parameters:
   size:
     type: integer
     required: true
-  osds_profile_id:
+  profile_id:
     type: string
     required: false
   snapshot_id:
@@ -34,7 +34,7 @@ parameters:
   snapshot_from_cloud:
     type: string
     required: false
-  osds_token:
+  auth_token:
     type: string
     required: false
 runner_type: "python-script"

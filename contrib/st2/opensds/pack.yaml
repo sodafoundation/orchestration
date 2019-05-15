@@ -1,7 +1,7 @@
 ---
 ref: opensds
 name: opensds
-description: opensds actions and workflows
+description: The OpenSDS actions and workflows
 keywords:
   - opensds
   - workflows
@@ -9,7 +9,7 @@ version: 0.1.0
 python_versions:
   - "2"
   - "3"
-author: opensds team
-email: opensds@opensds.com
+author: The OpenSDS Authors
+email: info@opensds.com
 contributors:
-  - opensds team
+  - The OpenSDS Authors

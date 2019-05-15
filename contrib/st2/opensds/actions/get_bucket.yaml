@@ -12,8 +12,8 @@ parameters:
     type: string
     description: "Name of the bucket."
     required: true
-  osds_token:
+  auth_token:
     type: string
     description: "Authentication Token."
-    required: true
+    required: false
 runner_type: "python-script"

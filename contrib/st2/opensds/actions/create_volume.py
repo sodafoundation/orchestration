@@ -20,34 +20,37 @@ from st2common.runners.base_action import Action
 
 class CreateVolumeAction(Action):
     def run(self,
-            osds_ip="",
-            osds_port="",
-            osds_tenant_id="",
+            ip_addr="",
+            port="",
+            tenant_id="",
             name="",
             description="Volume",
             availability_zone="default",
-            osds_profile_id="",
+            profile_id="",
             snapshot_id="",
             snapshot_from_cloud="",
-            osds_token="",
+            auth_token="",
             size=1):
         data = {
             "Name": name,
             "Description": description,
             "AvailabilityZone": availability_zone,
-            "ProfileId": osds_profile_id,
+            "ProfileId": profile_id,
             "SnapshotId": snapshot_id,
             "SnapshotFromCloud": snapshot_from_cloud,
             "Size": size
             }
+        if profile_id:
+            data["ProfileId"] = profile_id
+
         url = "http://" + \
-            osds_ip + ":" + \
-            osds_port + "/v1beta/" + \
-            osds_tenant_id + "/block/volumes"
+            ip_addr + ":" + \
+            port + "/v1beta/" + \
+            tenant_id + "/block/volumes"
 
         headers = {
             'content-type': 'application/json',
-            'x-auth-token': osds_token
+            'x-auth-token': auth_token
         }
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()

@@ -6,51 +6,67 @@ entry_point: workflows/provision_volume.yaml
 name: provision-volume
 pack: opensds
 parameters:
-  osds_ip:
+  ip_addr:
     required: true
+    description: "Host IP for the OpenSDS"
     type: string
-  osds_port:
+  port:
     required: true
+    description: "Port number for the service"
     type: string
-  osds_tenant_id:
+  tenant_id:
     required: true
+    description: "Tenant ID or Project ID"
     type: string
   name:
     required: true
+    description: "Name of volume for provision"
     type: string
   description:
     type: string
+    description: "Description in any"
     required: false
   availability_zone:
     type: string
+    description: "Availablity Zone to create volume"
     required: false
   size:
     type: integer
+    description: "Size of volume in GB"
     required: true
-  osds_profile_id:
+  profile_id:
     type: string
+    description: "Profile ID to create volume"
     required: false
   snapshot_id:
     type: string
+    description: "Snapshot ID to create volume"
     required: false
   snapshot_from_cloud:
     type: string
+    description: "Snapshot from cloud to create volume"
     required: false
   mount_point:
     type: string
+    description: "Mount point to attach volume"
     required: false
   host_info:
     type: object
+    description: "Host info JSON to attach volume"
     required: false
   connection_info:
     type: object
+    description: "Connectin info JSON to attach volume"
     required: false
   access_protocol:
     type: string
+    description: "Access protocol for attach volume"
     required: false
-  osds_token:
+  auth_token:
     type: string
+    description: "Authentication Token"
     required: false
   timeout:
     type: integer
+    description: "Failure timeout"
     default: 60

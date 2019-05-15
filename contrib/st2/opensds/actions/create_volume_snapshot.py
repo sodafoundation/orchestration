@@ -22,26 +22,26 @@ SNAPSHOT_STATUS_AVAILABLE = 'available'
 
 class ExtendVolumeAction(Action):
     def run(self,
-            osds_ip,
-            osds_port,
-            osds_tenant_id,
+            ip_addr,
+            port,
+            tenant_id,
             volume_id,
             name,
             description,
-            osds_profile_id,
-            osds_token):
+            profile_id,
+            auth_token):
         data = {
             "name": name,
             "description": description,
             "volumeId": volume_id,
-            "profileId": osds_profile_id
+            "profileId": profile_id
         }
         url = "http://" + \
-              osds_ip + ":" + \
-              osds_port + "/v1beta/" + \
-              osds_tenant_id + "/block/snapshots/"
+              ip_addr + ":" + \
+              port + "/v1beta/" + \
+              tenant_id + "/block/snapshots/"
         headers = {'content-type': 'application/json',
-                   'x-auth-token': osds_token}
+                   'x-auth-token': auth_token}
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()
         resp = r.json()
@@ -49,11 +49,11 @@ class ExtendVolumeAction(Action):
         snapshot_id = resp["id"]
         while status != SNAPSHOT_STATUS_AVAILABLE:
             url = "http://" + \
-                  osds_ip + ":" + \
-                  osds_port + "/v1beta/" + \
-                  osds_tenant_id + "/block/snapshots/" + \
+                  ip_addr + ":" + \
+                  port + "/v1beta/" + \
+                  tenant_id + "/block/snapshots/" + \
                   snapshot_id
-            headers = {'x-auth-token': osds_token}
+            headers = {'x-auth-token': auth_token}
             r = requests.get(url=url, headers=headers)
             r.raise_for_status()
             resp = r.json()

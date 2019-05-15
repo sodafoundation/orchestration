@@ -19,9 +19,9 @@ from st2common.runners.base_action import Action
 
 
 class GetMigrationAction(Action):
-    def run(self, url, osds_token):
+    def run(self, url, auth_token):
         headers = {
-            'x-auth-token': osds_token
+            'x-auth-token': auth_token
         }
         while True:
             r = requests.get(url=url, headers=headers)

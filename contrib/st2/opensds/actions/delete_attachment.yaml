@@ -4,19 +4,19 @@ enabled: true
 entry_point: delete_attachment.py
 name: delete-attachment
 parameters:
-  osds_ip:
+  ip_addr:
     required: true
     type: string
-  osds_port:
+  port:
     required: true
     type: string
-  osds_tenant_id:
+  tenant_id:
     type: string
     required: true
   attachment_id:
     type: string
     required: true
-  osds_token:
+  auth_token:
     type: string
     required: false
 runner_type: "python-script"

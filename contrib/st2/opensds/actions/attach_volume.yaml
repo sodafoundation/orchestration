@@ -4,13 +4,13 @@ enabled: true
 entry_point: attach_volume.py
 name: attach-volume
 parameters:
-  osds_ip:
+  ip_addr:
     type: string
     required: true
-  osds_port:
+  port:
     type: string
     required: true
-  osds_tenant_id:
+  tenant_id:
     type: string
     required: true
   volume_id:
@@ -28,7 +28,7 @@ parameters:
   access_protocol:
     type: string
     required: false
-  osds_token:
+  auth_token:
     type: string
     required: false
 runner_type: "python-script"

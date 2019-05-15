@@ -6,21 +6,21 @@ workflows:
     main:
         type: direct
         input:
-            - osds_ip
-            - osds_port
-            - osds_tenant_id
+            - ip_addr
+            - port
+            - tenant_id
             - name
             - description
             - availability_zone
             - size
-            - osds_profile_id
+            - profile_id
             - snapshot_id
             - snapshot_from_cloud
             - mount_point
             - host_info
             - connection_info
             - access_protocol
-            - osds_token
+            - auth_token
             - timeout
         output:
             tagline: "<% $.print_status %>"
@@ -31,17 +31,17 @@ workflows:
             create_volume:
                 action: opensds.create-volume
                 input:
-                    osds_ip: "<% $.osds_ip %>"
-                    osds_port: "<% $.osds_port %>"
-                    osds_tenant_id: "<% $.osds_tenant_id %>"
+                    ip_addr: "<% $.ip_addr %>"
+                    port: "<% $.port %>"
+                    tenant_id: "<% $.tenant_id %>"
                     name: "<% $.name %>"
                     description: "<% $.description %>"
                     availability_zone: "<% $.availability_zone %>"
                     size: '<% $.size %>'
-                    osds_profile_id: "<% $.osds_profile_id %>"
+                    profile_id: "<% $.profile_id %>"
                     snapshot_id: "<% $.snapshot_id %>"
                     snapshot_from_cloud: '<% $.snapshot_from_cloud %>'
-                    osds_token: "<% $.osds_token %>"
+                    auth_token: "<% $.auth_token %>"
                 publish:
                    volume_id: <% task(create_volume).result.result %>
                 on-success:
@@ -49,14 +49,14 @@ workflows:
             attach_volume:
                 action: opensds.attach-volume
                 input:
-                    osds_ip: "<% $.osds_ip %>"
-                    osds_port: "<% $.osds_port %>"
-                    osds_tenant_id: "<% $.osds_tenant_id %>"
+                    ip_addr: "<% $.ip_addr %>"
+                    port: "<% $.port %>"
+                    tenant_id: "<% $.tenant_id %>"
                     volume_id: <% $.volume_id %>
                     mount_point: <% $.mount_point %>
                     host_info: <% $.host_info %>
                     connection_info: <% $.connection_info %>
                     access_protocol: <% $.access_protocol %>
-                    osds_token: "<% $.osds_token %>"
+                    auth_token: "<% $.auth_token %>"
                 publish:
                     print_status : <% task(attach_volume).result.stdout %>
