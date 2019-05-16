@@ -16,6 +16,13 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
 
 
 #### Install Orchestration 
+* Clone [OpenSDS Orchestration](https://github.com/opensds/orchestration)  project and bring up docker instance of the Orchestration manager
+    ```sh
+    $ git clone https://github.com/opensds/orchestration
+    $ cd orchestration
+    $ docker build .
+    $ docker-compose up -d
+    ```
 * Install StackStorm
 	The stackstorm [docker installer](https://github.com/StackStorm/st2-docker) repo is cloned, build as below.
     ```sh
@@ -23,16 +30,10 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
     $ cd st2-docker
     $ make env
     ```
-* Add following line to docker-compose.yml file for mounting [opensds pack](https://github.com/opensds/orchestration/tree/master/contrib/st2/opensds) as volume
-    ```sh
-    volumes:
-    ...
-          - /opt/opensds/orchestration/opensds:/opt/stackstorm/packs/opensds
-    ...
-    ```
-* Start docker container using docker-compose and register opensds pack
+* Start docker container using docker-compose, copy opensds pack and register opensds pack
     ```sh
     $ docker-compose up -d
+    $ docker cp <orchestration project>/contrib/st2/opensds <st2 container id>:/opt/stackstorm/packs/
 	$ docker-compose exec stackstorm /bin/bash
 	# st2ctl reload --register-all
     ```
@@ -65,10 +66,6 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
     st2scheduler PID: 54
     mistral-server PID: 340
     mistral.api PID: 335
-	```
-* Start Orchestration manager as docker instance.
-	```sh
-	$ docker-compose up -d
 	```
 
 #### Installer script
@@ -105,7 +102,7 @@ For the examples below OpenSDS is installed on VM and both StackStorm and Orches
         https://localhost/api/v1/executions \
         -H  'content-type: application/json' \
         -H  'X-Auth-Token: <stackstorm token>' \
-        -d '{"action": "opensds.provision-volume", "user": null, "parameters": {"ipaddr": "<ip>", "port": "50040", "size": 1, "tenantid": "<id>", "name": "test000", "token": "<opensds token>", "hostinfo": {"host":"ubuntu","initiator":"iqn.1993-08.org.debian:01:437bac3717c8","ip":"<host ip>"}}}'
+        -d '{"action": "opensds.provision-volume", "user": null, "parameters": {"i_paddr": "<ip>", "port": "50040", "size": 1, "tenant_id": "<id>", "name": "test000", "auth_token": "<opensds token>", "host_info": {"host":"ubuntu","initiator":"iqn.1993-08.org.debian:01:437bac3717c8","ip":"<host ip>"}}}'
     ```
 
 * Create Volume using StackStorm Action with input arguments
@@ -114,5 +111,5 @@ For the examples below OpenSDS is installed on VM and both StackStorm and Orches
     https://localhost/api/v1/executions   \
     -H  'content-type: application/json'   \
     -H  'X-Auth-Token: <stackstorm token>'   \
-    -d '{"action": "opensds.create-volume", "user": nul, "parameters": {"ipaddr": "<ip>", "port": "50040", "size": 1, "tenantid": "<id>", "name": "test001", "token": "<opensds token>"}}'
+    -d '{"action": "opensds.create-volume", "user": nul, "parameters": {"ip_addr": "<ip>", "port": "50040", "size": 1, "tenant_id": "<id>", "name": "test001", "auth_token": "<opensds token>"}}'
     ```
