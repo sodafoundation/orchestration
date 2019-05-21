@@ -4,7 +4,7 @@ enabled: true
 entry_point: extend_volume.py
 name: extend-volume
 parameters:
-  host_ip:
+  ip_addr:
     type: string
     description: "IP of the OpenSDS host."
     required: true
@@ -27,5 +27,5 @@ parameters:
   auth_token:
     type: string
     description: "Authentication Token."
-    required: true
+    required: false
 runner_type: "python-script"

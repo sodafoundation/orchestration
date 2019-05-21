@@ -18,12 +18,13 @@ from st2common.runners.base_action import Action
 
 
 class DeleteVolumeAction(Action):
-    def run(self, ip_addr="", port="", tenant_id="", token="", volume_id=""):
+    def run(self, ip_addr="", port="",
+            tenant_id="", auth_token="", volume_id=""):
         url = "http://" + \
             ip_addr + ":" + \
             port + "/v1beta/" + \
             tenant_id + "/block/volumes/" + \
             volume_id
-        headers = {'x-auth-token': token}
+        headers = {'x-auth-token': auth_token}
         r = requests.delete(url=url, headers=headers)
         r.raise_for_status()

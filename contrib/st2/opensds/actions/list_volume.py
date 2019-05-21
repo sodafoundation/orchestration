@@ -18,9 +18,12 @@ from st2common.runners.base_action import Action
 
 
 class ListVolumeAction(Action):
-    def run(self, ip_addr="", port="", token="", tenant_id=""):
-        url = "http://"+ip_addr+":"+port+"/v1beta/"+tenant_id+"/block/volumes"
-        headers = {'x-auth-token': token}
+    def run(self, ip_addr="", port="", auth_token="", tenant_id=""):
+        url = "http://" + \
+            ip_addr + ":" + \
+            port + "/v1beta/" + \
+            tenant_id + "/block/volumes"
+        headers = {'x-auth-token': auth_token}
         r = requests.get(url=url, headers=headers)
         print(r.text)
         r.raise_for_status()

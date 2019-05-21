@@ -34,7 +34,7 @@ parameters:
   snapshot_from_cloud:
     type: string
     required: false
-  token:
+  auth_token:
     type: string
     required: false
 runner_type: "python-script"

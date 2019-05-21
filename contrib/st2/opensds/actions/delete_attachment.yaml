@@ -16,7 +16,7 @@ parameters:
   attachment_id:
     type: string
     required: true
-  token:
+  auth_token:
     type: string
     required: false
 runner_type: "python-script"

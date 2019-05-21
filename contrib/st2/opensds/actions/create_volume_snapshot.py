@@ -22,7 +22,7 @@ SNAPSHOT_STATUS_AVAILABLE = 'available'
 
 class ExtendVolumeAction(Action):
     def run(self,
-            host_ip,
+            ip_addr,
             port,
             tenant_id,
             volume_id,
@@ -37,7 +37,7 @@ class ExtendVolumeAction(Action):
             "profileId": profile_id
         }
         url = "http://" + \
-              host_ip + ":" + \
+              ip_addr + ":" + \
               port + "/v1beta/" + \
               tenant_id + "/block/snapshots/"
         headers = {'content-type': 'application/json',
@@ -49,7 +49,7 @@ class ExtendVolumeAction(Action):
         snapshot_id = resp["id"]
         while status != SNAPSHOT_STATUS_AVAILABLE:
             url = "http://" + \
-                  host_ip + ":" + \
+                  ip_addr + ":" + \
                   port + "/v1beta/" + \
                   tenant_id + "/block/snapshots/" + \
                   snapshot_id
