@@ -17,22 +17,36 @@ from flask import Blueprint
 from orchestration.connectionmanager.connector import Connector
 import json
 from orchestration.api.apiconstants import Apiconstants
+from orchestration.utils.config import logger
 
 task = Blueprint("task", __name__)
-@task.route("/v1/orchestration/tasks/<string:execId>", methods=['GET'])
-def get_task_output(execId=''):
+@task.route("/v1beta/orchestration/tasks/<string:execId>", methods=['GET'])
+def get_task_status(execId=''):
     c = Connector().morph()
     rc, ret = c.get_execution_stats(execId)
     if(rc != Apiconstants.HTTP_OK):
         return jsonify(response=json.loads(ret)), rc
 
-    ret_json = json.loads(ret)
-    task_hash = {}
-    task_hash['id'] = ret_json['id']
-    task_hash['start'] = ret_json['start_timestamp']
-    task_hash['end'] = ret_json['end_timestamp']
-    task_hash['status'] = ret_json['status']
-    task_hash['message'] = 'Failed'
-    if ret_json['status'] == 'succeeded':
-        task_hash['message'] = ret_json['result']['tagline']
-    return jsonify(response=task_hash), 200
+    try:
+        ret_json = json.loads(ret)
+        task_hash = {}
+        task_hash['id'] = ret_json['id']
+        task_hash['start'] = ret_json['start_timestamp']
+        if 'end_timestamp' in ret_json:
+            task_hash['end'] = ret_json['end_timestamp']
+        if 'status' in ret_json:
+            task_hash['status'] = ret_json['status']
+        published_res = {}
+        if 'result' in ret_json:
+            result = ret_json['result']
+            for tasks in result['tasks']:
+                published_res.update(tasks['published'])
+            task_hash['published'] = published_res
+    except Exception as ex:
+        logger.error(
+                        "Received exception in getting task status: {}"
+                        .format(ex.message))
+        return jsonify(
+                        Apiconstants.TASK_ERR_MSG
+                    ), Apiconstants.HTTP_ERR_NOTFOUND
+    return jsonify(task_hash), 200

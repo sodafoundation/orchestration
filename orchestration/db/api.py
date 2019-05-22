@@ -20,6 +20,8 @@ import uuid
 from contextlib import contextmanager
 from orchestration.db import Session
 from orchestration.db import models
+from sqlalchemy.exc import SQLAlchemyError
+from orchestration.utils.config import logger
 
 
 # session_scope can be used cleanly in transaction,
@@ -104,12 +106,19 @@ def get_service_definition(context=None, id=''):
 
 
 def list_service_definitions(context, **filters):
-    with session_scope() as session:
-        query = session.query(models.ServiceDefinition)
-    if not query:
+    func_name = 'list_service_definitions'
+    logger.info("%s: Getting service definition for %s" % (func_name, id))
+    try:
+        with session_scope() as session:
+            query = session.query(models.ServiceDefinition)
+        if not query:
+            return []
+        else:
+            return get_query_res(query.all(), models.ServiceDefinition)
+    except SQLAlchemyError as sqe:
+        logger.error("Received exception while listing service definition"
+                     "[%s]", str(sqe))
         return []
-    else:
-        return get_query_res(query.all(), models.ServiceDefinition)
 
 
 def update_service_definition(context, values):

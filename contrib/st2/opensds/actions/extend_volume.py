@@ -19,12 +19,13 @@ from st2common.runners.base_action import Action
 
 
 class ExtendVolumeAction(Action):
-    def run(self, host_ip, port, tenant_id, volume_id, size, auth_token):
+    def run(self, ip_addr, port, tenant_id,
+            volume_id, size, auth_token):
         data = {
             "newSize": size
         }
         url = "http://" + \
-              host_ip + ":" + \
+              ip_addr + ":" + \
               port + "/v1beta/" + \
               tenant_id + "/block/volumes/" + \
               volume_id + "/resize"
@@ -37,7 +38,7 @@ class ExtendVolumeAction(Action):
         status = resp["status"]
         while status != 'available':
             url = "http://" + \
-                  host_ip + ":" + \
+                  ip_addr + ":" + \
                   port + "/v1beta/" + \
                   tenant_id + "/block/volumes/" + \
                   volume_id

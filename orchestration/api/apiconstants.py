@@ -16,4 +16,13 @@
 
 
 class Apiconstants:
+    # HTTP Codes
     HTTP_OK = 200
+    HTTP_CREATED = 201
+    HTTP_ACCEPTED = 202
+    HTTP_ERR_NOTFOUND = 404
+
+    # API errorrs
+
+    # Tasks
+    TASK_ERR_MSG = 'error getting tasks'

@@ -27,7 +27,7 @@ class AttachVolumeAction(Action):
             host_info="",
             connection_info="",
             access_protocol="",
-            token="",
+            auth_token="",
             volume_id=""):
         data = {
             "Mountpoint": mount_point,
@@ -38,7 +38,7 @@ class AttachVolumeAction(Action):
             "VolumeId": volume_id}
         headers = {
             'content-type': 'application/json',
-            'x-auth-token': token
+            'x-auth-token': auth_token
         }
         url = "http://" + \
             ip_addr + ":" + \
