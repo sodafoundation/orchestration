@@ -55,6 +55,7 @@ def list_sd_wfd_associations(context, **filters):
 
 
 def get_sd_wfd_association(context=None, id=''):
+    # TODO: This function should return only a specific WFD not list
     with session_scope() as session:
         if id == '':
             return list_sd_wfd_associations(None)
@@ -128,23 +129,23 @@ def update_service_definition(context, values):
 # -------------------------data access for service ----------------------------
 def create_service(context, values):
     service = models.Service()
+    if 'id' not in values:
+        values['id'] = str(uuid.uuid4())
+
     for key, value in values.items():
         if hasattr(service, key):
             setattr(service, key, value)
 
-    if not service.id:
-        service.id = uuid.uuid4()
-
     with session_scope() as session:
         session.add(service)
-    return service
+    return get_service(None, values['id'])
 
 
 def get_service(context, id):
     with session_scope() as session:
         query = session.query(models.Service).filter(
             models.Service.id == id)
-    return None if not query else query.first()
+    return None if not query else query.first().to_dict()
 
 
 def list_services(context, **filters):
@@ -239,6 +240,18 @@ def list_workflows(context, **filters):
     with session_scope() as session:
         query = session.query(models.Workflow)
     return [] if not query else get_query_res(query.all(), models.Workflow)
+
+
+def get_wf_wfds(context, wfdid):
+    try:
+        with session_scope() as session:
+            query = session.query(models.Workflow).filter(
+                models.Workflow.workflow_definition_id == wfdid)
+        return [] if not query else get_query_res(query.all(), models.Workflow)
+    except SQLAlchemyError as sqe:
+        logger.error("Received exception while listing workflows for [%s]:"
+                     "[%s]" % (wfdid, str(sqe)))
+        return []
 
 
 def update_workflow():

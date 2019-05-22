@@ -18,7 +18,8 @@ from orchestration.connectionmanager.connector import Connector
 from flask import request
 import json
 from orchestration.db.api \
-    import create_workflow, list_workflows
+    import create_workflow, list_workflows, create_service, \
+    get_sd_wfd_association
 from orchestration.api.apiconstants import Apiconstants
 from orchestration.utils.config import logger
 
@@ -34,21 +35,50 @@ instance = Blueprint("instance", __name__)
 def instance_ops():
     c = Connector().morph()
     content = request.get_json()
+    # get the service_definition id from the content and remove this from data
+    sd_id = content['id']
+    del content['id']
     rc, ret = c.execute_action(content)
     if(rc != Apiconstants.HTTP_CREATED):
         logger.error("api response received return code[%d]", rc)
         return jsonify(json.loads(ret)), rc
 
     ret_json = json.loads(ret)
+
+    # creat service attribs from the return
+    service_map = {}
+    service_map['name'] = ret_json['action']['name']
+    service_map['input'] = json.dumps(ret_json['parameters'])
+    # get the service definition id
+    service_map['service_definition_id'] = sd_id
+    service_obj = create_service(None, service_map)
+
     wf_hash = {}
     wf_hash['id'] = ret_json['id']
     wf_hash['name'] = ret_json['action']['name']
     wf_hash['input'] = json.dumps(ret_json['parameters'])
     wf_hash['workflow_source'] = ret_json['action']['ref']
+    wf_hash['service_id'] = service_obj['id']
+
+    wd_id = ''
+    try:
+        service_wf_list = get_sd_wfd_association(None, sd_id)
+        if not service_wf_list or service_wf_list is None:
+            logger.info("could not get workflow definition for sd %s", sd_id)
+        else:
+            for sd, wd in service_wf_list:
+                wd_id = wd.id
+    except Exception as e:
+        logger.error("received exception while getting wfd id %s", str(e))
+
+    wf_hash['workflow_definition_id'] = wd_id
+
     # Create the record of this instance in DB
     logger.info("creating workflow table with record [%s]", str(wf_hash))
+
+    # Create a Service of this execution.
     create_workflow(None, wf_hash)
-    return jsonify(ret_json), 200
+    return jsonify(wf_hash), 200
 
 
 '''
