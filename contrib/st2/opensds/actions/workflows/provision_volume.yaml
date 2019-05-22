@@ -20,7 +20,7 @@ workflows:
             - host_info
             - connection_info
             - access_protocol
-            - token
+            - auth_token
             - timeout
         output:
             tagline: "<% $.print_status %>"
@@ -41,7 +41,7 @@ workflows:
                     profile_id: "<% $.profile_id %>"
                     snapshot_id: "<% $.snapshot_id %>"
                     snapshot_from_cloud: '<% $.snapshot_from_cloud %>'
-                    token: "<% $.token %>"
+                    auth_token: "<% $.auth_token %>"
                 publish:
                    volume_id: <% task(create_volume).result.result %>
                 on-success:
@@ -57,6 +57,6 @@ workflows:
                     host_info: <% $.host_info %>
                     connection_info: <% $.connection_info %>
                     access_protocol: <% $.access_protocol %>
-                    token: "<% $.token %>"
+                    auth_token: "<% $.auth_token %>"
                 publish:
                     print_status : <% task(attach_volume).result.stdout %>

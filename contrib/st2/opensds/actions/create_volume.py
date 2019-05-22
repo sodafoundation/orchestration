@@ -29,17 +29,20 @@ class CreateVolumeAction(Action):
             profile_id="",
             snapshot_id="",
             snapshot_from_cloud="",
-            token="",
+            auth_token="",
             size=1):
         data = {
             "Name": name,
             "Description": description,
             "AvailabilityZone": availability_zone,
-            "profile_id": profile_id,
+            "ProfileId": profile_id,
             "SnapshotId": snapshot_id,
             "SnapshotFromCloud": snapshot_from_cloud,
             "Size": size
             }
+        if profile_id:
+            data["ProfileId"] = profile_id
+
         url = "http://" + \
             ip_addr + ":" + \
             port + "/v1beta/" + \
@@ -47,7 +50,7 @@ class CreateVolumeAction(Action):
 
         headers = {
             'content-type': 'application/json',
-            'x-auth-token': token
+            'x-auth-token': auth_token
         }
         r = requests.post(url=url, data=json.dumps(data), headers=headers)
         r.raise_for_status()
