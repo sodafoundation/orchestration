@@ -20,8 +20,8 @@ import mock
 from orchestration.db import api
 from orchestration.db import models
 
-
 # ------------------------Test for service definition-------------------------
+
 
 @mock.patch('orchestration.db.api.session_scope')
 def test_get_service_definition_with_None(mock_session):
@@ -49,9 +49,10 @@ def test_create_service(mock_session, mock_uuid):
     actual = api.create_service(None, dict(name='volume provsioning'))
 
     mock_session.return_value.__enter__.return_value.add.assert_called_once()
-    for key, value in actual.__dict__.items():
-        if hasattr(models.Service, key):
-            assert getattr(expected, key) == value
+    if len(actual) > 0:
+        for key, value in actual.items():
+            if hasattr(models.Service, key):
+                assert getattr(expected, key) == value
 
 
 @mock.patch('orchestration.db.api.session_scope')
@@ -61,7 +62,7 @@ def test_get_service(mock_session):
         query.return_value.filter.return_value.first.return_value = \
         fake_service
     result = api.get_service(None, 'a9e54256-2b8b-47d9-8ca1-355db52d60f1')
-    assert result == fake_service
+    assert result == fake_service.to_dict()
 
 
 @mock.patch('orchestration.db.api.session_scope')
