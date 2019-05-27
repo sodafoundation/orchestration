@@ -35,9 +35,6 @@ osds::st2::download() {
     git clone https://github.com/stackstorm/st2-docker
     cd st2-docker
     make env
-    # Patch docker-compose file for attaching opensds pack volume
-    OPENSDS_WF="\ \ \ \ \ \ - $ST2_WORKFLOW_PATH/opensds:$PACKS_PATH/opensds"
-    sed -i "/stackstorm-packs-volume:\/opt/a $OPENSDS_WF" $ST2_DOCKER_PATH/st2-docker/docker-compose.yml
   )
 }
 
@@ -53,8 +50,9 @@ osds::st2::install() {
     osds::st2::start
 
     # install opensds workflows
+    C_ID=`docker ps -a -q -f "name=st2-docker_stackstorm"`
+    docker cp $ST2_WORKFLOW_PATH/opensds $C_ID:$PACKS_PATH/
     docker-compose exec stackstorm st2ctl reload --register-all
-    docker-compose exec stackstorm st2 action list -p opensds
     docker-compose exec stackstorm st2 run packs.setup_virtualenv packs=opensds
 }
 
