@@ -5,10 +5,14 @@ python:
   - "2.7"
   - "3.5"
 
+env:
+  - ST2_REPO_PATH=/tmp/st2
+
 before_install:
   - sudo mkdir -p /var/log/opensds
   - sudo touch /var/log/opensds/orchestration.log
   - sudo chmod 666 /var/log/opensds/orchestration.log
+  - git clone https://github.com/StackStorm/st2.git /tmp/st2
 
 install:
   - pip install tox codecov
