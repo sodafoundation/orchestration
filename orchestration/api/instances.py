@@ -19,7 +19,7 @@ from flask import request
 import json
 from orchestration.db.api \
     import create_workflow, list_workflows, create_service, \
-    get_sd_wfd_association
+    get_sd_wfd_association, get_workflow, delete_workflow, get_wf_sd
 from orchestration.api.apiconstants import Apiconstants
 from orchestration.utils.config import logger
 
@@ -31,13 +31,15 @@ instance = Blueprint("instance", __name__)
 # St2 example of data:/v1beta/orchestration/instances -H
 # "Content-Type:application/json" -d
 # '{"action":"aks.ak_echo_py", "parameters":{"message":"Hello World"}}'
-@instance.route("/v1beta/orchestration/instances", methods=['POST'])
-def instance_ops():
+@instance.route("/v1beta/<string:tenant_id>/orchestration/instances",
+                methods=['POST'])
+def instance_ops(tenant_id=''):
     c = Connector().morph()
     content = request.get_json()
     # get the service_definition id from the content and remove this from data
     sd_id = content['id']
     del content['id']
+    content['parameters']['tenant_id'] = tenant_id
     rc, ret = c.execute_action(content)
     if(rc != Apiconstants.HTTP_CREATED):
         logger.error("api response received return code[%d]", rc)
@@ -113,28 +115,74 @@ def wfds_ops():
     return jsonify(ret), 200
 
 
+# Get all the instances of a particular service definition
 @instance.route(
-    "/v1beta/orchestration/instances",
+    "/v1beta/orchestration/instances/service/<string:service_def_id>",
+    methods=['GET'])
+def get_instance_sd(service_def_id=''):
+    # Query the db and return result
+    ret = ''
+    try:
+        ret = get_wf_sd(service_def_id)
+    except Exception as ex:
+        logger.error("error in getting result for sd [%s]", str(ex))
+        return jsonify(ret), 400
+    try:
+        # Create a hash of Service Definition Id and the Wfs
+        sd_wf_hash = {}
+        wf_list = []
+        for wf, service in ret:
+            # Create a hash of all the WFs
+            wf_hash = {}
+            wf_hash['id'] = wf.id,
+            wf_hash['name'] = wf.name,
+            wf_hash['input'] = json.loads(wf.input),
+            wf_hash['workflow_source'] = wf.workflow_source,
+            wf_hash['service_id'] = wf.service_id,
+            wf_hash['workflow_definition_id'] = wf.workflow_definition_id
+            # Add the Wfs to the List
+            wf_list.append(wf_hash)
+
+        sd_wf_hash[service_def_id] = wf_list
+    except Exception as ex:
+        logger.error("error in getting the WFs for SD [%s]: \
+            [%s]" % (service_def_id, str(ex)))
+    return jsonify(sd_wf_hash), 200
+
+
+@instance.route(
+    "/v1beta/<string:tenant_id>/orchestration/instances/<string:instance_id>",
     methods=['GET', 'PUT', 'DELETE'])
-def wf_ops():
+@instance.route(
+    "/v1beta/<string:tenant_id>/orchestration/instances",
+    methods=['GET'])
+def wf_ops(tenant_id='', instance_id=''):
     c = Connector().morph()
     method = request.method
     if method == 'GET':
         logger.info("inside getting actions")
-        ret = list_workflows(None)
+        if instance_id == '':
+            ret = list_workflows(None)
+        else:
+            ret = get_workflow(None, instance_id)
         logger.debug("returning list of workflows: %s" % (ret))
         return jsonify(ret), 200
     elif method == 'PUT':
         content = request.get_json()
+        content['parameters']['tenant_id'] = tenant_id
         rc, ret = c.update_action(id, content)
         if(rc != Apiconstants.HTTP_OK):
             return jsonify(json.loads(ret)), rc
 
         return jsonify(json.dumps(ret)), 200
     elif method == 'DELETE':
-        content = request.get_json()
-        rc, ret = c.delete_action(id, content)
+        rc, ret = c.delete_action(instance_id)
         if(rc != Apiconstants.HTTP_OK):
             return jsonify(json.loads(ret)), rc
+        # once the instance is deleted, delete it from DB too
+        try:
+            delete_workflow(None, instance_id)
+        except Exception as e:
+            logger.error("error while deleting instance %s from db", str(e))
 
         return jsonify(json.dumps(ret)), 200

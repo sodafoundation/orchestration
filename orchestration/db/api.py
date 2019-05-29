@@ -21,6 +21,7 @@ from contextlib import contextmanager
 from orchestration.db import Session
 from orchestration.db import models
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql.expression import and_
 from orchestration.utils.config import logger
 
 
@@ -233,7 +234,7 @@ def get_workflow(context, id):
     with session_scope() as session:
         query = session.query(models.Workflow).filter(
             models.Workflow.id == id)
-    return None if not query else query.first()
+    return None if not query else get_query_res(query.first(), models.Workflow)
 
 
 def list_workflows(context, **filters):
@@ -252,6 +253,18 @@ def get_wf_wfds(context, wfdid):
         logger.error("Received exception while listing workflows for [%s]:"
                      "[%s]" % (wfdid, str(sqe)))
         return []
+
+
+# Get all instances for a service definition id
+def get_wf_sd(service_def_id):
+    with session_scope() as session:
+
+        query = session.query(models.Workflow, models.Service) \
+            .join(models.Service, and_(
+                models.Workflow.service_id == models.Service.id)).filter(
+                models.Service.service_definition_id == service_def_id)
+
+    return [] if not query else query.all()
 
 
 def update_workflow():
@@ -302,8 +315,15 @@ def delete_task():
 # Returns the list of all the objects converted to dict
 def get_query_res(obj, tablename):
     res_list = []
+    row_hash = {}
+    # If the object is a single element
+    if not isinstance(obj, list):
+        for c in tablename.__table__.columns.keys():
+            row_hash[str(c)] = getattr(obj, c)
+        return row_hash
+
+    # if the object is list, o/p of query.list()
     for obj_elem in obj:
-        row_hash = {}
         for c in tablename.__table__.columns.keys():
             row_hash[str(c)] = getattr(obj_elem, c)
         res_list.append(row_hash)

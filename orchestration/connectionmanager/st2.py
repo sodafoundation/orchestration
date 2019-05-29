@@ -88,12 +88,11 @@ class St2():
                 url, data=json.dumps(req_data), headers=hdr, verify=False)
         return(resp.status_code, resp.text)
 
-    def delete_action(self, id, req_data):
+    def delete_action(self, id):
         auth_token = self.authenticate()
         url = Orchconstants().get_st2_action_list_url(self.server) + '/' + id
-        hdr = {'X-Auth-Token': auth_token, 'Content-Type': 'application/json'}
-        resp = requests.delete(
-                url, data=json.dumps(req_data), headers=hdr, verify=False)
+        hdr = {'X-Auth-Token': auth_token}
+        resp = requests.delete(url, headers=hdr, verify=False)
         return(resp.status_code, resp.text)
 
     # Function to execute the Action
