@@ -19,6 +19,7 @@ install:
 
 script:
   - tox
+  - $ST2_REPO_PATH/st2common/bin/st2-run-pack-tests -p contrib/st2/opensds
 
 after_success:
   - codecov

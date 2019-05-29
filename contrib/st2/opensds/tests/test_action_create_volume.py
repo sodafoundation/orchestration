@@ -32,17 +32,13 @@ class CreateVolumeActionTestCase(BaseActionTestCase):
 
             response = action.run(
                 ip_addr="127.0.0.1", port="5000",
-                tenant_id="123", name="vol_name", size=1, token="12345")
+                tenant_id="123", name="vol_name", size=1, auth_token="12345")
 
             self.assertEqual(response, "12345")
-            expected_data = '{"AvailabilityZone": "default", ' + \
-                '"Name": "vol_name", "SnapshotFromCloud": "", ' + \
-                '"profile_id": "", "SnapshotId": "", "Size": 1, ' + \
-                '"Description": "Volume"}'
 
             mock_post.assert_called_once_with(
                 url='http://127.0.0.1:5000/v1beta/123/block/volumes',
-                data=expected_data,
+                data=mock.ANY,  # JSON data to be handled externally
                 headers={
                     'content-type': 'application/json',
                     'x-auth-token': '12345'}

@@ -39,20 +39,13 @@ class AttachVolumeActionTestCase(BaseActionTestCase):
                     "ip": "100.64.41.133"
                     },
                 access_protocol="iscsi",
-                token="12345")
+                auth_token="12345")
 
             self.assertEqual(response, None)
 
-            expected_data = '{"ConnectionInfo": "", ' + \
-                '"HostInfo": {"ip": "100.64.41.133", ' + \
-                '"host": "ubuntu", ' + \
-                '"initiator": "iqn.1993-08.org.debian:01:437bac3717c8"}, ' + \
-                '"AccessProtocol": "iscsi", "VolumeId": "vol_name", ' + \
-                '"TenantId": "123", "Mountpoint": ""}'
-
             mock_post.assert_called_once_with(
                 url='http://127.0.0.1:5000/v1beta/123/block/attachments',
-                data=expected_data,
+                data=mock.ANY,  # JSON data to be handled externally
                 headers={
                     'content-type': 'application/json',
                     'x-auth-token': '12345'}

@@ -30,7 +30,7 @@ class DeleteAttachmentActionTestCase(BaseActionTestCase):
 
             response = action.run(
                 ip_addr="127.0.0.1", port="5000",
-                tenant_id="123", attachment_id="789", token="12345")
+                tenant_id="123", attachment_id="789", auth_token="12345")
 
             self.assertEqual(response, None)
 
