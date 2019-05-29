@@ -80,8 +80,10 @@ paths:
           $ref: '#/responses/HTTPStatus404'
         '500':
           $ref: '#/responses/HTTPStatus500'
-  
-  '/v1beta/orchestration/services':
+
+  '/v1beta/{tenantId}/orchestration/services':
+    parameters:
+      - $ref: '#/parameters/tenantId'
     get:
       tags:
         - Service Definitions
@@ -90,7 +92,6 @@ paths:
         '200':
           description: OK
           schema:
-            
             $ref: '#/definitions/ServiceDefs'
         '401':
           $ref: '#/responses/HTTPStatus401'
@@ -205,28 +206,9 @@ paths:
           $ref: '#/responses/HTTPStatus404'
         '500':
           $ref: '#/responses/HTTPStatus500'
-  '/v1beta/orchestration/instances/service/{serviceDefId}':
+  '/v1beta/{tenantId}/orchestration/tasks/{executionId}':
     parameters:
-      - $ref: '#/parameters/serviceDefId'
-    get:
-      tags:
-        - Service Instance
-      description: Get all instances of a service.
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/serviceInstanceSpecs'
-        '401':
-          $ref: '#/responses/HTTPStatus401'
-        '403':
-          $ref: '#/responses/HTTPStatus403'
-        '404':
-          $ref: '#/responses/HTTPStatus404'
-        '500':
-          $ref: '#/responses/HTTPStatus500'
-  '/v1beta/orchestration/tasks/{executionId}':
-    parameters:
+      - $ref: '#/parameters/tenantId'
       - $ref: '#/parameters/executionId'
     get:
       tags:
@@ -245,11 +227,9 @@ paths:
           $ref: '#/responses/HTTPStatus404'
         '500':
           $ref: '#/responses/HTTPStatus500'
-        
 definitions:
   BaseModel:
     type: object
-    
     properties:
       id:
         type: string
@@ -265,7 +245,6 @@ definitions:
         format: date-time
         example: 2017-07-10T14:36:58.014Z
         readOnly: true
-  
   CustomPropertiesSpec:
     description: >-
       CustomPropertiesSpec is a map of keys and JSON object that represents the
@@ -295,7 +274,7 @@ definitions:
         properties:
           name:
             type: string
-          tenant_id: 
+          tenant_id:
             type: string
           user_id:
             type: string
@@ -324,7 +303,7 @@ definitions:
               type: string
             name:
               type: string
-              
+
             tenant_id:
               type: string
             updated_at:
@@ -348,7 +327,6 @@ definitions:
             type: string
           name:
             type: string
-              
           tenant_id:
             type: string
           updated_at:
@@ -377,7 +355,7 @@ definitions:
             type: string
           workflow_source:
             type: string
-            
+
   InstanceCreationResp:
     description: >-
       Respoonse of the instance creation
@@ -399,12 +377,11 @@ definitions:
           workflow_source:
             type: string
             description: "Name of the action"
-          
+
   InstanceReq:
     description: >-
       Request parameters for creating an instance of service
     allOf:
-      - $ref: '#/definitions/BaseModel'
       - type: object
         required:
           - id
@@ -413,13 +390,11 @@ definitions:
         properties:
           id:
             type: string
-            example: "<ID of the Service Defintion>"
-          action: 
+          action:
             type: string
-            example: "<name of the action: opensds.migration-bucket"
+            example: "opensds.migration-bucket"
           parameters:
             type: object
-            example: "{<Required parameters for the service instance>}"
   TaskSpecs:
     description: >-
       Details of the service defintion instances created
@@ -478,7 +453,7 @@ definitions:
       code:
         type: integer
       message:
-        type: string   
+        type: string
   VersionSpec:
     description: >-
       Lists information for all SDS controller API versions. An API version is
@@ -503,7 +478,7 @@ definitions:
         type: string
         format: date-time
         example: '2019-04-10T14:36:58.014Z'
- 
+
 parameters:
   apiVersion:
     name: apiVersion
