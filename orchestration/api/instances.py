@@ -37,8 +37,8 @@ def instance_ops(tenant_id=''):
     c = Connector().morph()
     content = request.get_json()
     # get the service_definition id from the content and remove this from data
-    sd_id = content['id']
-    del content['id']
+    sd_id = content['sd_id']
+    del content['sd_id']
     content['parameters']['tenant_id'] = tenant_id
     rc, ret = c.execute_action(content)
     if(rc != Apiconstants.HTTP_CREATED):

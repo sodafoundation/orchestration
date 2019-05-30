@@ -92,7 +92,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/ServiceDefs'
+            type: array
+            items:
+                $ref: '#/definitions/ServiceDefs'
         '401':
           $ref: '#/responses/HTTPStatus401'
         '403':
@@ -163,15 +165,14 @@ paths:
           $ref: '#/responses/HTTPStatus404'
         '500':
           $ref: '#/responses/HTTPStatus500'
+  '/v1beta/{tenantId}/orchestration/instances/{instanceId}':
+    parameters:
+      - $ref: '#/parameters/tenantId'
+      - $ref: '#/parameters/instanceId'
     delete:
       tags:
         - Service Instance
       description: Delete an instance in execution
-      parameters:
-        - name: 'Execution details'
-          in: body
-          schema:
-            $ref: '#/definitions/InstanceCreationResp'
       responses:
         '200':
           description: OK
@@ -185,10 +186,6 @@ paths:
           $ref: '#/responses/HTTPStatus404'
         '500':
           $ref: '#/responses/HTTPStatus500'
-  '/v1beta/{tenantId}/orchestration/instances/{instanceId}':
-    parameters:
-      - $ref: '#/parameters/tenantId'
-      - $ref: '#/parameters/instanceId'
     get:
       tags:
         - Service Instance
@@ -197,7 +194,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/InstanceSpecs'
+            type: array
+            items:
+                $ref: '#/definitions/InstanceSpecs'
         '401':
           $ref: '#/responses/HTTPStatus401'
         '403':
@@ -245,19 +244,6 @@ definitions:
         format: date-time
         example: 2017-07-10T14:36:58.014Z
         readOnly: true
-  CustomPropertiesSpec:
-    description: >-
-      CustomPropertiesSpec is a map of keys and JSON object that represents the
-      customized properties of profile, such as requested capabilities
-      including diskType, latency, deduplicaiton, compression and so forth.
-    type: object
-    additionalProperties:
-      type: object
-    example:
-      key1: value1
-      key2: false
-      key3:
-        key31: value31
   ServiceDefsReq:
     description: >-
       The request for creating a Service Definitions
@@ -267,8 +253,6 @@ definitions:
         required:
           - name
           - description
-          - tenant_id
-          - user_id
           - group
           - workflows
         properties:
@@ -303,11 +287,6 @@ definitions:
               type: string
             name:
               type: string
-
-            tenant_id:
-              type: string
-            updated_at:
-              type: string
             user_id:
               type: string
   ServiceDefs:
@@ -329,8 +308,6 @@ definitions:
             type: string
           tenant_id:
             type: string
-          updated_at:
-            type: string
           user_id:
             type: string
   InstanceSpecs:
@@ -350,8 +327,6 @@ definitions:
           name:
             type: string
           service_id:
-            type: string
-          updated_at:
             type: string
           workflow_source:
             type: string
@@ -376,7 +351,8 @@ definitions:
             type: string
           workflow_source:
             type: string
-            description: "Name of the action"
+            description: "Name of the action. This is the workflow name 
+                            registered with the Orchestration manager. Ex. opensds.volume-provision"
 
   InstanceReq:
     description: >-
@@ -384,14 +360,16 @@ definitions:
     allOf:
       - type: object
         required:
-          - id
+          - sd_id
           - action
           - parameters
         properties:
           id:
             type: string
+            description: 'Service Definition id' 
           action:
             type: string
+            description: 'Name of the action registered with orchestration manager'
             example: "opensds.migration-bucket"
           parameters:
             type: object
