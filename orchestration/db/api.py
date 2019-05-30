@@ -316,6 +316,9 @@ def delete_task():
 def get_query_res(obj, tablename):
     res_list = []
     row_hash = {}
+    # If the object is empty, return empty list
+    if obj is None:
+        return res_list
     # If the object is a single element
     if not isinstance(obj, list):
         for c in tablename.__table__.columns.keys():
