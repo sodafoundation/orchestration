@@ -40,10 +40,15 @@ def instance_ops(tenant_id=''):
     sd_id = content['id']
     del content['id']
     content['parameters']['tenant_id'] = tenant_id
-    rc, ret = c.execute_action(content)
-    if(rc != Apiconstants.HTTP_CREATED):
-        logger.error("api response received return code[%d]", rc)
-        return jsonify(json.loads(ret)), rc
+    try:
+        rc, ret = c.execute_action(content)
+        if(rc != Apiconstants.HTTP_CREATED):
+            logger.error("api response received return code[%d]", rc)
+            return jsonify(json.loads(ret)), rc
+    except Exception as ex:
+        # The requests may throw ConnectionError. Handle it
+        logger.error("recieved exception [%s] while executing action", str(ex))
+        return jsonify([]), 500
 
     ret_json = json.loads(ret)
 
