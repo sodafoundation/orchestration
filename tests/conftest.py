@@ -30,3 +30,8 @@ def client():
 @pytest.fixture(autouse=False)
 def no_requests(monkeypatch):
     monkeypatch.delattr("requests.session.Session.request")
+
+
+@pytest.fixture(autouse=True)
+def no_om_athenticate(monkeypatch):
+    monkeypatch.delattr("orchestration.connectionmanager.st2.St2.authenticate")

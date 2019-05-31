@@ -14,9 +14,6 @@
 
 import json
 import uuid
-from orchestration.api.instances import get_wfd
-from orchestration.connectionmanager.st2 import St2
-import mock
 
 
 def test_post_instance(client):
@@ -63,14 +60,6 @@ def test_get_instance_by_id(client):
 # mock the return of any function
 def mockreturn(self='', id='', name=''):
     return 200, []
-
-
-@mock.patch('orchestration.connectionmanager.st2.St2')
-def test_get_wfd(client, monkeypatch):
-    id = str(uuid.uuid4())
-    monkeypatch.setattr(St2, 'get_action', mockreturn)
-    resp = get_wfd(id)
-    assert resp == []
 
 
 def test_delete_instance(client, monkeypatch):
