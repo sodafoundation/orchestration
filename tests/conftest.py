@@ -23,3 +23,10 @@ def client():
     client = server_manager.app.test_client()
 
     yield client
+
+
+# Fixture to prevent "requests" library from performing
+# http requests. reference: https://docs.pytest.org/en/3.0.1/monkeypatch.html
+@pytest.fixture(autouse=False)
+def no_requests(monkeypatch):
+    monkeypatch.delattr("requests.session.Session.request")
