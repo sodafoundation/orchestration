@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
 
-def test_instance_output(client):
-    pass
+
+def test_tasks_output(client):
+    id = str(uuid.uuid4())
+    url = '/v1beta/orchestration/tasks' + id
+    response = client.get(url)
+    assert response.status_code == 404
+
+
+def test_tasks_no_exec_id(client):
+    response = client.get('/v1beta/orchestration/tasks')
+    assert response.status_code == 404
