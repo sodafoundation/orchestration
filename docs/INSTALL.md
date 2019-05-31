@@ -16,12 +16,12 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
 
 
 #### Install Orchestration 
-* Clone [OpenSDS Orchestration](https://github.com/opensds/orchestration)  project and bring up docker instance of the Orchestration manager
+* Clone [OpenSDS Orchestration](https://github.com/opensds/orchestration)  project and install the Orchestration manager
     ```sh
     $ git clone https://github.com/opensds/orchestration
     $ cd orchestration
-    $ docker build .
-    $ docker-compose up -d
+    $ pip install -r requirements.txt
+    $ python setup.py install
     ```
 * Install StackStorm
 	The stackstorm [docker installer](https://github.com/StackStorm/st2-docker) repo is cloned, build as below.
@@ -67,6 +67,12 @@ The recommended OpenSDS Local Cluster Installation may be followed for initial t
     mistral-server PID: 340
     mistral.api PID: 335
 	```
+* Run [OpenSDS Orchestration](https://github.com/opensds/orchestration) the Orchestration manager. (StackStorm End-point and Password are required for Orchestration Manager)
+    ```sh
+    $ cd <OpenSDS Orchestration Directory>
+    $ ./orchestration/connectionmanager/credcreator.py set "St2" "<ST2 Endpoint IP>" "st2admin" "<ST2 Password>"
+    $ ./orchestration/server.py
+    ```
 
 #### Installer script
 The file [install.sh](https://github.com/opensds/orchestration/install.sh) may be used for automated installation of StackStorm and Workflows.
