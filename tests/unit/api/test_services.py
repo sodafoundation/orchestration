@@ -14,5 +14,5 @@
 
 
 def test_list_service(client):
-    response = client.get('/v1beta/orchestration/services')
+    response = client.get('/v1beta/xyz/orchestration/services')
     assert response.status_code == 200
