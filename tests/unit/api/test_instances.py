@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import uuid
 
 
 def test_post_instance(client):
@@ -42,6 +43,42 @@ def test_post_instance(client):
 def test_list_instance(client):
     response = client.get('/v1beta/xyz/orchestration/instances')
     assert response.status_code == 200
+
+
+def test_list_instance_wrong_url(client):
+    response = client.get('/v1beta/xyz/orchestration/nstances')
+    assert response.status_code == 404
+
+
+def test_get_instance_by_id(client):
+    id = str(uuid.uuid4())
+    url = '/v1beta/xyz/orchestration/instances/' + id
+    response = client.get(url)
+    assert response.json == []
+
+
+# mock the return of any function
+def mockreturn(self='', id='', name=''):
+    return 200, []
+
+
+def test_delete_instance(client, monkeypatch):
+    id = str(uuid.uuid4())
+    url = '/v1beta/xyz/orchestration/' + id
+    response = client.delete(url)
+    # This should return 404 error as the ID is not present
+    assert response.status_code == 404
+
+
+def test_put_instance(client, monkeypatch):
+    id = str(uuid.uuid4())
+    url = '/v1beta/xyz/orchestration/' + id
+    type_mime = 'application/json'
+    header = {'Content-Type': type_mime, 'Accept': type_mime}
+    data = {}
+    response = client.put(url, data=json.dumps(data), headers=header)
+    # This should return 404 error as the ID is not present
+    assert response.status_code == 404
 
 
 def test_get_instance(client):

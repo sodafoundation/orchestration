@@ -169,6 +169,14 @@ def wf_ops(tenant_id='', instance_id=''):
         if instance_id == '':
             ret = list_workflows(None)
         else:
+            # Check if there is a query param passed.
+            try:
+                service_def_id = request.args.get('service_def')
+                if service_def_id is not None:
+                    return get_instance_sd(service_def_id)
+            except Exception as e:
+                logger.debug("no service_def query params passed.[%s]", str(e))
+
             ret = get_workflow(None, instance_id)
         logger.debug("returning list of workflows: %s" % (ret))
         return jsonify(ret), 200
