@@ -315,18 +315,19 @@ def delete_task():
 # Returns the list of all the objects converted to dict
 def get_query_res(obj, tablename):
     res_list = []
-    row_hash = {}
     # If the object is empty, return empty list
     if obj is None:
         return res_list
     # If the object is a single element
     if not isinstance(obj, list):
+        row_hash = {}
         for c in tablename.__table__.columns.keys():
             row_hash[str(c)] = getattr(obj, c)
         return row_hash
 
     # if the object is list, o/p of query.list()
     for obj_elem in obj:
+        row_hash = {}
         for c in tablename.__table__.columns.keys():
             row_hash[str(c)] = getattr(obj_elem, c)
         res_list.append(row_hash)

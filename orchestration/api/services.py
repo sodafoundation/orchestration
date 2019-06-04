@@ -25,9 +25,9 @@ service = Blueprint("service", __name__)
 
 # This API will provide the list of all the Service Definitions
 @service.route(
-    "/v1beta/orchestration/services",
+    "/v1beta/<string:tenant_id>/orchestration/services",
     methods=['GET'])
-def list_services():
+def list_services(tenant_id=''):
     service_def_list = list_service_definitions(None)
     if not service_def_list:
         return jsonify([]), 200
@@ -38,19 +38,10 @@ def list_services():
 
     service_defs = []
     for service_def in service_def_list:
-        wfs = []
-        sd_hash = {}
         for sd, wd in service_workflow_list:
-            wfd_hash = {'id': wd.id,
-                        'name': wd.name,
-                        'description': wd.description,
-                        'definition': json.loads(wd.definition)
-                        }
             if service_def['id'] == sd.id:
-                wfs.append(wfd_hash)
-        service_def['workflows'] = wfs
-        sd_hash['service'] = service_def
-        service_defs.append(sd_hash)
+                service_def['input'] = json.loads(wd.definition)
+                service_defs.append(service_def)
 
     service_defs_hash = {'services': service_defs}
 
@@ -59,21 +50,21 @@ def list_services():
 
 # This API will provide the details of the service 'id' provided
 @service.route(
-    "/v1beta/orchestration/services/<string:service_id>",
+    "/v1beta/<string:tenant_id>/orchestration/services/<string:service_id>",
     methods=['GET'])
-def get_services(service_id):
+def get_services(tenant_id='', service_id=''):
     service_def_hash = get_service_def(service_id)
     if not bool(service_def_hash):
-        return '', 404
+        return jsonify([]), 404
 
     return jsonify(service_def_hash), 200
 
 
 # API to register the ServiceDefinitions to Orchestration Manager
 @service.route(
-    "/v1beta/orchestration/services",
+    "/v1beta/<string:tenant_id>/orchestration/services",
     methods=['POST'])
-def add_services():
+def add_services(tenant_id=''):
     payload = request.get_json()
     service_data = json.loads(json.dumps(payload))
     wf_def_sources = service_data['workflows']
@@ -118,17 +109,8 @@ def get_service_def(service_id):
     if not service_workflow_list or service_workflow_list is None:
         return {}
 
-    wfs = []
     for sd, wd in service_workflow_list:
-        wfd_hash = {'id': wd.id,
-                    'name': wd.name,
-                    'description': wd.description,
-                    'definition': json.loads(wd.definition),
-                    'action': wd.definition_source
-                    }
-        wfs.append(wfd_hash)
-
-    service_def_hash['workflows'] = wfs
+        service_def_hash['input'] = json.loads(wd.definition)
     service_def_hash = {'service': service_def_hash}
 
     return service_def_hash
