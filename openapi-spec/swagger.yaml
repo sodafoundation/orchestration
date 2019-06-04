@@ -1,3 +1,4 @@
+
 # Copyright 2019 The OpenSDS Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -111,10 +112,10 @@ paths:
           schema:
             $ref: '#/definitions/ServiceDefsReq'
       responses:
-        '202':
-          description: Accepted
+        '200':
+          description: Ok
           schema:
-            $ref: '#/definitions/ServiceDefs'
+            $ref: '#/definitions/ServiceDefsResponse'
         '400':
           $ref: '#/responses/HTTPStatus400'
         '401':
@@ -172,12 +173,12 @@ paths:
     delete:
       tags:
         - Service Instance
-      description: Delete an instance in execution
+      description: Delete a service instance
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/InstanceCreationResp'
+            $ref: '#/responses/ExecutionStatus'
         '401':
           $ref: '#/responses/HTTPStatus401'
         '403':
@@ -258,8 +259,6 @@ definitions:
         properties:
           name:
             type: string
-          tenant_id:
-            type: string
           user_id:
             type: string
           group:
@@ -274,7 +273,6 @@ definitions:
     description: >-
       Response of the service definition created
       allOf:
-        - $ref: '#/definitions/BaseModel'
         - type: object
           properties:
             created_at:
@@ -293,7 +291,7 @@ definitions:
     description: >-
       Service Definitions are the defined business processes which contains a list of workflows to achieve a set of tasks.
     allOf:
-      - $ref: '#/definitions/BaseModel'
+      
       - type: object
         properties:
           created_at:
@@ -310,6 +308,19 @@ definitions:
             type: string
           user_id:
             type: string
+          workflows:
+            type: array
+            items:
+              $ref: ''
+            description: 'Details of underlying workflow'
+            example: '[
+            {
+                "definition_source": "opensds.migration-bucket",
+                "description": "Bucket Migration Multi-Cloud Service",
+                "id": "417de5d9-a8d3-4499-9148-ed56cca15d3b",
+                "name": "migration-bucket",
+                "wfe_type": "st2"
+            }'
   InstanceSpecs:
     description: >-
       Details of the service defintion instances created
@@ -321,14 +332,20 @@ definitions:
             type: string
           id:
             type: string
+            description: "Service instance ID"
           input:
-            type: string
+            type: object
             description: "Input provided by the user as part of creating service instance"
           name:
             type: string
-          service_id:
+            description: "Service instance name"
+          service_definition_id:
             type: string
           workflow_source:
+            type: string
+          output:
+            type: string
+          status:
             type: string
 
   InstanceCreationResp:
@@ -340,18 +357,20 @@ definitions:
         properties:
           id:
             type: string
-            description: "Id of the instance created"
+            description: "Id of the service instance created"
           input:
             type: object
             description: "Input provided by the user as part of creating service instance"
           name:
             type: string
             description: "Name of the service definition of this instance is created"
-          service_id:
+          workflow_id:
+            type: string
+          workflow_definition_id:
             type: string
           workflow_source:
             type: string
-            description: "Name of the action. This is the workflow name 
+            description: "Name of the action. This is the workflow name
                             registered with the Orchestration manager. Ex. opensds.volume-provision"
 
   InstanceReq:
@@ -363,16 +382,21 @@ definitions:
           - sd_id
           - action
           - parameters
+          - name
         properties:
           id:
             type: string
-            description: 'Service Definition id' 
+            description: 'Service Definition id'
           action:
             type: string
             description: 'Name of the action registered with orchestration manager'
             example: "opensds.migration-bucket"
           parameters:
             type: object
+            description: "All the required parameters for the Service instance"
+          name:
+            type: string
+            description: "User friendly name for the service instance"
   TaskSpecs:
     description: >-
       Details of the service defintion instances created
@@ -510,3 +534,6 @@ responses:
     description: An unexpected error occured.
     schema:
       $ref: '#/definitions/ErrorSpec'
+  ExecutionStatus:
+    description: 'Success/Failure'
+
