@@ -18,8 +18,9 @@ from orchestration.connectionmanager.connector import Connector
 from flask import request
 import json
 from orchestration.db.api \
-    import create_workflow, list_workflows, create_service, \
-    get_sd_wfd_association, get_workflow, delete_workflow, get_wf_sd
+    import create_workflow, create_service, \
+    get_sd_wfd_association, delete_service, get_wf_sd, \
+    list_services, get_service
 from orchestration.api.apiconstants import Apiconstants
 from orchestration.utils.config import logger
 
@@ -39,6 +40,11 @@ def instance_ops(tenant_id=''):
     # get the service_definition id from the content and remove this from data
     sd_id = content['id']
     del content['id']
+
+    # Name should be provided by the instance creator
+    service_name = content['name']
+    del content['name']
+
     content['parameters']['tenant_id'] = tenant_id
     try:
         rc, ret = c.execute_action(content)
@@ -54,18 +60,18 @@ def instance_ops(tenant_id=''):
 
     # creat service attribs from the return
     service_map = {}
-    service_map['name'] = ret_json['action']['name']
+    service_map['name'] = service_name
     service_map['input'] = json.dumps(ret_json['parameters'])
     # get the service definition id
     service_map['service_definition_id'] = sd_id
     service_obj = create_service(None, service_map)
 
     wf_hash = {}
-    wf_hash['id'] = ret_json['id']
+    wf_hash['workflow_id'] = ret_json['id']
     wf_hash['name'] = ret_json['action']['name']
     wf_hash['input'] = json.dumps(ret_json['parameters'])
     wf_hash['workflow_source'] = ret_json['action']['ref']
-    wf_hash['service_id'] = service_obj['id']
+    wf_hash['id'] = service_obj['id']
 
     wd_id = ''
     try:
@@ -85,6 +91,7 @@ def instance_ops(tenant_id=''):
 
     # Create a Service of this execution.
     create_workflow(None, wf_hash)
+    wf_hash['name'] = service_name
     return jsonify(wf_hash), 200
 
 
@@ -134,25 +141,28 @@ def get_instance_sd(service_def_id=''):
         return jsonify(ret), 400
     try:
         # Create a hash of Service Definition Id and the Wfs
-        sd_wf_hash = {}
         wf_list = []
         for wf, service in ret:
             # Create a hash of all the WFs
-            wf_hash = {}
-            wf_hash['id'] = wf.id,
-            wf_hash['name'] = wf.name,
-            wf_hash['input'] = json.loads(wf.input),
-            wf_hash['workflow_source'] = wf.workflow_source,
-            wf_hash['service_id'] = wf.service_id,
-            wf_hash['workflow_definition_id'] = wf.workflow_definition_id
+            wf_hash = {'workflow_id': wf.id,
+                       'name': service.name,
+                       'input': json.loads(wf.input),
+                       'workflow_source': wf.workflow_source,
+                       'id': wf.service_id,
+                       'workflow_definition_id': wf.workflow_definition_id,
+                       'output': wf.output,
+                       'status':  wf.status,
+                       'created_at':  wf.created_at,
+                       'updated_at':  wf.updated_at,
+                       'service_definition_id': service_def_id
+                       }
             # Add the Wfs to the List
             wf_list.append(wf_hash)
 
-        sd_wf_hash[service_def_id] = wf_list
     except Exception as ex:
         logger.error("error in getting the WFs for SD [%s]: \
             [%s]" % (service_def_id, str(ex)))
-    return jsonify(sd_wf_hash), 200
+    return jsonify(wf_list), 200
 
 
 @instance.route(
@@ -164,10 +174,11 @@ def get_instance_sd(service_def_id=''):
 def wf_ops(tenant_id='', instance_id=''):
     c = Connector().morph()
     method = request.method
+    global ret
     if method == 'GET':
         logger.info("inside getting actions")
         if instance_id == '':
-            ret = list_workflows(None)
+            ret = list_services(None)
         else:
             # Check if there is a query param passed.
             try:
@@ -176,8 +187,11 @@ def wf_ops(tenant_id='', instance_id=''):
                     return get_instance_sd(service_def_id)
             except Exception as e:
                 logger.debug("no service_def query params passed.[%s]", str(e))
-
-            ret = get_workflow(None, instance_id)
+            try:
+                ret = get_service(None, instance_id)
+            except Exception as e:
+                logger.error("error in getting service detail for [%s]: [%s]",
+                             instance_id, str(e))
         logger.debug("returning list of workflows: %s" % (ret))
         return jsonify(ret), 200
     elif method == 'PUT':
@@ -189,13 +203,10 @@ def wf_ops(tenant_id='', instance_id=''):
 
         return jsonify(json.dumps(ret)), 200
     elif method == 'DELETE':
-        rc, ret = c.delete_action(instance_id)
-        if(rc != Apiconstants.HTTP_OK):
-            return jsonify(json.loads(ret)), rc
-        # once the instance is deleted, delete it from DB too
+        rc, ret = 200, 'Success'
         try:
-            delete_workflow(None, instance_id)
+            delete_service(None, instance_id)
         except Exception as e:
-            logger.error("error while deleting instance %s from db", str(e))
-
-        return jsonify(json.dumps(ret)), 200
+            logger.error("error while deleting instance from db. [%s]", str(e))
+            rc, ret = 500, 'Failed'
+        return jsonify(ret), 200

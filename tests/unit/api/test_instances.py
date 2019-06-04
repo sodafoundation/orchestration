@@ -22,6 +22,7 @@ def test_post_instance(client):
     data = {
         "id": "26ab0773-fc5a-4211-a8e9-8e61ff16fa42",
         "action": "opensds.migration-bucket",
+        "name": "foo",
         "parameters": {
             "ip_addr": "1.2.3.4",
             "port": "8089",

@@ -152,7 +152,7 @@ def get_service(context, id):
 def list_services(context, **filters):
     with session_scope() as session:
         query = session.query(models.Service)
-    return [] if not query else query.all()
+    return [] if not query else get_query_res(query.all(), models.Service)
 
 
 def update_service(context, values):
