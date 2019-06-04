@@ -12,7 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 
 def test_list_service(client):
-    response = client.get('/v1beta/orchestration/services')
+    response = client.get('/v1beta/xyz/orchestration/services')
     assert response.status_code == 200
+
+
+def test_get_service(client):
+    id = str(uuid.uuid4())
+    url = '/v1beta/xyz/orchestration/services' + id
+    response = client.get(url)
+    assert response.status_code == 404
