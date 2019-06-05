@@ -64,6 +64,7 @@ def instance_ops(tenant_id=''):
     service_map['input'] = json.dumps(ret_json['parameters'])
     # get the service definition id
     service_map['service_definition_id'] = sd_id
+    service_map['status'] = ret_json['status']
     service_obj = create_service(None, service_map)
 
     wf_hash = {}
@@ -72,6 +73,7 @@ def instance_ops(tenant_id=''):
     wf_hash['input'] = json.dumps(ret_json['parameters'])
     wf_hash['workflow_source'] = ret_json['action']['ref']
     wf_hash['id'] = service_obj['id']
+    wf_hash['status'] = ret_json['status']
 
     wd_id = ''
     try:
