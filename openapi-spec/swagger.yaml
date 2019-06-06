@@ -229,21 +229,19 @@ paths:
           $ref: '#/responses/HTTPStatus500'
 definitions:
   BaseModel:
+  
     type: object
     properties:
-      id:
-        type: string
-        example: 084bf71e-a102-11e7-88a8-e31fe6d52248
-        readOnly: true
-      createdAt:
+
+      created_at:
         type: string
         format: date-time
-        example: 2017-07-10T14:36:58.014Z
+        example: '2017-07-10T14:36:58.014Z'
         readOnly: true
-      updatedAt:
+      updated_at:
         type: string
         format: date-time
-        example: 2017-07-10T14:36:58.014Z
+        example: '2017-07-10T14:36:58.014Z'
         readOnly: true
   ServiceDefsReq:
     description: >-
@@ -328,8 +326,6 @@ definitions:
       - $ref: '#/definitions/BaseModel'
       - type: object
         properties:
-          crated_at:
-            type: string
           id:
             type: string
             description: "Service instance ID"
@@ -352,12 +348,18 @@ definitions:
     description: >-
       Respoonse of the instance creation
     allOf:
-      - $ref: '#/definitions/BaseModel'
+      
       - type: object
         properties:
           id:
             type: string
             description: "Id of the service instance created"
+          create_at:
+            type: string
+            description: 'date-time at which instance was created'
+          description:
+            type: string
+            description: 'description of the instance'
           input:
             type: object
             description: "Input provided by the user as part of creating service instance"
@@ -368,6 +370,12 @@ definitions:
             type: string
           workflow_definition_id:
             type: string
+          service_definition_id:
+            type: string
+            description: 'ID of the Service definition of which this is the instance'
+          status:
+            type: string
+            description: 'Status of the instance in execution. Running/Finished/Failed'
           workflow_source:
             type: string
             description: "Name of the action. This is the workflow name
@@ -384,7 +392,7 @@ definitions:
           - parameters
           - name
         properties:
-          id:
+          service_definition_id:
             type: string
             description: 'Service Definition id'
           action:
@@ -397,6 +405,12 @@ definitions:
           name:
             type: string
             description: "User friendly name for the service instance"
+          description:
+            type: string
+            description: "Description of the Instance intent"
+          user_id:
+            type: string
+            description: "User id of the requestor"
   TaskSpecs:
     description: >-
       Details of the service defintion instances created
