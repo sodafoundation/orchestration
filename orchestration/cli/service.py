@@ -2,6 +2,7 @@ import requests
 import json
 from utils import get_project_id, get_user_id, get_url
 
+
 # API get service from id
 def get_services(service_id):
     url = get_url() + "services/" + service_id
@@ -51,8 +52,7 @@ def add_services():
 
     }
     resp = requests.post(url=url, data=json.dumps(data), headers=headers)
-    if resp.status_code != 201:
+    if resp.status_code != 200:
         print("Request for Register Services failed", resp.status_code)
 
     print(resp.text)
-

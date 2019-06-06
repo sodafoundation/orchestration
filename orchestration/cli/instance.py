@@ -2,6 +2,7 @@ import requests
 import json
 from utils import OPENSDS_IP, OPENSDS_TOKEN, get_project_id, get_url
 
+
 # API get instances
 def get_instances():
     url = get_url() + "instances"
@@ -11,14 +12,16 @@ def get_instances():
 
     print(resp.text)
 
+
 # API run instance
-def run_instance(ip, port, ):
+def run_instance(service_id):
     url = get_url() + "instances"
     headers = {
         'content-type': 'application/json'
     }
 
     data = {
+        "id": service_id,
         "action": "opensds.provision-volume",
         "parameters":
             {
@@ -34,7 +37,8 @@ def run_instance(ip, port, ):
     print(data)
     resp = requests.post(url=url, data=json.dumps(data), headers=headers)
     if resp.status_code != 200:
-        print("Request for Run Provision Volume Services failed", resp.status_code)
+        print(
+            "Request for Run Provision Volume Services failed",
+            resp.status_code)
 
     print(resp.text)
-

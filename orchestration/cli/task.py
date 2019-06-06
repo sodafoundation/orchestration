@@ -1,6 +1,7 @@
 import requests
 from utils import get_url
 
+
 # API get tasks
 def get_task(exec_id):
     url = get_url() + "tasks/" + exec_id
@@ -9,6 +10,7 @@ def get_task(exec_id):
         print("Request for Instance list failed", resp.status_code)
 
     print(resp.text)
+
 
 # API get workflows
 def get_workflows():

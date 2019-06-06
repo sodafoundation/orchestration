@@ -3,8 +3,8 @@ from requests.auth import HTTPBasicAuth
 import json
 
 # Input parameters
-OPENSDS_IP = "100.64.41.205"
-OPENSDS_TOKEN = 'gAAAAABc7RUcGs5JMS3d5G4sXOYxKFC-i841j0AremxI6DxWi-j0rqoy1Azg7_4feljnzy8QvyVxSymRkVDvqJR-KDzo8o2Cf58QzLgwzE95-cSh2Gmuw2DCMgaFHSq0JAPCReGWDsQEBcDav2NXhkrwxUQ1dTohHdDExoLi9hA6NdHhB28DLOxQ9He9nDVkybLfUg1A_K40'
+OPENSDS_IP = "100.64.41.212"
+OPENSDS_TOKEN = ''  # Insert token here
 ORCHESTRATOR_IP = "localhost"
 ORCHESTRATOR_PORT = '5000'
 ST2_USER = 'st2admin'
@@ -14,6 +14,7 @@ ST2_HOST = "localhost"
 
 def get_info():
     print("project_id:", get_project_id())
+
 
 def get_project_id():
     url = "http://" + OPENSDS_IP + "/identity/v3/projects"
@@ -89,13 +90,18 @@ def get_opensds_token():
             }
         }
     }
-    resp = requests.post(url=url, data=json.dumps(data), headers=headers, verify=False)
+    resp = requests.post(
+        url=url, data=json.dumps(data), headers=headers, verify=False)
     if resp.status_code != 201:
         print("Request for OpenSDS Token failed ", resp.status_code)
 
     print("OpenSDS Token: ", resp.headers['X-Subject-Token'])
     return resp.headers['X-Subject-Token']
 
+
 def get_url():
-    return("http://" + ORCHESTRATOR_IP + \
-        ":" + ORCHESTRATOR_PORT + "/v1beta/orchestration/")
+    return(
+        "http://" + ORCHESTRATOR_IP +
+        ":" + ORCHESTRATOR_PORT +
+        "/v1beta/" + get_project_id() +
+        "/orchestration/")
