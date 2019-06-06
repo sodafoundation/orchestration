@@ -1,0 +1,101 @@
+import requests
+from requests.auth import HTTPBasicAuth
+import json
+
+# Input parameters
+OPENSDS_IP = "100.64.41.205"
+OPENSDS_TOKEN = 'gAAAAABc7RUcGs5JMS3d5G4sXOYxKFC-i841j0AremxI6DxWi-j0rqoy1Azg7_4feljnzy8QvyVxSymRkVDvqJR-KDzo8o2Cf58QzLgwzE95-cSh2Gmuw2DCMgaFHSq0JAPCReGWDsQEBcDav2NXhkrwxUQ1dTohHdDExoLi9hA6NdHhB28DLOxQ9He9nDVkybLfUg1A_K40'
+ORCHESTRATOR_IP = "localhost"
+ORCHESTRATOR_PORT = '5000'
+ST2_USER = 'st2admin'
+ST2_PASSWORD = 'lbBIIK3P'
+ST2_HOST = "localhost"
+
+
+def get_info():
+    print("project_id:", get_project_id())
+
+def get_project_id():
+    url = "http://" + OPENSDS_IP + "/identity/v3/projects"
+    headers = {
+        'x-auth-token': OPENSDS_TOKEN
+    }
+    resp = requests.get(url=url, headers=headers)
+    if resp.status_code != 200:
+        print("Request for Project ID failed", resp.status_code)
+
+    json_resp = json.loads(resp.text)
+
+    for proj in json_resp['projects']:
+        if proj['name'] == 'admin':
+            print("OpenSDS Project ID =", proj['id'])
+            return proj['id']
+
+    print("ERROR: Failed to get project ID")
+    return ''
+
+
+def get_user_id():
+    url = "http://" + OPENSDS_IP + "/identity/v3/users"
+    headers = {
+        'x-auth-token': OPENSDS_TOKEN
+    }
+    resp = requests.get(url=url, headers=headers)
+    if resp.status_code != 200:
+        print("Request for Project ID failed", resp.status_code)
+
+    json_resp = json.loads(resp.text)
+
+    for usr in json_resp['users']:
+        if usr['name'] == 'admin':
+            print("OpenSDS User ID =", usr['id'])
+            return usr['id']
+
+    print("ERROR: Failed to get user ID")
+    return ''
+
+
+def get_st2_token():
+    url = "https://" + ST2_HOST + "/auth/v1/tokens"
+    headers = {
+        'content-type': 'application/json'
+    }
+    auth = HTTPBasicAuth(ST2_USER, ST2_PASSWORD)
+    resp = requests.post(url=url, auth=auth, headers=headers, verify=False)
+    if resp.status_code != 201:
+        print("Request for ST2 Token failed")
+    json_resp = json.loads(resp.text)
+    tok = json_resp['token']
+    print("StackStorm token is: ", tok)
+    return tok
+
+
+def get_opensds_token():
+    url = "http://" + OPENSDS_IP + "/identity/v3/auth/tokens"
+    headers = {
+        'content-type': 'application/json'
+    }
+    data = {
+        "auth": {
+            "identity": {
+                "methods": ["password"],
+                "password": {
+                    "user": {
+                        "name": "admin",
+                        "domain": {"id": "default"},
+                        "password": "opensds@123"
+                    }
+                }
+            }
+        }
+    }
+    resp = requests.post(url=url, data=json.dumps(data), headers=headers, verify=False)
+    if resp.status_code != 201:
+        print("Request for OpenSDS Token failed ", resp.status_code)
+
+    print("OpenSDS Token: ", resp.headers['X-Subject-Token'])
+    return resp.headers['X-Subject-Token']
+
+def get_url():
+    return("http://" + ORCHESTRATOR_IP + \
+        ":" + ORCHESTRATOR_PORT + "/v1beta/orchestration/")
