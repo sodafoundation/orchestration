@@ -55,7 +55,7 @@ def test_get_instance_by_id(client):
     id = str(uuid.uuid4())
     url = '/v1beta/xyz/orchestration/instances/' + id
     response = client.get(url)
-    assert response.json == []
+    assert response.json == {}
 
 
 # mock the return of any function
@@ -84,4 +84,4 @@ def test_put_instance(client, monkeypatch):
 
 def test_get_instance(client):
     response = client.get('/v1beta/xyz/orchestration/instances/a1bcd')
-    assert response.status_code == 200
+    assert response.status_code == 404
