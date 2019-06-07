@@ -161,7 +161,8 @@ def get_instance_sd(service_def_id=''):
                        'service_definition_id': service_def_id,
                        'tenant_id': service.tenant_id,
                        'user_id': service.user_id,
-                       'status': service.status
+                       'status': service.status,
+                       'description': service.description
                        }
 
             status, output = _update_status_and_output(wf.service_id)
