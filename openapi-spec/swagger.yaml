@@ -206,19 +206,20 @@ paths:
           $ref: '#/responses/HTTPStatus404'
         '500':
           $ref: '#/responses/HTTPStatus500'
-  '/v1beta/{tenantId}/orchestration/tasks/{executionId}':
+  '/v1beta/{tenantId}/orchestration/tasks':
     parameters:
       - $ref: '#/parameters/tenantId'
-      - $ref: '#/parameters/executionId'
     get:
       tags:
         - Executed Tasks
-      description: 'Executed task info'
+      description: 'Executed task information'
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/TaskSpecs'
+            type: array
+            items:
+              $ref: '#/definitions/TaskSpecs'
         '401':
           $ref: '#/responses/HTTPStatus401'
         '403':
@@ -418,45 +419,23 @@ definitions:
       - $ref: '#/definitions/BaseModel'
       - type: object
         properties:
-          start:
-            type: string
           id:
             type: string
-          published:
-            type: string
-            description: "Result published by the orchestration manager"
-          end:
-            type: string
-          action:
-            type: string
-            description: "Name of the service executed"
-          status:
-            type: string
-            description: "Status of the executing tasks"
-  serviceInstanceSpecs:
-    description: >-
-      List of all the instances of a Service Definition
-    allOf:
-      - $ref: '#/definitions/BaseModel'
-      - type: object
-        properties:
-          id:
-            type: string
-          published:
-            type: string
-            description: "Result published by the orchestration manager"
           name:
             type: string
-            description: 'Name of the service definition'
+          description:
+            type: string
           input:
             type: object
-            description: "Input provided by user for the instance"
-          service_id:
+            description: 'Input for the task'
+          output:
             type: string
-            description: "ID of the service"
-          workflow_source:
+            description: 'Output for the executed task'
+          status:
             type: string
-            description: "name of the opensds action"
+            description: 'Status of the executed task'
+            example: 'Running/Failed/Success'
+          
   ErrorSpec:
     description: >-
       Detailed HTTP error response, which consists of a HTTP status code, and a
@@ -550,4 +529,3 @@ responses:
       $ref: '#/definitions/ErrorSpec'
   ExecutionStatus:
     description: 'Success/Failure'
-
