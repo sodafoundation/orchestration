@@ -37,8 +37,8 @@ def instance_ops(tenant_id=''):
     c = Connector().morph()
     content = request.get_json()
     # get the service_definition id from the content and remove this from data
-    sd_id = content['id']
-    del content['id']
+    sd_id = content['service_id']
+    del content['service_id']
     content['parameters']['tenant_id'] = tenant_id
     try:
         rc, ret = c.execute_action(content)

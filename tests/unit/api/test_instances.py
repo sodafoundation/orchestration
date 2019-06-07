@@ -20,7 +20,7 @@ def test_post_instance(client):
     type_mime = 'application/json'
     header = {'Content-Type': type_mime, 'Accept': type_mime}
     data = {
-        "id": "26ab0773-fc5a-4211-a8e9-8e61ff16fa42",
+        "service_id": "26ab0773-fc5a-4211-a8e9-8e61ff16fa42",
         "action": "opensds.migration-bucket",
         "parameters": {
             "ip_addr": "1.2.3.4",
