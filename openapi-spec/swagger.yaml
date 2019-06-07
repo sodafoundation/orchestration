@@ -54,7 +54,7 @@ paths:
             application/json:
               - name: v1beta
                 status: CURRENT
-                updated: '2017-07-10T14:36:58.014Z'
+                updated: '2019-06-10T14:36:58.014Z'
         '500':
           $ref: '#/responses/HTTPStatus500'
   '/{apiVersion}':
@@ -76,7 +76,7 @@ paths:
             application/json:
               name: v1beta
               status: SUPPORTED
-              updated: '2017-04-10T14:36:58.014Z'
+              updated: '2019-06-10T14:36:58.014Z'
         '404':
           $ref: '#/responses/HTTPStatus404'
         '500':
@@ -113,7 +113,7 @@ paths:
             $ref: '#/definitions/ServiceDefsReq'
       responses:
         '200':
-          description: Ok
+          description: OK
           schema:
             $ref: '#/definitions/ServiceDefsResponse'
         '400':
@@ -135,7 +135,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/InstanceSpecs'
+            type: array
+            items:
+              $ref: '#/definitions/InstanceSpecs'
         '401':
           $ref: '#/responses/HTTPStatus401'
         '403':
@@ -195,9 +197,7 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-                $ref: '#/definitions/InstanceSpecs'
+            $ref: '#/definitions/InstanceSpecs'
         '401':
           $ref: '#/responses/HTTPStatus401'
         '403':
@@ -268,24 +268,27 @@ definitions:
             example: {"definition_source": 'opensds.migration-bucket' ,
                       "wfe_type": "st2"
                       }
+          description:
+            type: string
+            description: 'user friendly name of the service'
   ServiceDefsResponse:
     description: >-
       Response of the service definition created
-      allOf:
-        - type: object
-          properties:
-            created_at:
-              type: string
-            description:
-              type: string
-            group:
-              type: string
-            id:
-              type: string
-            name:
-              type: string
-            user_id:
-              type: string
+    allOf:
+      - $ref: '#/definitions/BaseModel'
+      - type: object
+        properties:
+          description:
+            type: string
+          group:
+            type: string
+          id:
+            type: string
+          name:
+            type: string
+          user_id:
+            type: string
+            
   ServiceDefs:
     description: >-
       Service Definitions are the defined business processes which contains a list of workflows to achieve a set of tasks.
@@ -319,7 +322,7 @@ definitions:
                 "id": "417de5d9-a8d3-4499-9148-ed56cca15d3b",
                 "name": "migration-bucket",
                 "wfe_type": "st2"
-            }'
+            }]'
   InstanceSpecs:
     description: >-
       Details of the service defintion instances created
@@ -344,6 +347,9 @@ definitions:
             type: string
           status:
             type: string
+          description:
+            type: string
+            description: 'Description of the instance created'
 
   InstanceCreationResp:
     description: >-
@@ -367,20 +373,12 @@ definitions:
           name:
             type: string
             description: "Name of the service definition of this instance is created"
-          workflow_id:
-            type: string
-          workflow_definition_id:
-            type: string
           service_definition_id:
             type: string
             description: 'ID of the Service definition of which this is the instance'
           status:
             type: string
             description: 'Status of the instance in execution. Running/Finished/Failed'
-          workflow_source:
-            type: string
-            description: "Name of the action. This is the workflow name
-                            registered with the Orchestration manager. Ex. opensds.volume-provision"
 
   InstanceReq:
     description: >-
@@ -393,7 +391,7 @@ definitions:
           - parameters
           - name
         properties:
-          service_definition_id:
+          service_id:
             type: string
             description: 'Service Definition id'
           action:
