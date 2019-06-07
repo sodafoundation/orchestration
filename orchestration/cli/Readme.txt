@@ -10,9 +10,9 @@ Steps to run CLI:
 
 Example Usage:
 
-$ python cli.py service list
-$ python cli.py service add
-$ python cli.py service get --id d8360a8a-6c5e-4533-a18a-b446db8caac8 
+$ ./orchctl service list
+$ ./orchctl service add
+$ ./orchctl service get --id d8360a8a-6c5e-4533-a18a-b446db8caac8 
 
-$ python cli.py instance get
-$ python cli.py instance run --id 73207f47-5e99-4c24-8a73-2e7d6f92b107
+$ ./orchctl instance get
+$ ./orchctl instance run --id 73207f47-5e99-4c24-8a73-2e7d6f92b107
