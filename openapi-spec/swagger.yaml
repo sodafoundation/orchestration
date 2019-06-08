@@ -1,0 +1,529 @@
+
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  version: "v1beta"
+  title: OpenSDS Orchestration API
+  description: OpenSDS Orchestration API to manage workflows.
+  termsOfService: 'https://www.linuxfoundation.org/terms'
+  contact:
+    name: OpenSDS Support
+    url: 'https://opensds.slack.com'
+    email: support@opensds.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: opensds
+schemes:
+  - https
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /:
+    get:
+      tags:
+        - API versions
+      description: Lists information for all Orchestration API versions.
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              versions:
+                type: array
+                items:
+                  $ref: '#/definitions/VersionSpec'
+          examples:
+            application/json:
+              - name: v1beta
+                status: CURRENT
+                updated: '2019-06-10T14:36:58.014Z'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+  '/{apiVersion}':
+    parameters:
+      - $ref: '#/parameters/apiVersion'
+    get:
+      tags:
+        - API versions
+      description: Gets version details by specified API version.
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              version:
+                $ref: '#/definitions/VersionSpec'
+          examples:
+            application/json:
+              name: v1beta
+              status: SUPPORTED
+              updated: '2019-06-10T14:36:58.014Z'
+        '404':
+          $ref: '#/responses/HTTPStatus404'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+
+  '/v1beta/{tenantId}/orchestration/services':
+    parameters:
+      - $ref: '#/parameters/tenantId'
+    get:
+      tags:
+        - Service Definitions
+      description: Lists information for all Service Defintions.
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+                $ref: '#/definitions/ServiceDefs'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+    post:
+      tags:
+        - Service Definitions
+      description: Registers a Service Definition.
+      parameters:
+        - name: Definition name
+          in: body
+          schema:
+            $ref: '#/definitions/ServiceDefsReq'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ServiceDefsResponse'
+        '400':
+          $ref: '#/responses/HTTPStatus400'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+  '/v1beta/{tenantId}/orchestration/instances':
+    parameters:
+      - $ref: '#/parameters/tenantId'
+    get:
+      tags:
+        - Service Instance
+      description: Gets all service instances detail.
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/InstanceSpecs'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '404':
+          $ref: '#/responses/HTTPStatus404'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+    post:
+      tags:
+        - Service Instance
+      description: Create an instance of service definition.
+      parameters:
+        - name: Instance details
+          in: body
+          schema:
+            $ref: '#/definitions/InstanceReq'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/InstanceCreationResp'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '404':
+          $ref: '#/responses/HTTPStatus404'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+  '/v1beta/{tenantId}/orchestration/instances/{instanceId}':
+    parameters:
+      - $ref: '#/parameters/tenantId'
+      - $ref: '#/parameters/instanceId'
+    delete:
+      tags:
+        - Service Instance
+      description: Delete a service instance
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/responses/ExecutionStatus'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '404':
+          $ref: '#/responses/HTTPStatus404'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+    get:
+      tags:
+        - Service Instance
+      description: Gets particular service instance detail.
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/InstanceSpecs'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '404':
+          $ref: '#/responses/HTTPStatus404'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+  '/v1beta/{tenantId}/orchestration/tasks':
+    parameters:
+      - $ref: '#/parameters/tenantId'
+    get:
+      tags:
+        - Executed Tasks
+      description: 'Executed task information'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TaskSpecs'
+        '401':
+          $ref: '#/responses/HTTPStatus401'
+        '403':
+          $ref: '#/responses/HTTPStatus403'
+        '404':
+          $ref: '#/responses/HTTPStatus404'
+        '500':
+          $ref: '#/responses/HTTPStatus500'
+definitions:
+  BaseModel:
+  
+    type: object
+    properties:
+
+      created_at:
+        type: string
+        format: date-time
+        example: '2017-07-10T14:36:58.014Z'
+        readOnly: true
+      updated_at:
+        type: string
+        format: date-time
+        example: '2017-07-10T14:36:58.014Z'
+        readOnly: true
+  ServiceDefsReq:
+    description: >-
+      The request for creating a Service Definitions
+    allOf:
+      - $ref: '#/definitions/BaseModel'
+      - type: object
+        required:
+          - name
+          - description
+          - group
+          - workflows
+        properties:
+          name:
+            type: string
+          user_id:
+            type: string
+          group:
+            type: string
+            example: "Migration/Provisioning"
+          workflows:
+            type: object
+            example: {"definition_source": 'opensds.migration-bucket' ,
+                      "wfe_type": "st2"
+                      }
+          description:
+            type: string
+            description: 'user friendly name of the service'
+  ServiceDefsResponse:
+    description: >-
+      Response of the service definition created
+    allOf:
+      - $ref: '#/definitions/BaseModel'
+      - type: object
+        properties:
+          description:
+            type: string
+          group:
+            type: string
+          id:
+            type: string
+          name:
+            type: string
+          user_id:
+            type: string
+            
+  ServiceDefs:
+    description: >-
+      Service Definitions are the defined business processes which contains a list of workflows to achieve a set of tasks.
+    allOf:
+      
+      - type: object
+        properties:
+          created_at:
+            type: string
+          description:
+            type: string
+          group:
+            type: string
+          id:
+            type: string
+          name:
+            type: string
+          tenant_id:
+            type: string
+          user_id:
+            type: string
+          workflows:
+            type: array
+            items:
+              $ref: ''
+            description: 'Details of underlying workflow'
+            example: '[
+            {
+                "definition_source": "opensds.migration-bucket",
+                "description": "Bucket Migration Multi-Cloud Service",
+                "id": "417de5d9-a8d3-4499-9148-ed56cca15d3b",
+                "name": "migration-bucket",
+                "wfe_type": "st2"
+            }]'
+  InstanceSpecs:
+    description: >-
+      Details of the service defintion instances created
+    allOf:
+      - $ref: '#/definitions/BaseModel'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: "Service instance ID"
+          input:
+            type: object
+            description: "Input provided by the user as part of creating service instance"
+          name:
+            type: string
+            description: "Service instance name"
+          service_definition_id:
+            type: string
+          workflow_source:
+            type: string
+          output:
+            type: string
+          status:
+            type: string
+          description:
+            type: string
+            description: 'Description of the instance created'
+
+  InstanceCreationResp:
+    description: >-
+      Respoonse of the instance creation
+    allOf:
+      
+      - type: object
+        properties:
+          id:
+            type: string
+            description: "Id of the service instance created"
+          create_at:
+            type: string
+            description: 'date-time at which instance was created'
+          description:
+            type: string
+            description: 'description of the instance'
+          input:
+            type: object
+            description: "Input provided by the user as part of creating service instance"
+          name:
+            type: string
+            description: "Name of the service definition of this instance is created"
+          service_definition_id:
+            type: string
+            description: 'ID of the Service definition of which this is the instance'
+          status:
+            type: string
+            description: 'Status of the instance in execution. Running/Finished/Failed'
+
+  InstanceReq:
+    description: >-
+      Request parameters for creating an instance of service
+    allOf:
+      - type: object
+        required:
+          - sd_id
+          - action
+          - parameters
+          - name
+        properties:
+          service_id:
+            type: string
+            description: 'Service Definition id'
+          action:
+            type: string
+            description: 'Name of the action registered with orchestration manager'
+            example: "opensds.migration-bucket"
+          parameters:
+            type: object
+            description: "All the required parameters for the Service instance"
+          name:
+            type: string
+            description: "User friendly name for the service instance"
+          description:
+            type: string
+            description: "Description of the Instance intent"
+          user_id:
+            type: string
+            description: "User id of the requestor"
+  TaskSpecs:
+    description: >-
+      Details of the service defintion instances created
+    allOf:
+      - $ref: '#/definitions/BaseModel'
+      - type: object
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+          description:
+            type: string
+          input:
+            type: object
+            description: 'Input for the task'
+          output:
+            type: string
+            description: 'Output for the executed task'
+          status:
+            type: string
+            description: 'Status of the executed task'
+            example: 'Running/Failed/Success'
+          
+  ErrorSpec:
+    description: >-
+      Detailed HTTP error response, which consists of a HTTP status code, and a
+      custom error message unique for each failure case.
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+  VersionSpec:
+    description: >-
+      Lists information for all SDS controller API versions. An API version is
+      a  string that consists of a 'v' + number, or 'v' + number + 'alpha'  or
+      'beta' + number.
+    type: object
+    required:
+      - name
+      - status
+      - updated
+    properties:
+      name:
+        type: string
+        example: v1beta
+      status:
+        type: string
+        enum:
+          - CURRENT
+          - SUPPORTED
+          - DEPRECATED
+      updated:
+        type: string
+        format: date-time
+        example: '2019-04-10T14:36:58.014Z'
+
+parameters:
+  apiVersion:
+    name: apiVersion
+    in: path
+    required: true
+    description: API version string
+    type: string
+    pattern: 'v([1-9][0-9]*)((alpha)([1-9][0-9]*)|(beta)([1-9][0-9]*))?'
+  tenantId:
+    name: tenantId
+    in: path
+    required: true
+    description: The tenant UUID in a multi-tenancy environment.
+    type: string
+  instanceId:
+    name: instanceId
+    required: true
+    in: path
+    type: string
+    description: 'Instacne ID'
+  executionId:
+    name: executionId
+    required: true
+    in: path
+    type: string
+    description: 'Execution ID'
+  serviceDefId:
+    name: serviceDefId
+    required: true
+    in: path
+    type: string
+    description: 'Service definition ID'
+responses:
+  HTTPStatus400:
+    description: BadRequest
+    schema:
+      $ref: '#/definitions/ErrorSpec'
+  HTTPStatus401:
+    description: NotAuthorized
+    schema:
+      $ref: '#/definitions/ErrorSpec'
+  HTTPStatus403:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorSpec'
+  HTTPStatus404:
+    description: The resource does not exist
+    schema:
+      $ref: '#/definitions/ErrorSpec'
+  HTTPStatus500:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/ErrorSpec'
+  ExecutionStatus:
+    description: 'Success/Failure'

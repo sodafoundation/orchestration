@@ -38,14 +38,22 @@ def list_services(tenant_id=''):
 
     service_defs = []
     for service_def in service_def_list:
+        wfs = []
         for sd, wd in service_workflow_list:
             if service_def['id'] == sd.id:
+                wfd_hash = {'id': wd.id,
+                            'name': wd.name,
+                            'description': wd.description,
+                            'definition': json.loads(wd.definition),
+                            'definition_source': wd.definition_source,
+                            'wfe_type': wd.wfe_type
+                            }
+                wfs.append(wfd_hash)
+                service_def['workflows'] = wfs
                 service_def['input'] = json.loads(wd.definition)
                 service_defs.append(service_def)
 
-    service_defs_hash = {'services': service_defs}
-
-    return jsonify(service_defs_hash), 200
+    return jsonify(service_defs), 200
 
 
 # This API will provide the details of the service 'id' provided
@@ -109,8 +117,17 @@ def get_service_def(service_id):
     if not service_workflow_list or service_workflow_list is None:
         return {}
 
+    wfs = []
     for sd, wd in service_workflow_list:
+        wfd_hash = {'id': wd.id,
+                    'name': wd.name,
+                    'description': wd.description,
+                    'definition': json.loads(wd.definition),
+                    'definition_source': wd.definition_source,
+                    'wfe_type': wd.wfe_type
+                    }
+        wfs.append(wfd_hash)
+        service_def_hash['workflows'] = wfs
         service_def_hash['input'] = json.loads(wd.definition)
-    service_def_hash = {'service': service_def_hash}
 
     return service_def_hash
