@@ -84,7 +84,7 @@ def add_services(tenant_id=''):
         wf_def_sources = service_data['workflows']
     except Exception as e:
         err_msg = 'workflows param is missing'
-        logger.error("%s", err_msg)
+        logger.error("%s: Exception [%s]", err_msg, str(e))
         return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
     try:
         if not service_data.get('group') \
