@@ -43,6 +43,13 @@ status_map = {'requested': 'Running', 'succeeded': 'Success',
 def instance_ops(tenant_id=''):
     c = Connector().morph()
     content = request.get_json()
+    AUTH_TOKEN = request.headers.get('X-Auth-Token')
+
+    # TODO: Need to check, When orchestration APIs authentication is implemented
+    if AUTH_TOKEN == '' or AUTH_TOKEN is None:
+        err_msg = 'Bad Request. Authentication Token is missing'
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+
     # get the service_definition id from the content and remove this from data
     sd_id = content['service_id']
     del content['service_id']
@@ -52,6 +59,7 @@ def instance_ops(tenant_id=''):
     del content['name']
 
     content['parameters']['tenant_id'] = tenant_id
+    content['parameters']['auth_token'] = AUTH_TOKEN
     try:
         rc, ret = c.execute_action(content)
         if(rc != Apiconstants.HTTP_CREATED):
@@ -72,6 +80,7 @@ def instance_ops(tenant_id=''):
     service_map['service_definition_id'] = sd_id
     service_map['status'] = status_map[ret_json['status']]
     service_obj = create_service(None, service_map)
+    del service_map['input']['auth_token']
 
     wf_hash = {}
     wf_hash['workflow_id'] = ret_json['id']
