@@ -24,7 +24,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.expression import and_
 from orchestration.utils.config import logger
 
-
 # session_scope can be used cleanly in transaction,
 # references the officel document of sqlalchemy.
 @contextmanager
@@ -152,11 +151,17 @@ def get_service(context, id):
 def list_services(context, **filters):
     with session_scope() as session:
         query = session.query(models.Service)
-    return [] if not query else query.all()
+    return [] if not query else get_query_res(query.all(), models.Service)
 
 
-def update_service(context, values):
-    pass
+def update_service(context, id, values):
+    try:
+        with session_scope() as session:
+            session.query(models.Service).filter(
+                models.Service.id == id).update(
+                values, synchronize_session=False)
+    except Exception as e:
+        logger.error("error updating the service: %s", str(e))
 
 
 def delete_service(context, id):
@@ -243,6 +248,16 @@ def list_workflows(context, **filters):
     return [] if not query else get_query_res(query.all(), models.Workflow)
 
 
+def update_workflow(context, id, values):
+    try:
+        with session_scope() as session:
+            session.query(models.Workflow).filter(
+                            models.Workflow.id == id).update(
+                            values, synchronize_session=False)
+    except Exception as e:
+        logger.error("error in updating workflow for id [%s]:[%s]", id, str(e))
+
+
 def get_wf_wfds(context, wfdid):
     try:
         with session_scope() as session:
@@ -255,6 +270,19 @@ def get_wf_wfds(context, wfdid):
         return []
 
 
+# get the workflow id of a instance
+def get_execid_instance(context, sid):
+    try:
+        with session_scope() as session:
+            query = session.query(models.Workflow).filter(
+                models.Workflow.service_id == sid)
+            res = query.first().to_dict()
+            return res['id']
+    except SQLAlchemyError as sqe:
+        logger.error("error in getting workflow id for %s:%s", sid, str(sqe))
+        return ''
+
+
 # Get all instances for a service definition id
 def get_wf_sd(service_def_id):
     with session_scope() as session:
@@ -265,10 +293,6 @@ def get_wf_sd(service_def_id):
                 models.Service.service_definition_id == service_def_id)
 
     return [] if not query else query.all()
-
-
-def update_workflow():
-    pass
 
 
 def delete_workflow():

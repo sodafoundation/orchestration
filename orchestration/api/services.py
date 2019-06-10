@@ -63,7 +63,7 @@ def list_services(tenant_id=''):
 def get_services(tenant_id='', service_id=''):
     service_def_hash = get_service_def(service_id)
     if not bool(service_def_hash):
-        return jsonify([]), 404
+        return jsonify({}), 404
 
     return jsonify(service_def_hash), 200
 
