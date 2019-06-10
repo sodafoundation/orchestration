@@ -20,10 +20,14 @@ from orchestration.api.apiconstants import Apiconstants
 from orchestration.utils.config import logger
 
 task = Blueprint("task", __name__)
-@task.route("/v1beta/orchestration/tasks/<string:execId>", methods=['GET'])
-def get_task_status(execId=''):
+
+
+@task.route(
+    "/v1beta/<string:tenant_id>/orchestration/tasks/<string:exec_id>",
+    methods=['GET'])
+def get_task_status(tenant_id='', exec_id=''):
     c = Connector().morph()
-    rc, ret = c.get_execution_stats(execId)
+    rc, ret = c.get_execution_stats(exec_id)
     if(rc != Apiconstants.HTTP_OK):
         return jsonify(response=json.loads(ret)), rc
 
