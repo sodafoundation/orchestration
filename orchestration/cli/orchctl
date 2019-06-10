@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+# Copyright 2019 The OpenSDS Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This class contains the constants required by different modules
+
+import argparse
+from argparse import RawTextHelpFormatter
+from service import add_services, list_services, get_services
+from instance import get_instances, run_instance
+from task import get_task, get_workflows
+
+
+def service_api(args=''):
+    switcher = {
+        "add": add_services,
+        "list": list_services,
+        "get": get_services,
+    }
+    # Get the function from switcher dictionary
+    func = switcher.get(args.operation, lambda: "Invalid operation")
+    # Execute the function
+    if args.operation == 'get':
+        if args.id is None:
+            print("ERROR: Needs --id set for service get")
+            return
+        func(args.id)
+        return
+    ret = func()
+    if ret is not None:
+        print(ret)
+
+
+def instance_api(args):
+    switcher = {
+        "run": run_instance,
+        "get": get_instances,
+    }
+    # Get the function from switcher dictionary
+    func = switcher.get(args.operation, lambda: "Invalid operation")
+    # Execute the function
+    if args.operation == 'run':
+        if args.id is None:
+            print("ERROR: Needs --id set for instance run")
+            return
+        func(args.id)
+        return
+    ret = func()
+    if ret is not None:
+        print(ret)
+
+
+def workflow_api(args):
+    switcher = {
+        "get": get_workflows,
+    }
+    # Get the function from switcher dictionary
+    func = switcher.get(args.operation, lambda: "Invalid operation")
+    # Execute the function
+    ret = func()
+    if ret is not None:
+        print(ret)
+
+
+def task_api(args):
+    switcher = {
+        "get": get_task
+    }
+    # Get the function from switcher dictionary
+    func = switcher.get(args.operation, lambda: "Invalid operation")
+    # Execute the function
+    ret = func()
+    if ret is not None:
+        print(ret)
+
+
+def cli():
+    description = """
+    CLI for OpenSDS Orchestration Manager
+
+    Example: cli.py service list"""
+    parser = argparse.ArgumentParser(
+        description=description,
+        formatter_class=RawTextHelpFormatter
+    )
+
+    subparsers = parser.add_subparsers()
+
+    parser_service = subparsers.add_parser(
+        'service', help='service takes operation: [get, list, add]')
+    parser_service.add_argument(
+        'operation', help='available operations [get, list, add]')
+    parser_service.add_argument('--id', help='Service ID to get')
+    parser_service.set_defaults(func=service_api)
+
+    parser_instance = subparsers.add_parser(
+        'instance', help='instance takes operation: [get, run]')
+    parser_instance.add_argument(
+        'operation', help='available operations [get, run]')
+    parser_instance.add_argument('--id', help='Service ID to run')
+    parser_instance.set_defaults(func=instance_api)
+
+    parser_workflow = subparsers.add_parser(
+        'workflow', help='workflow takes operation: [get]')
+    parser_workflow.add_argument(
+        'operation', help='available operations [get]')
+    parser_workflow.set_defaults(func=workflow_api)
+
+    parser_task = subparsers.add_parser(
+        'task', help='task takes operation: [get]')
+    parser_task.add_argument(
+        'operation', help='available operations [get]')
+    parser_task.add_argument('--id', help='Execution ID help')
+    parser_task.set_defaults(func=task_api)
+
+    args = parser.parse_args()
+
+    args.func(args)
+
+
+if __name__ == '__main__':
+    cli()
