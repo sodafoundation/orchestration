@@ -58,6 +58,52 @@ def instance_ops(tenant_id=''):
     service_name = content['name']
     del content['name']
 
+    if tenant_id == '':
+        err_msg = 'bad URL. tenant id is empty'
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_NOTFOUND
+
+    # get the service_definition id from the content and remove this from data
+    try:
+        sd_id = content['service_id']
+        del content['service_id']
+        if sd_id == '':
+            raise ValueError('Empty service definition id')
+    except Exception as e:
+        err_msg = 'required input service_id is missing'
+        logger.error("%s. Exception [%s]" % (err_msg, str(e)))
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+
+    # Name should be provided by the instance creator
+    try:
+        service_name = content['name']
+        del content['name']
+        if service_name == '':
+            raise ValueError('Empty service name')
+    except Exception as e:
+        err_msg = 'required input service \'name\' is missing'
+        logger.error("%s. Exception [%s]" % (err_msg, str(e)))
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+
+    # Description of the instance getting created
+    try:
+        description = content['description']
+        del content['description']
+        if description == '':
+            raise ValueError('Empty service description provided')
+    except Exception as e:
+        # If description is not provided, the instance creation should proceed
+        logger.info("no instance description provided. Set empty %s", str(e))
+
+    # user_id of the instance creator
+    try:
+        user_id = content['user_id']
+        del content['user_id']
+        if description == '':
+            raise ValueError('Empty user id provided')
+    except Exception as e:
+        # If description is not provided, the instance creation should proceed
+        logger.info("no user_id provided. Exception [%s]", str(e))
+
     content['parameters']['tenant_id'] = tenant_id
     content['parameters']['auth_token'] = AUTH_TOKEN
     try:
@@ -78,16 +124,26 @@ def instance_ops(tenant_id=''):
     service_map['input'] = json.dumps(ret_json['parameters'])
     # get the service definition id
     service_map['service_definition_id'] = sd_id
+    service_map['description'] = description
+    service_map['user_id'] = user_id
+    service_map['tenant_id'] = tenant_id
     service_map['status'] = status_map[ret_json['status']]
     service_obj = create_service(None, service_map)
     del service_map['input']['auth_token']
 
-    wf_hash = {}
-    wf_hash['workflow_id'] = ret_json['id']
-    wf_hash['name'] = ret_json['action']['name']
+    # Now that service is created append appropriate values
+    service_map['id'] = service_obj['id']
+    service_map['created_at'] = service_obj['created_at']
+    service_map['updated_at'] = service_obj['updated_at']
+    service_map['input'] = ret_json['parameters']
+
+
+    wf_hash['id'] = ret_json['id']
+    wf_hash['name'] = service_name
+    wf_hash['description'] = description
     wf_hash['input'] = json.dumps(ret_json['parameters'])
     wf_hash['workflow_source'] = ret_json['action']['ref']
-    wf_hash['id'] = service_obj['id']
+    wf_hash['service_id'] = service_obj['id']
     wf_hash['status'] = ret_json['status']
 
     wd_id = ''
@@ -108,8 +164,7 @@ def instance_ops(tenant_id=''):
 
     # Create a Service of this execution.
     create_workflow(None, wf_hash)
-    wf_hash['name'] = service_name
-    return jsonify(wf_hash), 200
+    return jsonify(service_map), 200
 
 
 '''
@@ -211,6 +266,8 @@ def wf_ops(tenant_id='', instance_id=''):
                 status, output = _update_status_and_output(service['id'])
                 service['status'] = status
                 service['output'] = output
+                service['service_id'] = service['service_definition_id']
+                del service['service_definition_id']
         else:
             try:
                 ret = get_service(None, instance_id)
@@ -222,6 +279,8 @@ def wf_ops(tenant_id='', instance_id=''):
             status, output = _update_status_and_output(instance_id)
             ret['status'] = status
             ret['output'] = output
+            ret['service_id'] = ret['service_definition_id']
+            del ret['service_definition_id']
 
         logger.debug("returning list of workflows: %s" % (ret))
         return jsonify(ret), 200
