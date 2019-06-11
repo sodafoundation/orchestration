@@ -18,7 +18,8 @@ import uuid
 
 def test_post_instance(client):
     type_mime = 'application/json'
-    header = {'Content-Type': type_mime, 'Accept': type_mime}
+    header = {'Content-Type': type_mime, 'Accept': type_mime,
+              'X-Auth-Token': 'abcde'}
     data = {
         "service_id": "26ab0773-fc5a-4211-a8e9-8e61ff16fa42",
         "action": "opensds.migration-bucket",
@@ -32,8 +33,7 @@ def test_post_instance(client):
             "description": "Migration_test_orchestration",
             "destBackend": "hw-backend",
             "srcBucketName": "aws-orchestrate",
-            "destBucketName": "hw-orchestrate",
-            "auth_token": "abcde"
+            "destBucketName": "hw-orchestrate"
         }
     }
     url = '/v1beta/xyz/orchestration/instances'
