@@ -20,7 +20,7 @@ import json
 from orchestration.db.api \
     import create_workflow, create_service, \
     get_sd_wfd_association, delete_service, get_wf_sd, \
-    list_services, get_service, \
+    list_services, get_service, get_service_definition,\
     get_execid_instance, update_service, update_workflow
 from orchestration.api.apiconstants import Apiconstants
 from orchestration.utils.config import logger
@@ -54,8 +54,10 @@ def instance_ops(tenant_id=''):
         del content['service_id']
         if sd_id == '':
             raise ValueError('Empty service definition id')
+        if get_service_definition(None, sd_id) == None:
+            raise ValueError('Invalid service definition id')
     except Exception as e:
-        err_msg = 'required input service_id is missing'
+        err_msg = 'required input service_id is missing or incorrect'
         logger.error("%s. Exception [%s]" % (err_msg, str(e)))
         return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
 
@@ -106,6 +108,8 @@ def instance_ops(tenant_id=''):
     # creat service attribs from the return
     service_map = {}
     service_map['name'] = service_name
+    # Don't store auth_token
+    del ret_json['parameters']['auth_token']
     service_map['input'] = json.dumps(ret_json['parameters'])
     # get the service definition id
     service_map['service_definition_id'] = sd_id
@@ -116,6 +120,7 @@ def instance_ops(tenant_id=''):
     service_obj = create_service(None, service_map)
 
     # Now that service is created append appropriate values
+    service_map['service_id'] = sd_id
     service_map['id'] = service_obj['id']
     service_map['created_at'] = service_obj['created_at']
     service_map['updated_at'] = service_obj['updated_at']
@@ -273,12 +278,17 @@ def wf_ops(tenant_id='', instance_id=''):
 
         return jsonify(json.dumps(ret)), 200
     elif method == 'DELETE':
-        rc, ret = 200, 'Success'
+        rc, ret = Apiconstants.HTTP_OK, 'Success'
         try:
-            delete_service(None, instance_id)
+            ret_instance = get_service(None, instance_id)
+            if ret_instance == None:
+                raise ValueError("Instance id is not present")
+            else:
+                logger.info("deleting instance %s", instance_id)
+                delete_service(None, instance_id)
         except Exception as e:
             logger.error("error while deleting instance from db. [%s]", str(e))
-            rc, ret = 500, 'Failed'
+            rc, ret = Apiconstants.HTTP_ERR_NOTFOUND, 'Failed'
         return jsonify(ret), rc
 
 
