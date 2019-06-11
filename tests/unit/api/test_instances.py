@@ -38,7 +38,7 @@ def test_post_instance(client):
     }
     url = '/v1beta/xyz/orchestration/instances'
     response = client.post(url, data=json.dumps(data), headers=header)
-    assert response.status_code == 500
+    assert response.status_code == 400
 
 
 def test_list_instance(client):

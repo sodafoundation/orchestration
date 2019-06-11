@@ -61,7 +61,7 @@ def instance_ops(tenant_id=''):
         del content['service_id']
         if sd_id == '':
             raise ValueError('Empty service definition id')
-        if get_service_definition(None, sd_id) == None:
+        if get_service_definition(None, sd_id) is None:
             raise ValueError('Invalid service definition id')
     except Exception as e:
         err_msg = 'required input service_id is missing or incorrect'
@@ -294,7 +294,7 @@ def wf_ops(tenant_id='', instance_id=''):
         rc, ret = Apiconstants.HTTP_OK, 'Success'
         try:
             ret_instance = get_service(None, instance_id)
-            if ret_instance == None:
+            if ret_instance is None:
                 raise ValueError("Instance id is not present")
             else:
                 logger.info("deleting instance %s", instance_id)
