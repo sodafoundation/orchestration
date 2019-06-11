@@ -21,6 +21,7 @@ class Apiconstants:
     HTTP_CREATED = 201
     HTTP_ACCEPTED = 202
     HTTP_ERR_NOTFOUND = 404
+    HTTP_ERR_BAD_REQUEST = 400
 
     # API errorrs
 

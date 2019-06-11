@@ -19,6 +19,8 @@ from orchestration.db.api \
 from orchestration.api.instances import get_wfd
 from flask import Blueprint, jsonify, request
 import json
+from orchestration.api.apiconstants import Apiconstants
+from orchestration.utils.config import logger
 
 service = Blueprint("service", __name__)
 
@@ -77,11 +79,44 @@ def add_services(tenant_id=''):
     service_data = json.loads(json.dumps(payload))
     wf_def_sources = service_data['workflows']
 
+    # Validate the request sent
+    try:
+        wf_def_sources = service_data['workflows']
+    except Exception as e:
+        err_msg = 'workflows param is missing'
+        logger.error("%s: Exception [%s]", err_msg, str(e))
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+    try:
+        if not service_data.get('group') \
+            or not service_data.get('name') \
+            or not service_data.get('user_id') \
+           or not service_data.get('description'):
+            logger.error("One of these: group/name/user_id is missing")
+            logger.debug("request param is %s", service_data)
+            raise ValueError('Value missing')
+    except Exception as e:
+        err_msg = 'One or more required value missing'
+        logger.error("%s. Exception [%s]", err_msg, str(e))
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+
     workflow_definitions = []
 
+    if len(wf_def_sources) < 1 or not type(wf_def_sources) is list:
+        err_msg = 'list of workflows not provided'
+        logger.error("%s", err_msg)
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+
     for wf_def_source in wf_def_sources:
-        def_source_id = wf_def_source['definition_source']
-        wfe_type = wf_def_source['wfe_type']
+        try:
+            def_source_id = wf_def_source['definition_source']
+            wfe_type = wf_def_source['wfe_type']
+            if not def_source_id or not wfe_type:
+                raise ValueError('WF Value missing')
+        except Exception as e:
+            err_msg = 'One or more required value of WF missing'
+            logger.error("%s. Exception [%s]", err_msg, str(e))
+            return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
+
         workflow_definition = get_wfd(def_source_id)
         if workflow_definition is None:
             continue
