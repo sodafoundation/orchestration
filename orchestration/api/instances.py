@@ -43,6 +43,13 @@ status_map = {'requested': 'Running', 'succeeded': 'Success',
 def instance_ops(tenant_id=''):
     c = Connector().morph()
     content = request.get_json()
+    AUTH_TOKEN = request.headers.get('X-Auth-Token')
+
+    # TODO: Need to check, When orchestration APIs authentication
+    # is implemented
+    if AUTH_TOKEN == '' or AUTH_TOKEN is None:
+        err_msg = 'Bad Request. Authentication Token is missing'
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
 
     if tenant_id == '':
         err_msg = 'bad URL. tenant id is empty'
@@ -91,6 +98,7 @@ def instance_ops(tenant_id=''):
         logger.info("no user_id provided. Exception [%s]", str(e))
 
     content['parameters']['tenant_id'] = tenant_id
+    content['parameters']['auth_token'] = AUTH_TOKEN
     try:
         rc, ret = c.execute_action(content)
         if(rc != Apiconstants.HTTP_CREATED):
@@ -120,6 +128,7 @@ def instance_ops(tenant_id=''):
     service_map['created_at'] = service_obj['created_at']
     service_map['updated_at'] = service_obj['updated_at']
     service_map['input'] = ret_json['parameters']
+    del service_map['input']['auth_token']
 
     wf_hash = {}
     wf_hash['id'] = ret_json['id']
@@ -250,6 +259,8 @@ def wf_ops(tenant_id='', instance_id=''):
                 status, output = _update_status_and_output(service['id'])
                 service['status'] = status
                 service['output'] = output
+                service['service_id'] = service['service_definition_id']
+                del service['service_definition_id']
         else:
             try:
                 ret = get_service(None, instance_id)
@@ -261,6 +272,8 @@ def wf_ops(tenant_id='', instance_id=''):
             status, output = _update_status_and_output(instance_id)
             ret['status'] = status
             ret['output'] = output
+            ret['service_id'] = ret['service_definition_id']
+            del ret['service_definition_id']
 
         logger.debug("returning list of workflows: %s" % (ret))
         return jsonify(ret), 200
