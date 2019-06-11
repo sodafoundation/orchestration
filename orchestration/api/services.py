@@ -77,6 +77,7 @@ def get_services(tenant_id='', service_id=''):
 def add_services(tenant_id=''):
     payload = request.get_json()
     service_data = json.loads(json.dumps(payload))
+    service_data['tenant_id'] = tenant_id
     wf_def_sources = service_data['workflows']
 
     # Validate the request sent
