@@ -22,6 +22,8 @@ from logging.handlers import RotatingFileHandler
 # flask server configuration
 HOST = "127.0.0.1"
 PORT = "5000"
+config_file = 'orchestration.conf'
+
 
 # logging configuration
 LOGGING_FILE = "/var/log/opensds/orchestration.log"

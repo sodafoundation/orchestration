@@ -19,8 +19,6 @@ from orchestration.utils import config
 from orchestration.api.instances import instance
 from orchestration.api.tasks import task
 
-config_file = 'orchestration.conf'
-
 
 class ServerManager:
     app = Flask(__name__)
@@ -47,8 +45,8 @@ if __name__ == '__main__':
     # If config file is specified in command line, use that file
     # Else use default config file'orchestration.conf'
     if len(sys.argv) > 1:
-        config_file = sys.argv[1]
-        config.init_config(config_file)
+        config.config_file = sys.argv[1]
+        config.init_config(config.config_file)
     else:
-        config.init_config(config_file)
+        config.init_config(config.config_file)
     server_manager.start()

@@ -14,7 +14,7 @@
 
 from orchestration.connectionmanager.st2 import St2
 from orchestration.utils.config import get_workflow_config
-import orchestration
+from orchestration.utils.config import config_file
 
 # This class is the interface for all the different form of
 # Workflow Manager
@@ -27,8 +27,7 @@ class Connector(object):
     # return the instance of that technology
     def morph(self):
         try:
-            (tech, server, user, passwd) = get_workflow_config(
-                orchestration.server.config_file)
+            (tech, server, user, passwd) = get_workflow_config(config_file)
             if tech == 'St2':
                 return St2(server, user, passwd)
         except Exception as ex:
