@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import configparser
+import errno
+import os
 from cryptography.fernet import Fernet
 import logging
 from logging.handlers import RotatingFileHandler
@@ -20,7 +22,6 @@ from logging.handlers import RotatingFileHandler
 # flask server configuration
 HOST = "127.0.0.1"
 PORT = "5000"
-CONFIG_FILE = '/etc/opensds/orchestration.conf'
 
 # logging configuration
 LOGGING_FILE = "/var/log/opensds/orchestration.log"
@@ -53,40 +54,27 @@ def init_logging():
     logger.addHandler(server_log_file)
 
 
-def init_config(file='orchestration.conf'):
+def init_config(file):
     global conf
     global HOST
     global PORT
 
-    conf = configparser.ConfigParser()
-    dataset = conf.read(file)
-    if len(dataset) == 0:
-        logger.error("Failed to open orchestration config file: [%s]" % file)
-        file = 'orchestration.conf'
-        logger.warning("Creating default config file at: [%s]" % file)
-        # create default template config file
-        cfgfile = open(file, 'w')
+    try:
+        conf = configparser.ConfigParser()
+        dataset = conf.read(file)
+        if len(dataset) == 0:
+            logger.error(
+                "Failed to open orchestration config file: [%s]" % file)
+            raise IOError(
+                errno.ENOENT, os.strerror(errno.ENOENT), file)
 
-        # fill config file with default data
-        conf.add_section('orchestration')
-        conf.set('orchestration', 'host', HOST)
-        conf.set('orchestration', 'port', PORT)
-        conf.add_section('workflow')
-        conf.set('workflow', 'tech', 'St2')
-        conf.set('workflow', 'host', '127.0.0.1')
-        conf.set('workflow', 'username', 'St2')
-        conf.set('workflow', 'encripted_password', 'false')
-        conf.set('workflow', 'password', 'password')
-        conf.set('workflow', 'phrase', '')
-
-        conf.write(cfgfile)
-        cfgfile.close()
-
-    HOST = conf['orchestration']['host']
-    PORT = conf['orchestration']['port']
+        HOST = conf['orchestration']['host']
+        PORT = conf['orchestration']['port']
+    except Exception as ex:
+        raise ex
 
 
-def get_workflow_config():
+def get_workflow_config(file):
     global conf
     tech = ''
     server = ''
@@ -94,26 +82,31 @@ def get_workflow_config():
     passwd = ''
 
     try:
+        conf = configparser.ConfigParser()
+        dataset = conf.read(file)
+        if len(dataset) == 0:
+            logger.error(
+                "Failed to open orchestration config file: [%s]" % file)
+            raise IOError(
+                errno.ENOENT, os.strerror(errno.ENOENT), file)
         server = conf.get('workflow', 'host')
         user = conf.get('workflow', 'username')
         tech = conf.get('workflow', 'tech')
-        encripted = conf.get('workflow', 'encripted_password')
-        if encripted == 'false':
+        encrypted = conf.get('workflow', 'encrypted_password')
+        if encrypted == 'false':
             passwd = conf.get('workflow', 'password')
         else:
             phrase = conf.get('workflow', 'phrase')
             ciphered_suite = Fernet(phrase.encode())
             passwd = (ciphered_suite.decrypt(passwd.encode()))
     except Exception as ex:
-        print(passwd)
         print(ex)
         raise ex
-    finally:
-        return tech, server, user, passwd
+
+    return tech, server, user, passwd
 
 
 init_logging()
-init_config(CONFIG_FILE)
 
 # database configuration
 DATABASE = {

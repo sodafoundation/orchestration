@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 from flask import Flask
 from orchestration.api.services import service
 from orchestration.utils import config
 from orchestration.api.instances import instance
 from orchestration.api.tasks import task
+
+config_file = 'orchestration.conf'
 
 
 class ServerManager:
@@ -41,4 +44,11 @@ class ServerManager:
 server_manager = ServerManager()
 
 if __name__ == '__main__':
+    # If config file is specified in command line, use that file
+    # Else use default config file'orchestration.conf'
+    if len(sys.argv) > 1:
+        config_file = sys.argv[1]
+        config.init_config(config_file)
+    else:
+        config.init_config(config_file)
     server_manager.start()

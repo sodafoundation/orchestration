@@ -25,8 +25,7 @@ def test_config_init():
 
 
 def test_get_workflow_config():
-    config.init_config(FILE)
-    (tech, server, user, passwd) = config.get_workflow_config()
+    (tech, server, user, passwd) = config.get_workflow_config(FILE)
     assert tech == 'St2'
     assert server == '10.0.0.1'
     assert user == 'st2admin'
