@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from orchestration.connectionmanager.st2 import St2
-from orchestration.connectionmanager.credcreator import CredCreator
+from orchestration.utils.config import get_workflow_config
+from orchestration.utils.config import config_file
 
 # This class is the interface for all the different form of
 # Workflow Manager
@@ -26,7 +27,7 @@ class Connector(object):
     # return the instance of that technology
     def morph(self):
         try:
-            (tech, server, user, passwd) = CredCreator().get_creds()
+            (tech, server, user, passwd) = get_workflow_config(config_file)
             if tech == 'St2':
                 return St2(server, user, passwd)
         except Exception as ex:
