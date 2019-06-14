@@ -142,10 +142,14 @@ def create_service(context, values):
 
 
 def get_service(context, id):
-    with session_scope() as session:
-        query = session.query(models.Service).filter(
-            models.Service.id == id)
-    return None if not query else query.first().to_dict()
+    try:
+        with session_scope() as session:
+            query = session.query(models.Service).filter(
+                models.Service.id == id)
+        return None if not query else query.first().to_dict()
+    except Exception as e:
+        logger.error("exception while getting the service %s: [%s]", str(e))
+        return None
 
 
 def list_services(context, **filters):

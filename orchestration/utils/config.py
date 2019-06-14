@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import configparser
+import errno
+import os
+from cryptography.fernet import Fernet
 import logging
 from logging.handlers import RotatingFileHandler
 
 # flask server configuration
 HOST = "127.0.0.1"
 PORT = "5000"
+config_file = 'orchestration.conf'
+
 
 # logging configuration
 LOGGING_FILE = "/var/log/opensds/orchestration.log"
@@ -25,6 +31,7 @@ LOGGING_FORMAT = "[%(asctime)s] [%(levelname)s] [%(filename)s] " \
     "[%(funcName)s():%(lineno)s] [PID:%(process)d TID:%(thread)d] %(message)s"
 LOGGING_LEVEL = "INFO"
 logger = None
+conf = None
 
 
 def init_logging():
@@ -49,7 +56,60 @@ def init_logging():
     logger.addHandler(server_log_file)
 
 
+def init_config(file):
+    global conf
+    global HOST
+    global PORT
+
+    try:
+        conf = configparser.ConfigParser()
+        dataset = conf.read(file)
+        if len(dataset) == 0:
+            logger.error(
+                "Failed to open orchestration config file: [%s]" % file)
+            raise IOError(
+                errno.ENOENT, os.strerror(errno.ENOENT), file)
+
+        HOST = conf['orchestration']['host']
+        PORT = conf['orchestration']['port']
+    except Exception as ex:
+        raise ex
+
+
+def get_workflow_config(file):
+    global conf
+    tech = ''
+    server = ''
+    user = ''
+    passwd = ''
+
+    try:
+        conf = configparser.ConfigParser()
+        dataset = conf.read(file)
+        if len(dataset) == 0:
+            logger.error(
+                "Failed to open orchestration config file: [%s]" % file)
+            raise IOError(
+                errno.ENOENT, os.strerror(errno.ENOENT), file)
+        server = conf.get('workflow', 'host')
+        user = conf.get('workflow', 'username')
+        tech = conf.get('workflow', 'tech')
+        encrypted = conf.get('workflow', 'encrypted_password')
+        if encrypted == 'false':
+            passwd = conf.get('workflow', 'password')
+        else:
+            phrase = conf.get('workflow', 'phrase')
+            ciphered_suite = Fernet(phrase.encode())
+            passwd = (ciphered_suite.decrypt(passwd.encode()))
+    except Exception as ex:
+        print(ex)
+        raise ex
+
+    return tech, server, user, passwd
+
+
 init_logging()
+
 # database configuration
 DATABASE = {
     'sqlalchemy.url': 'sqlite:///osdsorch.sqlite'
