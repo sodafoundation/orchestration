@@ -36,13 +36,13 @@ def test_post_instance(client):
             "destBucketName": "hw-orchestrate"
         }
     }
-    url = '/v1beta/xyz/orchestration/instances'
+    url = '/orchestration/xyz/instances'
     response = client.post(url, data=json.dumps(data), headers=header)
     assert response.status_code == 400
 
 
 def test_list_instance(client):
-    response = client.get('/v1beta/xyz/orchestration/instances')
+    response = client.get('/orchestration/xyz/instances')
     assert response.status_code == 200
 
 
@@ -53,7 +53,7 @@ def test_list_instance_wrong_url(client):
 
 def test_get_instance_by_id(client):
     id = str(uuid.uuid4())
-    url = '/v1beta/xyz/orchestration/instances/' + id
+    url = '/orchestration/xyz/instances/' + id
     response = client.get(url)
     assert response.json == {}
 
@@ -65,7 +65,7 @@ def mockreturn(self='', id='', name=''):
 
 def test_delete_instance(client, monkeypatch):
     id = str(uuid.uuid4())
-    url = '/v1beta/xyz/orchestration/' + id
+    url = '/orchestration/xyz/' + id
     response = client.delete(url)
     # This should return 404 error as the ID is not present
     assert response.status_code == 404
@@ -73,7 +73,7 @@ def test_delete_instance(client, monkeypatch):
 
 def test_put_instance(client, monkeypatch):
     id = str(uuid.uuid4())
-    url = '/v1beta/xyz/orchestration/' + id
+    url = '/orchestration/xyz/' + id
     type_mime = 'application/json'
     header = {'Content-Type': type_mime, 'Accept': type_mime}
     data = {}
@@ -83,5 +83,5 @@ def test_put_instance(client, monkeypatch):
 
 
 def test_get_instance(client):
-    response = client.get('/v1beta/xyz/orchestration/instances/a1bcd')
+    response = client.get('/orchestration/xyz/instances/a1bcd')
     assert response.status_code == 404

@@ -16,12 +16,12 @@ import uuid
 
 
 def test_list_service(client):
-    response = client.get('/v1beta/xyz/orchestration/services')
+    response = client.get('/orchestration/xyz/services')
     assert response.status_code == 200
 
 
 def test_get_service(client):
     id = str(uuid.uuid4())
-    url = '/v1beta/xyz/orchestration/services' + id
+    url = '/orchestration/xyz/services' + id
     response = client.get(url)
     assert response.status_code == 404

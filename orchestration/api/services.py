@@ -26,8 +26,11 @@ service = Blueprint("service", __name__)
 
 
 # This API will provide the list of all the Service Definitions
+# FIXME: temporarily changing the URL to:
+# /orchestration/<string:tenant_id>/services
+# Ideally it should be: /v1beta/<string:tenant_id>/orchestration/services
 @service.route(
-    "/v1beta/<string:tenant_id>/orchestration/services",
+    "/orchestration/<string:tenant_id>/services",
     methods=['GET'])
 def list_services(tenant_id=''):
     service_def_list = list_service_definitions(None)
@@ -59,8 +62,11 @@ def list_services(tenant_id=''):
 
 
 # This API will provide the details of the service 'id' provided
+# FIXME: /orchestration/<string:tenant_id>/services/<string:service_id>
+# It should be fixed to:
+# /v1beta/<string:tenant_id>/orchestration/services/<string:service_id>
 @service.route(
-    "/v1beta/<string:tenant_id>/orchestration/services/<string:service_id>",
+    "/orchestration/<string:tenant_id>/services/<string:service_id>",
     methods=['GET'])
 def get_services(tenant_id='', service_id=''):
     service_def_hash = get_service_def(service_id)
@@ -72,7 +78,7 @@ def get_services(tenant_id='', service_id=''):
 
 # API to register the ServiceDefinitions to Orchestration Manager
 @service.route(
-    "/v1beta/<string:tenant_id>/orchestration/services",
+    "/orchestration/<string:tenant_id>/services",
     methods=['POST'])
 def add_services(tenant_id=''):
     payload = request.get_json()
