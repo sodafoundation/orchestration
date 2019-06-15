@@ -133,7 +133,6 @@ def instance_ops(tenant_id=''):
     service_map['created_at'] = service_obj['created_at']
     service_map['updated_at'] = service_obj['updated_at']
     service_map['input'] = ret_json['parameters']
-    del service_map['input']['auth_token']
 
     wf_hash = {}
     wf_hash['id'] = ret_json['id']
