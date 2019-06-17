@@ -108,6 +108,26 @@ def get_workflow_config(file):
     return tech, server, user, passwd
 
 
+def get_config(file, section, key):
+    global conf
+    value = ''
+
+    try:
+        conf = configparser.ConfigParser()
+        dataset = conf.read(file)
+        if len(dataset) == 0:
+            logger.error(
+                "Failed to open orchestration config file: [%s]" % file)
+            raise IOError(
+                errno.ENOENT, os.strerror(errno.ENOENT), file)
+        value = conf.get(section, key)
+    except Exception as ex:
+        print(ex)
+        raise ex
+
+    return value
+
+
 init_logging()
 
 # database configuration
