@@ -24,28 +24,6 @@ workflows:
           on-error:
             - fail
         tasks:
-            get_bucket:
-                action: opensds.get-bucket
-                input:
-                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/s3/"
-                    bucket_name: "<% $.destBucketName %>"
-                    auth_token: '<% $.auth_token %>'
-                publish:
-                    print_status: <% task(get_bucket).result.stdout %>
-                on-success:
-                    - create_bucket_migration
-                on-error:
-                    - create_bucket
-            create_bucket:
-                action: opensds.create-bucket
-                input:
-                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/s3/<% $.destBucketName %>"
-                    backend_name: "<% $.destBackend %>"
-                    auth_token: '<% $.auth_token %>'
-                publish:
-                    print_status: <% task(create_bucket).result.stdout %>
-                on-success:
-                    - create_bucket_migration
             create_bucket_migration:
                 action: opensds.create-bucket-migration
                 input:

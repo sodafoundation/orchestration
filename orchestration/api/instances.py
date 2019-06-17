@@ -20,10 +20,11 @@ import json
 from orchestration.db.api \
     import create_workflow, create_service, \
     get_sd_wfd_association, delete_service, get_wf_sd, \
-    list_services, get_service, get_service_definition,\
+    list_services, get_service, get_service_definition, \
     get_execid_instance, update_service, update_workflow
 from orchestration.api.apiconstants import Apiconstants
-from orchestration.utils.config import logger
+from orchestration.utils.config import logger, config_file, \
+    get_config
 
 instance = Blueprint("instance", __name__)
 
@@ -44,13 +45,11 @@ def instance_ops(tenant_id=''):
     c = Connector().morph()
     content = request.get_json()
     AUTH_TOKEN = request.headers.get('X-Auth-Token')
-
     # TODO: Need to check, When orchestration APIs authentication
     # is implemented
     if AUTH_TOKEN == '' or AUTH_TOKEN is None:
         err_msg = 'Bad Request. Authentication Token is missing'
         return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
-
     if tenant_id == '':
         err_msg = 'bad URL. tenant id is empty'
         return jsonify(err_msg), Apiconstants.HTTP_ERR_NOTFOUND
@@ -98,6 +97,26 @@ def instance_ops(tenant_id=''):
     except Exception as e:
         # If description is not provided, the instance creation should proceed
         logger.info("no user_id provided. Exception [%s]", str(e))
+
+    # action of the instance creator
+    try:
+        action = content['action']
+        if action == '':
+            raise ValueError('Empty action provided')
+        if action == 'opensds.provision-volume':
+            content['parameters']['ip_addr'] = get_config(config_file,
+                                                          'hotpot', 'host')
+            content['parameters']['port'] = get_config(config_file,
+                                                       'hotpot', 'port')
+        else:
+            content['parameters']['ip_addr'] = get_config(config_file,
+                                                          'gelato', 'host')
+            content['parameters']['port'] = get_config(config_file,
+                                                       'gelato', 'port')
+    except Exception as e:
+        err_msg = 'required input action is missing'
+        logger.error("%s. Exception [%s]" % (err_msg, str(e)))
+        return jsonify(err_msg), Apiconstants.HTTP_ERR_BAD_REQUEST
 
     content['parameters']['tenant_id'] = tenant_id
     content['parameters']['auth_token'] = AUTH_TOKEN
