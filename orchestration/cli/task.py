@@ -20,8 +20,10 @@ from utils import get_url
 
 
 # API get tasks
-def get_task(exec_id):
-    url = get_url() + "tasks/" + exec_id
+def get_task(args):
+    if args.exec_id is None:
+        raise Exception('Missing parameter, "exec_id"')
+    url = get_url(args.project_id) + "tasks/" + args.exec_id
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Instance list failed", resp.status_code)
@@ -30,8 +32,8 @@ def get_task(exec_id):
 
 
 # API get workflows
-def get_workflows():
-    url = get_url() + "workflows"
+def get_workflows(args):
+    url = get_url(args.project_id) + "workflows"
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for workflows list failed", resp.status_code)
