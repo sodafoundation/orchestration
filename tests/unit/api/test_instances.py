@@ -41,8 +41,39 @@ def test_post_instance(client):
     assert response.status_code == 400
 
 
+def test_post_instance_empty_1(client):
+    type_mime = 'application/json'
+    header = {'Content-Type': type_mime, 'Accept': type_mime}
+    data = {}
+    url = '/v1beta/xyz/orchestration/instances'
+    response = client.post(url, data=json.dumps(data), headers=header)
+    assert response.json == 'Bad Request. Authentication Token is missing'
+    assert response.status_code == 400
+
+
+def test_post_instance_empty_2(client):
+    type_mime = 'application/json'
+    header = {'Content-Type': type_mime, 'Accept': type_mime,
+              'X-Auth-Token': 'abcde'}
+    data = {}
+    url = '/v1beta//orchestration/instances'
+    response = client.post(url, data=json.dumps(data), headers=header)
+    assert response.status_code == 404
+
+
+def test_post_instance_empty_3(client):
+    type_mime = 'application/json'
+    header = {'Content-Type': type_mime, 'Accept': type_mime,
+              'X-Auth-Token': 'abcde'}
+    data = {'service_id': 'abc'}
+    url = '/v1beta/xyz/orchestration/instances'
+    response = client.post(url, data=json.dumps(data), headers=header)
+    assert response.status_code == 400
+
+
 def test_list_instance(client):
     response = client.get('/v1beta/xyz/orchestration/instances')
+    print(response.json)
     assert response.status_code == 200
 
 
