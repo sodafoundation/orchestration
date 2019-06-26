@@ -20,23 +20,24 @@ from requests.auth import HTTPBasicAuth
 import json
 
 # Input parameters
-OPENSDS_IP = "100.64.41.212"
-OPENSDS_TOKEN = ''  # Insert token here
+OPENSDS_IP = "127.0.0.1"
+OPENSDS_USER = 'admin'
+OPENSDS_PASS = 'opensds@123'
 ORCHESTRATOR_IP = "localhost"
 ORCHESTRATOR_PORT = '5000'
 ST2_USER = 'st2admin'
-ST2_PASSWORD = 'lbBIIK3P'
+ST2_PASSWORD = 'FEMAVZoU'
 ST2_HOST = "localhost"
 
 
-def get_info():
-    print("project_id:", get_project_id())
+def get_info(ip, user, password):
+    print("project_id:", get_project_id(ip, user, password))
 
 
-def get_project_id():
-    url = "http://" + OPENSDS_IP + "/identity/v3/projects"
+def get_project_id(ip, user, password):
+    url = "http://" + ip + "/identity/v3/projects"
     headers = {
-        'x-auth-token': OPENSDS_TOKEN
+        'x-auth-token': get_opensds_token(ip, user, password)
     }
     resp = requests.get(url=url, headers=headers)
     if resp.status_code != 200:
@@ -45,7 +46,7 @@ def get_project_id():
     json_resp = json.loads(resp.text)
 
     for proj in json_resp['projects']:
-        if proj['name'] == 'admin':
+        if proj['name'] == user:
             print("OpenSDS Project ID =", proj['id'])
             return proj['id']
 
@@ -53,10 +54,10 @@ def get_project_id():
     return ''
 
 
-def get_user_id():
-    url = "http://" + OPENSDS_IP + "/identity/v3/users"
+def get_user_id(ip, user, password):
+    url = "http://" + ip + "/identity/v3/users"
     headers = {
-        'x-auth-token': OPENSDS_TOKEN
+        'x-auth-token': get_opensds_token(ip, user, password)
     }
     resp = requests.get(url=url, headers=headers)
     if resp.status_code != 200:
@@ -65,7 +66,7 @@ def get_user_id():
     json_resp = json.loads(resp.text)
 
     for usr in json_resp['users']:
-        if usr['name'] == 'admin':
+        if usr['name'] == user:
             print("OpenSDS User ID =", usr['id'])
             return usr['id']
 
@@ -88,8 +89,8 @@ def get_st2_token():
     return tok
 
 
-def get_opensds_token():
-    url = "http://" + OPENSDS_IP + "/identity/v3/auth/tokens"
+def get_opensds_token(ip, user, password):
+    url = "http://" + ip + "/identity/v3/auth/tokens"
     headers = {
         'content-type': 'application/json'
     }
@@ -99,10 +100,18 @@ def get_opensds_token():
                 "methods": ["password"],
                 "password": {
                     "user": {
-                        "name": "admin",
+                        "name": user,
                         "domain": {"id": "default"},
-                        "password": "opensds@123"
+                        "password": password
                     }
+                }
+            },
+            "scope": {
+                "project": {
+                    "domain": {
+                        "id": "default"
+                    },
+                    "name": user
                 }
             }
         }
@@ -116,9 +125,9 @@ def get_opensds_token():
     return resp.headers['X-Subject-Token']
 
 
-def get_url():
+def get_url(ip=OPENSDS_IP, user=OPENSDS_USER, password=OPENSDS_PASS):
     return(
         "http://" + ORCHESTRATOR_IP +
         ":" + ORCHESTRATOR_PORT +
-        "/v1beta/" + get_project_id() +
+        "/v1beta/" + get_project_id(ip, user, password) +
         "/orchestration/")

@@ -17,7 +17,7 @@
 
 import requests
 import json
-from utils import OPENSDS_IP, OPENSDS_TOKEN, get_project_id, get_url
+from utils import OPENSDS_IP, get_opensds_token, get_project_id, get_url
 
 
 # API get instances
@@ -47,7 +47,7 @@ def run_instance(service_id):
                 "tenant_id": get_project_id(),
                 "size": 1,
                 "name": "full",
-                "auth_token": OPENSDS_TOKEN
+                "auth_token": get_opensds_token()
             }
     }
 

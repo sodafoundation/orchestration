@@ -6,7 +6,7 @@ Steps to run CLI:
 1. Deploy OpenSDS (https://github.com/opensds/opensds/wiki)
 2. Deploy StackStorm with OpenSDS packs (https://github.com/opensds/orchestration/blob/master/docs/INSTALL.md)
 3. Start Orchestrator (https://github.com/opensds/orchestration/blob/master/docs/INSTALL.md)
-4. Update input parameters in util.py file (OPENSDS_IP, OPENSDS_TOKEN, ORCHESTRATOR_IP, etc.)
+4. Update input parameters in util.py file (OPENSDS_IP, ORCHESTRATOR_IP, etc.)
 
 Example Usage:
 
