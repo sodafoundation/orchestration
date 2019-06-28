@@ -22,9 +22,9 @@ from utils import get_url
 
 # API get tasks
 def get_task(args):
-    if args.exec_id is None:
-        raise Exception('Missing parameter, "exec_id"')
-    url = get_url(args.project_id) + "tasks/" + args.exec_id
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "tasks/" + args.id
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Instance list failed", resp.status_code)

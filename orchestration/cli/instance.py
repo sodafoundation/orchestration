@@ -29,11 +29,12 @@ def list_instances(args):
 
     print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
+
 # API get instances
 def get_instances(args):
-    if args.instance_id is None:
-        raise Exception('Missing parameter, "instance_id"')
-    url = get_url(args.project_id) + "instances/" + args.instance_id
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "instances/" + args.id
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Instance get failed", resp.status_code)
@@ -43,9 +44,9 @@ def get_instances(args):
 
 # API delete instances
 def delete_instances(args):
-    if args.instance_id is None:
-        raise Exception('Missing parameter, "instance_id"')
-    url = get_url(args.project_id) + "instances/" + args.instance_id
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "instances/" + args.id
     resp = requests.delete(url=url)
     if resp.status_code != 200:
         print("Request for Instance delete failed", resp.status_code)

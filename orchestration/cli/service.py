@@ -21,9 +21,9 @@ from utils import get_url
 
 # API get service from id
 def get_services(args):
-    if args.service_id is None:
-        raise Exception('Missing parameter, "service_id"')
-    url = get_url(args.project_id) + "services/" + args.service_id
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "services/" + args.id
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Service failed", resp.status_code)
