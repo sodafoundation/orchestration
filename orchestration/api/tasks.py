@@ -48,8 +48,7 @@ def get_task_status(tenant_id='', exec_id=''):
             task_hash['published'] = published_res
     except Exception as ex:
         logger.error(
-                        "Received exception in getting task status: {}"
-                        .format(ex.message))
+                        "Received exception in getting task status: %s", ex)
         return jsonify(
                         Apiconstants.TASK_ERR_MSG
                     ), Apiconstants.HTTP_ERR_NOTFOUND

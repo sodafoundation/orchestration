@@ -13,6 +13,10 @@
 # limitations under the License.
 
 import uuid
+from mock import Mock
+import datetime
+import json
+from orchestration.connectionmanager.st2 import St2
 
 
 def test_tasks_output(client):
@@ -24,4 +28,32 @@ def test_tasks_output(client):
 
 def test_tasks_no_exec_id(client):
     response = client.get('/v1beta/orchestration/tasks')
+    assert response.status_code == 404
+
+
+def test_get_task_status(client, monkeypatch):
+    id = str(uuid.uuid4())
+    url = '/v1beta/xyz/orchestration/tasks/' + id
+    # Form the data to be mocked
+    data = {}
+    data['id'] = id
+    data['start_timestamp'] = str(datetime.datetime.now())
+    data['end_timestamp'] = str(datetime.datetime.now())
+    data['status'] = 'Success'
+    temp = {}
+    temp['tasks'] = []
+    data['result'] = temp
+
+    St2.get_execution_stats = Mock(return_value=(200, json.dumps(data)))
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+def test_get_task_status_invalid(client):
+    id = str(uuid.uuid4())
+    url = '/v1beta/xyz/orchestration/tasks/' + id
+    # Form the data to be mocked
+    data = {}
+    St2.get_execution_stats = Mock(return_value=(200, json.dumps(data)))
+    response = client.get(url)
     assert response.status_code == 404
