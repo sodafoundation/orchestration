@@ -47,6 +47,6 @@ $ ./orchctl --help
 $ ./orchctl info
 $ ./orchctl service list
 $ ./orchctl service add
-$ ./orchctl service get --service_id d8360a8a-6c5e-4533-a18a-b446db8caac8 
+$ ./orchctl service get --service_id d8360a8a-6c5e-4533-a18a-b446db8caac8
 $ ./orchctl instance get
 $ ./orchctl instance run --data '{"service_id":"08e8a8a3-7a78-43d3-9ab1-45fe7a60d4eb","action":"opensds.provision-volume","name":"Volume Provision name","description":"Volume Provision description","user_id":"558057c4256545bd8a307c37464003c9","parameters":{"ip_addr":"127.0.0.1","port":"50040","tenant_id":"94b280022d0c4401bcf3b0ea85870519","size":1,"name":"test"}}'

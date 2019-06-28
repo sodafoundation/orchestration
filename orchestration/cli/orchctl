@@ -18,7 +18,7 @@
 import argparse
 from argparse import RawTextHelpFormatter
 from service import add_services, list_services, get_services
-from instance import get_instances, run_instance
+from instance import list_instances, get_instances, delete_instances, run_instance
 from task import get_task, get_workflows
 from utils import update_config_vars, get_info
 import utils
@@ -41,7 +41,9 @@ def service_api(args):
 def instance_api(args):
     switcher = {
         "run": run_instance,
+        "list": list_instances,
         "get": get_instances,
+        "delete": delete_instances,
     }
 
     func = switcher.get(args.operation, None)
@@ -93,6 +95,7 @@ def cli():
         formatter_class=RawTextHelpFormatter
     )
 
+    # Main options
     parser.add_argument('-a','--address', help='ip address of opensds hotpot')
     parser.add_argument('-u','--user', help='username for opensds hotpot')
     parser.add_argument('-p','--password', help='password for opensds hotpot')
@@ -103,30 +106,36 @@ def cli():
 
     subparsers = parser.add_subparsers()
 
+    # Subcommand - service
     parser_service = subparsers.add_parser(
-        'service', help='service takes operation: [get, list, add]')
+        'service', help='service takes operation: [list, get, add]')
     parser_service.add_argument(
-        'operation', help='available operations [get, list, add]')
+        'operation', help='available operations [list, get, add]')
     parser_service.add_argument(
         '-s', '--service_id', help='Service ID for get subcommand')
     parser_service.add_argument(
         '-d','--data', help='JSON data of Serive for add subcommand')
     parser_service.set_defaults(func=service_api)
 
+    # Subcommand - instance
     parser_instance = subparsers.add_parser(
-        'instance', help='instance takes operation: [get, run]')
+        'instance', help='instance takes operation: [list, get, delete, run]')
     parser_instance.add_argument(
-        'operation', help='available operations [get, run]')
+        'operation', help='available operations [list, get, delete, run]')
+    parser_instance.add_argument(
+        '-i', '--instance_id', help='Instance ID for get subcommand')
     parser_instance.add_argument(
         '-d', '--data', help='JSON data of Instance for run subcommand')
     parser_instance.set_defaults(func=instance_api)
 
+    # Subcommand - workflow
     parser_workflow = subparsers.add_parser(
         'workflow', help='workflow takes operation: [get]')
     parser_workflow.add_argument(
         'operation', help='available operations [get]')
     parser_workflow.set_defaults(func=workflow_api)
 
+    # Subcommand - task
     parser_task = subparsers.add_parser(
         'task', help='For getting Task Status. "task" takes operation: [get]')
     parser_task.add_argument(
@@ -134,6 +143,7 @@ def cli():
     parser_task.add_argument('--id', help='Execution ID of the task')
     parser_task.set_defaults(func=task_api)
 
+    # Subcommand - info
     parser_info = subparsers.add_parser(
         'info', help='info returns details of current configuration')
     parser_info.set_defaults(func=info_api)

@@ -28,7 +28,7 @@ def get_services(args):
     if resp.status_code != 200:
         print("Request for Service failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API get services
@@ -38,7 +38,7 @@ def list_services(args):
     if resp.status_code != 200:
         print("Request for Services list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API register services
@@ -75,4 +75,4 @@ def add_services(args):
     if resp.status_code != 200:
         print("Request for Register Services failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))

@@ -16,6 +16,7 @@
 
 
 import requests
+import json
 from utils import get_url
 
 
@@ -28,7 +29,7 @@ def get_task(args):
     if resp.status_code != 200:
         print("Request for Instance list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API get workflows
@@ -38,4 +39,4 @@ def get_workflows(args):
     if resp.status_code != 200:
         print("Request for workflows list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))

@@ -16,17 +16,41 @@
 
 
 import requests
+import json
 from utils import get_url, get_opensds_token
 
 
-# API get instances
-def get_instances(args):
+# API list instances
+def list_instances(args):
     url = get_url(args.project_id) + "instances"
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Instance list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
+
+# API get instances
+def get_instances(args):
+    if args.instance_id is None:
+        raise Exception('Missing parameter, "instance_id"')
+    url = get_url(args.project_id) + "instances/" + args.instance_id
+    resp = requests.get(url=url)
+    if resp.status_code != 200:
+        print("Request for Instance get failed", resp.status_code)
+
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
+
+
+# API delete instances
+def delete_instances(args):
+    if args.instance_id is None:
+        raise Exception('Missing parameter, "instance_id"')
+    url = get_url(args.project_id) + "instances/" + args.instance_id
+    resp = requests.delete(url=url)
+    if resp.status_code != 200:
+        print("Request for Instance delete failed", resp.status_code)
+
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API run instance
@@ -61,4 +85,4 @@ def run_instance(args):
             "Request for Run Provision Volume Services failed",
             resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
