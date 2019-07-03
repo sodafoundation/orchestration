@@ -1,0 +1,19 @@
+---
+description: Check if migration is needed.
+enabled: true
+entry_point: check_if_migration_needed.py
+name: check_if_migration_needed
+parameters:
+  src_bucket_name:
+    type: string
+    description: "Source Bucket Name."
+    required: true
+  dest_bucket_name:
+    type: string
+    description: "Destination Bucket Name."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: false
+runner_type: "python-script"

@@ -1,0 +1,48 @@
+---
+description: Migrate and Data Analysis Service
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/data_analysis.yaml
+name: data-analysis
+pack: opensds
+parameters:
+  ip_addr:
+    required: true
+    description: "Host IP for the OpenSDS."
+    type: string
+  port:
+    required: true
+    description: "Port for the service."
+    type: string
+  tenant_id:
+    required: true
+    description: "Tenant ID."
+    type: string
+  user_id:
+    required: true
+    description: "User ID."
+    type: string
+  dest_backend_name:
+    required: true
+    description: "Destination Backend Storage Name."
+    type: string
+  src_bucket_name:
+    required: true
+    description: "Source Bucket Name."
+    type: string
+  dest_bucket_name:
+    required: true
+    description: "Destination Bucket Name."
+    type: string
+  analysis_engine_type:
+    required: true
+    description: "Data Analysis Egine Type."
+    type: string
+  analysis_args:
+    required: true
+    description: "Arguments Used for Data Analysis."
+    type: object
+  auth_token:
+    required: false
+    description: "Authentication Token."
+    type: string

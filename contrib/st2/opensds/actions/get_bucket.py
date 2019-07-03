@@ -21,7 +21,8 @@ from st2common.runners.base_action import Action
 class GetBucketAction(Action):
     def run(self, url, bucket_name, auth_token):
         headers = {
-            'x-auth-token': auth_token
+            'x-auth-token': auth_token,
+            'Content-type': 'application/xml'
         }
         r = requests.get(url=url, headers=headers)
         r.raise_for_status()
