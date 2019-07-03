@@ -1,0 +1,112 @@
+---
+version: "2.0"
+name: "opensds.data-analysis"
+
+workflows:
+
+    main:
+        type: direct
+        input:
+            - ip_addr
+            - port
+            - tenant_id
+            - user_id
+            - auth_token
+            - name
+            - src_bucket_name
+            - dest_bucket_name
+            - dest_backend_name
+            - analysis_engine_type
+            - analysis_args
+        output:
+            tagline: "<% $.print_status %>"
+        task-defaults:
+          on-error:
+            - fail
+        tasks:
+            get_bucket:
+                action: opensds.get-bucket
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/s3/"
+                    bucket_name: "<% $.dest_bucket_name %>"
+                    auth_token: '<% $.auth_token %>'
+                publish:
+                    print_status: <% task(get_bucket).result.stdout %>
+                on-success:
+                    - execute_analysis: <% $.src_bucket_name = $.dest_bucket_name %>
+                    - create_bucket_migration: <% $.src_bucket_name != $.dest_bucket_name %>
+                on-error:
+                    - create_bucket
+            create_bucket:
+                action: opensds.create-bucket
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/s3/<% $.dest_bucket_name %>"
+                    backend_name: "<% $.dest_backend_name %>"
+                    auth_token: '<% $.auth_token %>'
+                publish:
+                    print_status: <% task(create_bucket).result.stdout %>
+                on-success:
+                    - create_bucket_migration
+            create_bucket_migration:
+                action: opensds.create-bucket-migration
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/<% $.tenant_id %>/plans"
+                    tenant_id: "<% $.tenant_id %>"
+                    user_id: "<% $.user_id %>"
+                    name: "analysis_<% $.name %>"
+                    description: "migration for data analysis"
+                    src_bucket_name: "<% $.src_bucket_name %>"
+                    dest_bucket_name: "<% $.dest_bucket_name %>"
+                    remain_source: true
+                    auth_token: '<% $.auth_token %>'
+                publish:
+                    migrationId: <% task(create_bucket_migration).result.result %>
+                on-success:
+                    - execute_bucket_migration
+            execute_bucket_migration:
+                action: opensds.execute-bucket-migration
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/<% $.tenant_id %>/plans/<% $.migrationId %>/run"
+                    auth_token: '<% $.auth_token %>'
+                publish:
+                    jobId : <% task(execute_bucket_migration).result.result %>
+                on-success:
+                    - get_bucket_migration
+                on-error:
+                    - delete_bucket_migration
+            get_bucket_migration:
+                action: opensds.get-bucket-migration
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/<% $.tenant_id %>/jobs/<% $.jobId %>"
+                    auth_token: '<% $.auth_token %>'
+                publish:
+                    print_status : <% task(get_bucket_migration).result.stdout %>
+                on-success:
+                    - delete_bucket_migration
+                    - execute_analysis
+                on-error:
+                    - delete_bucket_migration
+            delete_bucket_migration:
+                action: opensds.delete-bucket-migration
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/<% $.tenant_id %>/plans/<% $.migrationId %>"
+                    tenant_id: "<% $.tenant_id %>"
+                    auth_token: '<% $.auth_token %>'
+                publish:
+                    print_status : <% task(delete_bucket_migration).result.stdout %>
+            execute_analysis:
+                action: opensds.execute-analysis
+                input:
+                    analysis_engine_type: '<% $.analysis_engine_type %>' 
+                    args: '<% $.analysis_args %>'
+                publish:
+                    print_status : <% task(execute_analysis).result.stdout %>
+                on-success:
+                    - load_objects
+            load_objects:
+                action: opensds.load-objects
+                input:
+                    url: "http://<% $.ip_addr %>:<% $.port %>/v1/s3/<% $.dest_bucket_name %>/?load"
+                    backend_name: "<% $.dest_backend_name %>"
+                    prefix: "<% $.dest_bucket_name %>/output/"
+                    auth_token: "<% $.auth_token %>"

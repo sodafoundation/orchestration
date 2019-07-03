@@ -1,0 +1,23 @@
+---
+description: Delete Bucket Migration Dataflow Plan from Multi-cloud
+enabled: true
+entry_point: delete_bucket_migration.py
+name: delete-bucket-migration
+parameters:
+  url:
+    type: string
+    description: "URL for Deleting Bucket Migration Dataflow Plan."
+    required: true
+  tenant_id:
+    type: string
+    description: "Tenant ID."
+    required: true
+  user_id:
+    type: string
+    description: "User ID."
+    required: false
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: false
+runner_type: "python-script"
