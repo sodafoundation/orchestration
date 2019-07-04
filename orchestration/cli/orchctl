@@ -80,18 +80,12 @@ def task_api(args):
         print(ret)
 
 
-def info_api(args):
-    update_config_vars(args)
-    get_info(utils.OPENSDS_IP, utils.OPENSDS_USER, utils.OPENSDS_PASS)
-
-
 def cli():
     description = """
     CLI for OpenSDS Orchestration Manager
 
     Example:
     ./orchctl --help
-    ./orchctl info
     ./orchctl service list
     ./orchctl service add --data '{ ... }'
     ./orchctl service get --id d8360a8a-6c5e-4533-a18a-b446db8caac8
@@ -161,12 +155,6 @@ def cli():
         help='Show status of the task')
     parser_task.add_argument('--id', help='Execution ID of the task')
     parser_task.set_defaults(func=task_api)
-
-    # Subcommand - info
-    parser_info = subparsers.add_parser(
-        'info',
-        help='Shows configs, tenant_id, user_id, token of Orchestrator')
-    parser_info.set_defaults(func=info_api)
 
     args = parser.parse_args()
 
