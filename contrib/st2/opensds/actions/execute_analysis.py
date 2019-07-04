@@ -66,9 +66,7 @@ class ExecAnalysisAction(Action):
             if status != 'SUCCEED':
                 ret = RET_FAILED
         else:
-            print (
-                "unsupported analysis engine type:%s" %
-                analysis_engine_type)
+            print("unsupported analysis engine type:%s" % analysis_engine_type)
             ret = RET_FAILED
 
         return ret
@@ -80,7 +78,7 @@ def get_job_end_status(client, jid):
         # get status each 30 seconds
         time.sleep(30)
         resp = client.describe_cluster(ClusterId=jid)
-        print resp
+        print(resp)
         # value for State:
         # 'STARTING'|'BOOTSTRAPPING'|'RUNNING'|'WAITING'|'TERMINATING'|'TERMINATED'|'TERMINATED_WITH_ERRORS'
         state = resp.get("Cluster").get("Status").get("State")

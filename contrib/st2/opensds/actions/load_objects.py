@@ -30,7 +30,7 @@ class LoadObjsAction(Action):
                    'accept': 'application/xml'
                    }
         r = requests.put(url=url, data=body, headers=headers)
-        print r.content
+        print(r.content)
         r.raise_for_status()
         if r.status_code == requests.codes.ok:
             response = ET.fromstring(r.text)
