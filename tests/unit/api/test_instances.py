@@ -41,7 +41,7 @@ def test_post_instance(client):
     assert response.status_code == 400
 
 
-def test_list_instance(client):
+def test_list_instance(client, no_om_autenticate):
     response = client.get('/v1beta/xyz/orchestration/instances')
     assert response.status_code == 200
 
