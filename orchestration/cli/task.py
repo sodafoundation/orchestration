@@ -16,24 +16,27 @@
 
 
 import requests
+import json
 from utils import get_url
 
 
 # API get tasks
-def get_task(exec_id):
-    url = get_url() + "tasks/" + exec_id
+def get_task(args):
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "tasks/" + args.id
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Instance list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API get workflows
-def get_workflows():
-    url = get_url() + "workflows"
+def get_workflows(args):
+    url = get_url(args.project_id) + "workflows"
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for workflows list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
