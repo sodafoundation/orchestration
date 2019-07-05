@@ -150,7 +150,9 @@ def instance_ops(tenant_id=''):
     except Exception as ex:
         err_msg = str(ex)
         logger.error("received exception in creating service: %s", err_msg)
-        return jsonify(err_msg), 400
+        err_ret = {}
+        err_ret['message'] = err_msg
+        return jsonify(err_ret), Apiconstants.HTTP_ERR_BAD_REQUEST
 
     # Now that service is created append appropriate values
     service_map['service_id'] = sd_id
