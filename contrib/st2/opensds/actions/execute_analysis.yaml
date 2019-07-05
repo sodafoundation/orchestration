@@ -1,0 +1,56 @@
+---
+description: execuete data analysis by calling APIs of cloud vendor
+enabled: true
+entry_point: execute_analysis.py
+name: execute-analysis
+parameters:
+  timeout:
+    default: 99999999
+  analysis_engine_type:
+    type: string
+    description: "aws-emr, huawei-mrs, etc. but only aws-emr supported now."
+    required: true
+  args:
+    type: object 
+    description: "cloud specific arguments for data analysis, in json string, example is as below."
+    # aws input format:
+    # {
+    #   'Name': 'string'
+    #   'AK': 'string'
+    #   'SK': 'string'
+    #   'Region': 'string'  #example: 'us-east-1'
+    #   'ReleaseLabel': 'string'   #example: 'emr-5.20.0'
+    #   'Instances': {
+    #       'MasterInstanceType': 'string'   #example: 'm3.xlarge'
+    #       'SlaveInstanceType': 'string'   #example: 'm3.xlarge'
+    #       'InstanceCount': 123   #example: 4 (means 1 master node and 3 slave nodes)
+    #       'KeepJobFlowAliveWhenNoSteps': True|False
+    #       'TerminationProtected': True|False
+    #   }
+    #   'JobFlowRole': 'string'   #example: 'EMR_EC2_DefaultRole'
+    #   'ServiceRole': 'string'   #example: 'EMR_DefaultRole'
+    #   'VisibleToAllUsers': True|False
+    #   'Applications': [
+    #       {
+    #           'Name': 'string'   #example: 'Hadoop'
+    #       }
+    #   ]
+    #   'Steps': [
+    #       {
+    #           'Name': 'string'
+    #           'ActionOnFailure': 'TERMINATE_JOB_FLOW'|'TERMINATE_CLUSTER'|'CANCEL_AND_WAIT'|'CONTINUE'
+    #           'HadoopJarStep': {
+    #               # example: 's3n://elasticmapreduce/logprocessor.jar' or 'command-runner.jar'
+    #               'Jar': 'string'
+    #                # example: ['-input', 's3n://test/input', '-output', 's3n://test/output'] or ['state-pusher-script']
+    #               'Args':['string']
+    #           }
+    #       }
+    # ]
+    # }
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: false
+runner_type: "python-script"

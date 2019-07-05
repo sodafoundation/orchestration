@@ -1,0 +1,23 @@
+---
+description: Load objects from backend storage to OpenSDS.
+enabled: true
+entry_point: load_objects.py
+name: load-objects
+parameters:
+  url:
+    type: string
+    description: "URL for the Bucket Creation for multi-cloud S3 Interface."
+    required: true
+  backend_name:
+    type: string
+    description: "Name of the backend storage."
+    required: true
+  prefix:
+    type: string
+    description: "Prefix used to filter objects."
+    required: true
+  auth_token:
+    type: string
+    description: "Authentication Token."
+    required: false
+runner_type: "python-script"
