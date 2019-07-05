@@ -29,7 +29,8 @@ from orchestration.utils.config import logger, config_file, \
 instance = Blueprint("instance", __name__)
 
 status_map = {'requested': 'Running', 'succeeded': 'Success',
-              'failed': 'Failed', 'running': 'Running'
+              'failed': 'Failed', 'running': 'Running',
+              'scheduled': 'Running'
               }
 
 
