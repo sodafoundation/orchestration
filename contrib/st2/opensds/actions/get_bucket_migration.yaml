@@ -4,6 +4,8 @@ enabled: true
 entry_point: get_bucket_migration.py
 name: get-bucket-migration
 parameters:
+  timeout:
+    default: 7200
   url:
     type: string
     description: "URL for getting the Bucket Migration Information for multi-cloud S3 Interface."

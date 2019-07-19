@@ -38,6 +38,24 @@ def test_list_service_definitions(mock_session):
     result = api.list_service_definitions(None)
     assert len(result) == 0
 
+
+@mock.patch('uuid.uuid4')
+@mock.patch('orchestration.db.api.session_scope')
+def test_create_service_definition(mock_session, mock_uuid):
+    mock_uuid.return_value = '85a56708-a072-4525-9cc2-bb2f4e4a93e1'
+    expected = models.ServiceDefinition()
+    expected.id = '85a56708-a072-4525-9cc2-bb2f4e4a93e1'
+    expected.name = 'SD1'
+    actual = api.create_service_definition(
+        None, dict(name='SD1'), dict(
+            id='85a56708-a072-4525-9cc2-bb2f4e4a93e1', name='WD1'))
+    mock_session.return_value.__enter__.return_value.add.assert_called_once()
+    if len(actual) > 0:
+        for key, value in actual.items():
+            if hasattr(models.ServiceDefinition(), key):
+                assert getattr(expected, key) == value
+
+
 # ------------------------Test for Service------------------------------------
 @mock.patch('uuid.uuid4')
 @mock.patch('orchestration.db.api.session_scope')
@@ -117,4 +135,91 @@ def test_get_task_with_None(mock_session):
 def test_list_tasks(mock_session):
     mock_session.return_value.__enter__.return_value.query.return_value = []
     result = api.list_tasks(None)
+    assert len(result) == 0
+
+
+# Test for Workflow Definition
+@mock.patch('uuid.uuid4')
+@mock.patch('orchestration.db.api.session_scope')
+def test_create_workflow_definition(mock_session, mock_uuid):
+    mock_uuid.return_value = '85a56708-a072-4525-9cc2-bb2f4e4a93e1'
+    expected = models.WorkflowDefinition()
+    expected.id = '85a56708-a072-4525-9cc2-bb2f4e4a93e1'
+    expected.name = 'volume provisioning workflow def'
+    expected.wfe_type = 'St2'
+    actual = api.create_workflow_definition(
+        None, dict(name='volume provisioning workflow def', wfe_type='St2'))
+
+    mock_session.return_value.__enter__.return_value.add.assert_called_once()
+    item_list = ['id', 'name', 'wfe_type']
+    if actual is not None:
+        for key, value in api.get_query_res(
+                actual, models.WorkflowDefinition).items():
+            if key not in item_list:
+                next
+            if hasattr(models.WorkflowDefinition, key):
+                assert getattr(expected, key) == value
+
+
+@mock.patch('orchestration.db.api.session_scope')
+def test_get_workflow_definition(mock_session):
+    fake_wfd = models.WorkflowDefinition()
+    mock_session.return_value.__enter__.return_value. \
+        query.return_value.filter.return_value.first.return_value = \
+        fake_wfd
+    result = api.get_workflow_definition(
+                None, '85a56708-a072-4525-9cc2-bb2f4e4a93e1', 'St2')
+    assert result is not None
+
+
+@mock.patch('orchestration.db.api.session_scope')
+def test_list_workflow_definitions(mock_session):
+    mock_session.return_value.__enter__.return_value.query.return_value = []
+    result = api.list_workflow_definitions(None)
+    assert len(result) == 0
+
+
+def update_workflow_definition(mock_session):
+    api.update_workflow_definitions()
+
+
+def delete_workflow_definition(mock_session):
+    api.delete_workflow_definitions()
+
+
+# Test for Workflow
+@mock.patch('uuid.uuid4')
+@mock.patch('orchestration.db.api.session_scope')
+def test_create_workflow(mock_session, mock_uuid):
+    mock_uuid.return_value = '85a56708-a072-4525-9cc2-bb2f4e4a93e1'
+    expected = models.Workflow()
+    expected.id = '85a56708-a072-4525-9cc2-bb2f4e4a93e1'
+    expected.name = 'volume provisioning workflow'
+    expected.workflow_source = 'opensds.provision_volume'
+    actual = api.create_workflow(
+        None, dict(
+            name='volume provisioning workflow',
+            workflow_source='opensds.provision_volume'))
+
+    mock_session.return_value.__enter__.return_value.add.assert_called_once()
+    if actual is not None:
+        for key, value in api.get_query_res(actual, models.Workflow).items():
+            if hasattr(models.Workflow, key):
+                assert getattr(expected, key) == value
+
+
+@mock.patch('orchestration.db.api.session_scope')
+def test_get_workflow(mock_session):
+    fake_wf = models.Workflow()
+    mock_session.return_value.__enter__.return_value. \
+        query.return_value.filter.return_value.first.return_value = \
+        fake_wf
+    result = api.get_workflow(None, 'a9e54256-2b8b-47d9-8ca1-355db52d60f1')
+    assert result == fake_wf.to_dict()
+
+
+@mock.patch('orchestration.db.api.session_scope')
+def test_list_workflows(mock_session):
+    mock_session.return_value.__enter__.return_value.query.return_value = []
+    result = api.list_workflows(None)
     assert len(result) == 0

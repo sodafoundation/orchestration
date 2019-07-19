@@ -16,59 +16,63 @@
 
 import requests
 import json
-from utils import get_project_id, get_user_id, get_url
+from utils import get_url
 
 
 # API get service from id
-def get_services(service_id):
-    url = get_url() + "services/" + service_id
+def get_services(args):
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "services/" + args.id
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Service failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API get services
-def list_services():
-    url = get_url() + "services"
+def list_services(args):
+    url = get_url(args.project_id) + "services"
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Services list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API register services
-def add_services():
-    url = get_url() + "services"
+# Example Input data JSON format
+# {
+#     "name":"volume provision",
+#     "description":"Volume Service",
+#     "tenant_id":"94b280022d0c4401bcf3b0ea85870519",
+#     "user_id":"558057c4256545bd8a307c37464003c9",
+#     "input":"",
+#     "constraint":"",
+#     "group":"provisioning",
+#     "workflows":[
+#         {
+#             "definition_source":"opensds.provision-volume",
+#             "wfe_type":"st2"
+#         },
+#         {
+#             "definition_source":"opensds.snapshot-volume",
+#             "wfe_type":"st2"
+#         }
+#     ]
+# }
+
+def add_services(args):
+    if args.data is None:
+        raise Exception('Missing parameter, "data"')
+    url = get_url(args.project_id) + "services"
     headers = {
         'content-type': 'application/json'
     }
 
-    data = {
-        "name": "volume provision",
-        "description": "Volume Service",
-        "tenant_id": get_project_id(),
-        "user_id": get_user_id(),
-        "input": "",
-        "constraint": "",
-        "group": "provisioning",
-        "workflows": [
-            {
-                "definition_source": "opensds.provision-volume",
-                "wfe_type": "st2"
-            },
-            {
-                "definition_source": "opensds.snapshot-volume",
-                "wfe_type": "st2"
-            }
-
-        ]
-
-    }
-    resp = requests.post(url=url, data=json.dumps(data), headers=headers)
+    resp = requests.post(url=url, data=json.dumps(args.data), headers=headers)
     if resp.status_code != 200:
         print("Request for Register Services failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))

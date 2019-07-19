@@ -1,9 +1,9 @@
 ---
-description: Bucket Migration Multi-Cloud Service
+description: Migrate and Data Analysis Service
 enabled: true
 runner_type: mistral-v2
-entry_point: workflows/migration_bucket.yaml
-name: migration-bucket
+entry_point: workflows/data_analysis.yaml
+name: data-analysis
 pack: opensds
 parameters:
   ip_addr:
@@ -24,28 +24,28 @@ parameters:
     type: string
   name:
     required: true
-    description: "Name for the Bucket Migration Dataflow."
+    description: "Instance Name, Will Be Used To Create Migration Plan."
     type: string
-  description:
+  dest_backend_name:
     required: true
-    description: "Description about the Bucket Migration Dataflow."
+    description: "Destination Backend Storage Name."
     type: string
-  destBackend:
-    required: true
-    description: "Destination Backend Storage."
-    type: string
-  srcBucketName:
+  src_bucket_name:
     required: true
     description: "Source Bucket Name."
     type: string
-  destBucketName:
+  dest_bucket_name:
     required: true
     description: "Destination Bucket Name."
     type: string
-  remainSource:
+  analysis_engine_type:
     required: true
-    description: "Value for keeping the source objects."
-    type: boolean
+    description: "Data Analysis Egine Type."
+    type: string
+  analysis_args:
+    required: true
+    description: "Arguments Used for Data Analysis."
+    type: object
   auth_token:
     required: false
     description: "Authentication Token."

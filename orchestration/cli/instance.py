@@ -17,45 +17,73 @@
 
 import requests
 import json
-from utils import OPENSDS_IP, OPENSDS_TOKEN, get_project_id, get_url
+from utils import get_url, get_opensds_token
 
 
-# API get instances
-def get_instances():
-    url = get_url() + "instances"
+# API list instances
+def list_instances(args):
+    url = get_url(args.project_id) + "instances"
     resp = requests.get(url=url)
     if resp.status_code != 200:
         print("Request for Instance list failed", resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
+
+
+# API get instances
+def get_instances(args):
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "instances/" + args.id
+    resp = requests.get(url=url)
+    if resp.status_code != 200:
+        print("Request for Instance get failed", resp.status_code)
+
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
+
+
+# API delete instances
+def delete_instances(args):
+    if args.id is None:
+        raise Exception('Missing parameter, "id"')
+    url = get_url(args.project_id) + "instances/" + args.id
+    resp = requests.delete(url=url)
+    if resp.status_code != 200:
+        print("Request for Instance delete failed", resp.status_code)
+
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))
 
 
 # API run instance
-def run_instance(service_id):
-    url = get_url() + "instances"
+# Example Input data JSON format
+# {
+#   "service_id": "08e8a8a3-7a78-43d3-9ab1-45fe7a60d4eb",
+#   "action": "opensds.provision-volume",
+#   "name": "Volume Provision name",
+#   "description": "Volume Provision description",
+#   "user_id": "558057c4256545bd8a307c37464003c9",
+#   "parameters": {
+#     "ip_addr": "127.0.0.1",
+#     "port": "50040",
+#     "tenant_id": "94b280022d0c4401bcf3b0ea85870519",
+#     "size": 1,
+#     "name": "test",
+#   }
+# }
+
+def run_instance(args):
+    if args.data is None:
+        raise Exception('Missing parameter, "data"')
+    url = get_url(args.project_id) + "instances"
     headers = {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        'x-auth-token': get_opensds_token()
     }
 
-    data = {
-        "id": service_id,
-        "action": "opensds.provision-volume",
-        "parameters":
-            {
-                "ip_addr": OPENSDS_IP,
-                "port": "50040",
-                "tenant_id": get_project_id(),
-                "size": 1,
-                "name": "full",
-                "auth_token": OPENSDS_TOKEN
-            }
-    }
-
-    print(data)
-    resp = requests.post(url=url, data=json.dumps(data), headers=headers)
+    resp = requests.post(url=url, data=args.data, headers=headers)
     if resp.status_code != 200:
         print(
             "Request for Run Provision Volume Services failed",
             resp.status_code)
 
-    print(resp.text)
+    print(json.dumps(resp.json(), indent=2, sort_keys=True))

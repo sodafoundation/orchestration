@@ -18,26 +18,22 @@
 import argparse
 from argparse import RawTextHelpFormatter
 from service import add_services, list_services, get_services
-from instance import get_instances, run_instance
+from instance import list_instances, get_instances, delete_instances, run_instance
 from task import get_task, get_workflows
+from utils import update_config_vars, get_info
+import utils
 
-
-def service_api(args=''):
+def service_api(args):
     switcher = {
         "add": add_services,
         "list": list_services,
         "get": get_services,
     }
     # Get the function from switcher dictionary
-    func = switcher.get(args.operation, lambda: "Invalid operation")
-    # Execute the function
-    if args.operation == 'get':
-        if args.id is None:
-            print("ERROR: Needs --id set for service get")
-            return
-        func(args.id)
-        return
-    ret = func()
+    func = switcher.get(args.operation, None)
+    if func is None:
+        raise Exception('Invalid operation: ' + args.operation)
+    ret = func(args)
     if ret is not None:
         print(ret)
 
@@ -45,18 +41,16 @@ def service_api(args=''):
 def instance_api(args):
     switcher = {
         "run": run_instance,
+        "list": list_instances,
         "get": get_instances,
+        "delete": delete_instances,
     }
-    # Get the function from switcher dictionary
-    func = switcher.get(args.operation, lambda: "Invalid operation")
-    # Execute the function
-    if args.operation == 'run':
-        if args.id is None:
-            print("ERROR: Needs --id set for instance run")
-            return
-        func(args.id)
-        return
-    ret = func()
+
+    func = switcher.get(args.operation, None)
+    if func is None:
+        raise Exception('Invalid operation: ' + args.operation)
+
+    ret = func(args)
     if ret is not None:
         print(ret)
 
@@ -65,9 +59,9 @@ def workflow_api(args):
     switcher = {
         "get": get_workflows,
     }
-    # Get the function from switcher dictionary
-    func = switcher.get(args.operation, lambda: "Invalid operation")
-    # Execute the function
+    func = switcher.get(args.operation, None)
+    if func is None:
+        raise Exception('Invalid operation: ' + args.operation)
     ret = func()
     if ret is not None:
         print(ret)
@@ -77,9 +71,10 @@ def task_api(args):
     switcher = {
         "get": get_task
     }
-    # Get the function from switcher dictionary
-    func = switcher.get(args.operation, lambda: "Invalid operation")
-    # Execute the function
+
+    func = switcher.get(args.operation, None)
+    if func is None:
+        raise Exception('Invalid operation: ' + args.operation)
     ret = func()
     if ret is not None:
         print(ret)
@@ -89,43 +84,81 @@ def cli():
     description = """
     CLI for OpenSDS Orchestration Manager
 
-    Example: cli.py service list"""
+    Example:
+    ./orchctl --help
+    ./orchctl service list
+    ./orchctl service add --data '{ ... }'
+    ./orchctl service get --id d8360a8a-6c5e-4533-a18a-b446db8caac8
+    ./orchctl instance list
+    ./orchctl instance get --id 2723347b-9af8-451a-a7f8-62d40b10ad6f
+    ./orchctl instance delete --id 2723347b-9af8-451a-a7f8-62d40b10ad6f
+    ./orchctl instance run --data '{ ... }'
+    """
     parser = argparse.ArgumentParser(
         description=description,
         formatter_class=RawTextHelpFormatter
     )
 
+    # Main options
+    parser.add_argument('-a','--address', help='ip address of opensds hotpot')
+    parser.add_argument('-u','--user', help='username for opensds hotpot')
+    parser.add_argument('-p','--password', help='password for opensds hotpot')
+    parser.add_argument(
+        '-t','--project_id', help='project_id for opensds hotpot')
+    parser.add_argument('--orch_ip', help='Orchestration server ip address')
+    parser.add_argument('--orch_port', help='Orchestration server port')
+
     subparsers = parser.add_subparsers()
 
+    # Subcommand - service
     parser_service = subparsers.add_parser(
-        'service', help='service takes operation: [get, list, add]')
+        'service', help='Registers/Shows services in Orchestrator')
     parser_service.add_argument(
-        'operation', help='available operations [get, list, add]')
-    parser_service.add_argument('--id', help='Service ID to get')
+        'operation', choices=['list', 'get', 'add'],
+        help='list: Shows all services, ' +
+            'get: Show specified service with "id" specified, ' +
+            'add: Registers services with input "data"')
+    parser_service.add_argument(
+        '-i', '--id', help='Service ID for get subcommand')
+    parser_service.add_argument(
+        '-d','--data', help='JSON data of Serive for add subcommand')
     parser_service.set_defaults(func=service_api)
 
+    # Subcommand - instance
     parser_instance = subparsers.add_parser(
-        'instance', help='instance takes operation: [get, run]')
+        'instance', help='Executes/Shows/Deletes workflow instances')
     parser_instance.add_argument(
-        'operation', help='available operations [get, run]')
-    parser_instance.add_argument('--id', help='Service ID to run')
+        'operation', choices=['list', 'get', 'delete', 'run'],
+        help='list: Shows all instances, ' +
+            'get: Show specified instance with "id" specified, ' +
+            'delete: Remove specified instance with "id" specified, ' +
+            'run: Execute instance with input "data"')
+    parser_instance.add_argument(
+        '-i', '--id', help='Instance ID for get/delete subcommand')
+    parser_instance.add_argument(
+        '-d', '--data', help='JSON data of Instance for run subcommand')
     parser_instance.set_defaults(func=instance_api)
 
+    # Subcommand - workflow
     parser_workflow = subparsers.add_parser(
-        'workflow', help='workflow takes operation: [get]')
+        'workflow', help='Shows workflow definitions in Orchestrator')
     parser_workflow.add_argument(
-        'operation', help='available operations [get]')
+        'operation', choices=['get'],
+        help='get: Show specified workflow definition')
     parser_workflow.set_defaults(func=workflow_api)
 
+    # Subcommand - task
     parser_task = subparsers.add_parser(
-        'task', help='task takes operation: [get]')
+        'task', help='Status of the task in Orchestrator')
     parser_task.add_argument(
-        'operation', help='available operations [get]')
-    parser_task.add_argument('--id', help='Execution ID help')
+        'operation', choices=['get'],
+        help='Show status of the task')
+    parser_task.add_argument('--id', help='Execution ID of the task')
     parser_task.set_defaults(func=task_api)
 
     args = parser.parse_args()
 
+    update_config_vars(args)
     args.func(args)
 
 
