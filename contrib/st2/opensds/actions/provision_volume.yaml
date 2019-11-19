@@ -50,10 +50,10 @@ parameters:
     type: string
     description: "Mount point to attach volume"
     required: false
-  host_info:
-    type: object
-    description: "Host info JSON to attach volume"
-    required: false
+  host_id:
+    type: string
+    description: "Host id to attach volume"
+    required: true
   connection_info:
     type: object
     description: "Connectin info JSON to attach volume"

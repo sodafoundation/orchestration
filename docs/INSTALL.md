@@ -108,7 +108,7 @@ For the examples below OpenSDS is installed on VM and both StackStorm and Orches
         https://localhost/api/v1/executions \
         -H  'content-type: application/json' \
         -H  'X-Auth-Token: <stackstorm token>' \
-        -d '{"action": "opensds.provision-volume", "user": null, "parameters": {"i_paddr": "<ip>", "port": "50040", "size": 1, "tenant_id": "<id>", "name": "test000", "auth_token": "<opensds token>", "host_info": {"host":"ubuntu","initiator":"iqn.1993-08.org.debian:01:437bac3717c8","ip":"<host ip>"}}}'
+        -d '{"action": "opensds.provision-volume", "user": null, "parameters": {"i_paddr": "<ip>", "port": "50040", "size": 1, "tenant_id": "<id>", "name": "test000", "auth_token": "<opensds token>", "host_id": "<host_id>"}}'
     ```
 
 * Create Volume using StackStorm Action with input arguments

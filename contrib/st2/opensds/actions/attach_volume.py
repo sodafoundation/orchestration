@@ -24,14 +24,14 @@ class AttachVolumeAction(Action):
             port="",
             tenant_id="",
             mount_point="",
-            host_info="",
+            host_id="",
             connection_info="",
             access_protocol="",
             auth_token="",
             volume_id=""):
         data = {
             "Mountpoint": mount_point,
-            "HostInfo": host_info,
+            "HostId": host_id,
             "ConnectionInfo": connection_info,
             "TenantId": tenant_id,
             "AccessProtocol": access_protocol,

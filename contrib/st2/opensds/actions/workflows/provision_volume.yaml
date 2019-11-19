@@ -17,7 +17,7 @@ workflows:
             - snapshot_id
             - snapshot_from_cloud
             - mount_point
-            - host_info
+            - host_id
             - connection_info
             - access_protocol
             - auth_token
@@ -54,7 +54,7 @@ workflows:
                     tenant_id: "<% $.tenant_id %>"
                     volume_id: <% $.volume_id %>
                     mount_point: <% $.mount_point %>
-                    host_info: <% $.host_info %>
+                    host_id: <% $.host_id %>
                     connection_info: <% $.connection_info %>
                     access_protocol: <% $.access_protocol %>
                     auth_token: "<% $.auth_token %>"

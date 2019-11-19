@@ -19,9 +19,9 @@ parameters:
   mount_point:
     type: string
     required: false
-  host_info:
-    type: object
-    required: false
+  host_id:
+    type: string
+    required: true
   connection_info:
     type: object
     required: false
