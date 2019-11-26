@@ -16,18 +16,12 @@ parameters:
   volume_id:
     type: string
     required: true
-  mount_point:
+  attach_mode:
     type: string
     required: false
-  host_info:
-    type: object
-    required: false
-  connection_info:
-    type: object
-    required: false
-  access_protocol:
+  host_id:
     type: string
-    required: false
+    required: true
   auth_token:
     type: string
     required: false
