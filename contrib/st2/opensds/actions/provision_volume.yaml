@@ -46,22 +46,14 @@ parameters:
     type: string
     description: "Snapshot from cloud to create volume"
     required: false
-  mount_point:
+  attach_mode:
     type: string
-    description: "Mount point to attach volume"
+    description: "Attach Mode 'ro' or 'rw' to attach volume"
     required: false
   host_id:
     type: string
     description: "Host id to attach volume"
     required: true
-  connection_info:
-    type: object
-    description: "Connectin info JSON to attach volume"
-    required: false
-  access_protocol:
-    type: string
-    description: "Access protocol for attach volume"
-    required: false
   auth_token:
     type: string
     description: "Authentication Token"

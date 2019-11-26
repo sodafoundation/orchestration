@@ -23,18 +23,14 @@ class AttachVolumeAction(Action):
             ip_addr="",
             port="",
             tenant_id="",
-            mount_point="",
+            attach_mode="",
             host_id="",
-            connection_info="",
-            access_protocol="",
             auth_token="",
             volume_id=""):
         data = {
-            "Mountpoint": mount_point,
+            "AttachMode": attach_mode,
             "HostId": host_id,
-            "ConnectionInfo": connection_info,
             "TenantId": tenant_id,
-            "AccessProtocol": access_protocol,
             "VolumeId": volume_id}
         headers = {
             'content-type': 'application/json',
