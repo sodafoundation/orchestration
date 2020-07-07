@@ -24,6 +24,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.expression import and_
 from orchestration.utils.config import logger
 
+
 # session_scope can be used cleanly in transaction,
 # references the officel document of sqlalchemy.
 @contextmanager
