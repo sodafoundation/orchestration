@@ -97,6 +97,7 @@ def test_list_services(mock_session):
     result = api.list_services(None)
     assert len(result) == 0
 
+
 # ------------------------Test for task------------------------------------
 @mock.patch('uuid.uuid4')
 @mock.patch('orchestration.db.api.session_scope')

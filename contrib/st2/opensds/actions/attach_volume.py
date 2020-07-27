@@ -28,10 +28,10 @@ class AttachVolumeAction(Action):
             auth_token="",
             volume_id=""):
         data = {
-            "AttachMode": attach_mode,
-            "HostId": host_id,
-            "TenantId": tenant_id,
-            "VolumeId": volume_id}
+            "attachMode": attach_mode if attach_mode else "rw",
+            "hostId": host_id,
+            "tenantId": tenant_id,
+            "volumeId": volume_id}
         headers = {
             'content-type': 'application/json',
             'x-auth-token': auth_token

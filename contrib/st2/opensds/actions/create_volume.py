@@ -32,13 +32,13 @@ class CreateVolumeAction(Action):
             auth_token="",
             size=1):
         data = {
-            "Name": name,
-            "Description": description,
-            "AvailabilityZone": availability_zone,
-            "ProfileId": profile_id,
-            "SnapshotId": snapshot_id,
-            "SnapshotFromCloud": snapshot_from_cloud,
-            "Size": size
+            "name": name,
+            "description": description if description else "Volume creation",
+            "availabilityZone": availability_zone if availability_zone else "default",
+            "profileId": profile_id,
+            "snapshotId": snapshot_id if snapshot_id else "",
+            "snapshotFromCloud": snapshot_from_cloud if snapshot_from_cloud else False,
+            "size": size
             }
         if profile_id:
             data["ProfileId"] = profile_id
