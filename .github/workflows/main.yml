@@ -1,0 +1,40 @@
+name: SODA Orchestration CI Build
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+        
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5]
+        os: [ubuntu-16.04]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout project  
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Setup Pre-requisites
+      run: |
+        sudo mkdir -p /var/log/opensds
+        sudo touch /var/log/opensds/orchestration.log
+        sudo chmod 666 /var/log/opensds/orchestration.log
+      
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        pip install tox tox-gh-actions codecov
+
+    - name: Test with tox
+      run: tox
+    
+    - name: After success run Codecov Coverage tool.
+      uses: codecov/codecov-action@v1
+    
