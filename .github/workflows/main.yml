@@ -36,5 +36,4 @@ jobs:
       run: tox
     
     - name: After success run Codecov Coverage tool.
-      uses: codecov/codecov-action@v1
-    
+      run: codecov
