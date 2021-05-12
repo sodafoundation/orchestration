@@ -1,6 +1,7 @@
 # orchestration
 
-[![Build Status](https://travis-ci.com/sodafoundation/orchestration.svg?branch=master)](https://travis-ci.com/sodafoundation/orchestration) [![Coverage Report](https://img.shields.io/codecov/c/github/sodafoundation/orchestration/master.svg)](https://codecov.io/github/sodafoundation/orchestration?branch=master)
+[![Build Status](https://github.com/sodafoundation/orchestration/actions/workflows/main.yml/badge.svg)](https://github.com/sodafoundation/orchestration/actions/workflows/main.yml) 
+[![Coverage Report](https://img.shields.io/codecov/c/github/sodafoundation/orchestration/master.svg)](https://codecov.io/github/sodafoundation/orchestration?branch=master)
 [![Releases](https://img.shields.io/github/release/sodafoundation/orchestration/all.svg?style=flat-square)](https://github.com/sodafoundation/orchestration/releases)
 [![LICENSE](https://img.shields.io/github/license/sodafoundation/orchestration.svg?style=flat-square)](https://github.com/sodafoundation/orchestration/blob/master/LICENSE)
 
